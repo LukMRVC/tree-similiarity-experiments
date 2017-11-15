@@ -41,9 +41,15 @@ add_library(
 )
 target_include_directories(
   TreeSimilarity INTERFACE
-  external/tree-similarity-private/src/node
+  external/tree-similarity-private/src/allpairs
+  external/tree-similarity-private/src/cost_model
+  external/tree-similarity-private/src/data_structures
+  external/tree-similarity-private/src/join
   external/tree-similarity-private/src/label
+  external/tree-similarity-private/src/node
   external/tree-similarity-private/src/parser
+  external/tree-similarity-private/src/tree_to_set_converter
+  external/tree-similarity-private/src/zhang_shasha
 )
 
 # Let the compiler know to find the header files in TreeSimilarity library.
