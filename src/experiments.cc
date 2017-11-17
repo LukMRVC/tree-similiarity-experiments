@@ -1,13 +1,41 @@
+// The MIT License (MIT)
+// Copyright (c) 2017 Thomas Huetter
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+
+/// \file src/experiments.cc
+///
+/// \details
+/// Implements an experimental environment that executes algorithms in located in 
+/// in the folder external/. Input file, similarity threshold and algorithm are 
+/// passed as commandline arguments.
+
 #include "experiments.h"
 
 int main(int argc, char** argv) {
 
   if(argc != 4) {
-    std::cout << "Uasge: ./experiments <input_file> <similarity_threshold> <algorithm>" 
+    std::cout << "Usage: ./experiments <input_file> <similarity_threshold> <algorithm>" 
         << std::endl;
     std::cout << "Algorithm:" << std::endl;
-    std::cout << "a ... all algorithms" << std::endl << "b ... allpairs baseline" << std::endl <<
-        "n ... naive join" << std::endl;
+    std::cout << "all ... all algorithms" << std::endl << "allpairs_baseline ... allpairs baseline" << std::endl <<
+        "naive ... naive join" << std::endl;
     exit(-1);
   }
 
@@ -16,10 +44,15 @@ int main(int argc, char** argv) {
   using CostModel = cost_model::UnitCostModel<Label>;
   Timing timing;
 
+
+  // Write results as JSON object to stdout
+  std::cout << "{";
   // Path to file containing the input tree.
   std::string file_path = argv[1];
+  std::cout << "\"input_file\": \"" << file_path << "\", ";
   // Set similarity threshold - maximum number of allowed edit operations.
   double similarity_threshold = std::stod(argv[2]);
+  std::cout << "\"threshold\": " << similarity_threshold << ", ";
 
   // Create the container to store all trees.
   std::vector<node::Node<Label>> trees_collection;
@@ -27,7 +60,7 @@ int main(int argc, char** argv) {
   ////////////////////////////////////////////////////////////////////////
   /// PARSE INPUT 
   ////////////////////////////////////////////////////////////////////////
-
+  
   // Initialized Timing object
   Timing::Interval * parse = timing.create_enroll("Parse");
   // Start timing
@@ -40,13 +73,16 @@ int main(int argc, char** argv) {
   // Stop timing
   parse->stop();
 
+  // Write timing
+  std::cout << "\"time_parsing\": " << parse->getfloat() << ", ";
+
 
   ////////////////////////////////////////////////////////////////////////
   /// ALLPAIRS BASELINE ALGORITHM
   ////////////////////////////////////////////////////////////////////////
 
   // If algorithm is either all or allpairs baseline
-  if(argv[3] == std::string("a") || argv[3] == std::string("b")) {
+  if(argv[3] == std::string("all") || argv[3] == std::string("allpairs_baseline")) {
     // Initialize allpairs baseline
     join::AllpairsBaselineSelfJoin<Label, CostModel> absj;
   
@@ -62,6 +98,9 @@ int main(int argc, char** argv) {
     // Stop timing
     tree_to_set->stop();
 
+    // Write timing
+    std::cout << "\"time_tree_to_set\": " << tree_to_set->getfloat() << ", ";
+
 
     // Initialized Timing object
     Timing::Interval * allpairs = timing.create_enroll("Allpairs");
@@ -75,7 +114,9 @@ int main(int argc, char** argv) {
     // Stop timing
     allpairs->stop();
 
-    std::cout << "#ABSJ: candidates=" << join_candidates_absj.size() << std::endl;
+    // Write timing
+    std::cout << "\"time_pruning\": " << allpairs->getfloat() << ", ";
+
 
     // Initialized Timing object
     Timing::Interval * verify = timing.create_enroll("Verify");
@@ -90,7 +131,13 @@ int main(int argc, char** argv) {
     // Stop timing
     verify->stop();
 
-    std::cout << "ABSJ: #resultset=" << result_set_absj.size() << std::endl;
+    // Write timing
+    std::cout << "\"time_verify\": " << verify->getfloat() << ", ";
+
+
+    // Write number of candidates and number of result pairs
+    std::cout << "\"candidates\": " << join_candidates_absj.size() << ", ";
+    std::cout << "\"resultset\": " << result_set_absj.size() << "}" << std::endl;
   }
 
   ////////////////////////////////////////////////////////////////////////
@@ -98,7 +145,7 @@ int main(int argc, char** argv) {
   ////////////////////////////////////////////////////////////////////////
 
   // If algorithm is either all or allpairs baseline
-  if(argv[3] == std::string("a") || argv[3] == std::string("n")) {
+  if(argv[3] == std::string("all") || argv[3] == std::string("naive")) {
     // Initialize allpairs baseline
     join::NaiveSelfJoin<Label, CostModel> nsj;
 
@@ -114,9 +161,8 @@ int main(int argc, char** argv) {
     // Stop timing
     naive_join->stop();
 
-    std::cout << "NSJ: #resultset=" << result_set_nsj.size() << std::endl;
+    // Write timing and number of result pairs
+    std::cout << "\"time_verify\": " << naive_join->getfloat() << ", ";
+    std::cout << "\"resultset\": " << result_set_nsj.size() << "}" << std::endl;
   }
-
-  // Output timing statistics
-  std::cout << timing;
 }
