@@ -9,6 +9,13 @@ CREATE TABLE dataset (
   max_tree_size integer
 );
 
+DROP TABLE IF EXISTS algorithm CASCADE;
+CREATE TABLE algorithm (
+  short_name varchar(31) PRIMARY KEY,
+  filename varchar(127) NOT NULL,
+  short_description text
+);
+
 -- Common algorithm attributes.
 --
 -- IMPORTANT: Apply to all if modified.
@@ -18,7 +25,7 @@ CREATE TABLE dataset (
 -- experiments_timestamp timestamp,
 -- dataset_short_name varchar(127) REFERENCES dataset(short_name),
 -- dataset_parsing_time bigint,
--- algorithm_name varchar(127),
+-- algorithm_short_name varchar(31) REFERENCES algorithm(short_name),
 -- algorithm_version varchar(127),
 -- threshold decimal,
 -- result_set_size integer,
@@ -31,6 +38,7 @@ CREATE TABLE naive_self_join (
   experiments_timestamp timestamp,
   dataset_short_name varchar(127) REFERENCES dataset(short_name),
   dataset_parsing_time bigint,
+  algorithm_short_name varchar(31) REFERENCES algorithm(short_name),
   algorithm_version varchar(127),
   threshold decimal,
   result_set_size integer,
@@ -47,6 +55,7 @@ CREATE TABLE allpairs_baseline_self_join (
   experiments_timestamp timestamp,
   dataset_short_name varchar(127) REFERENCES dataset(short_name),
   dataset_parsing_time bigint,
+  algorithm_short_name varchar(31) REFERENCES algorithm(short_name),
   algorithm_version varchar(127),
   threshold decimal,
   result_set_size integer,

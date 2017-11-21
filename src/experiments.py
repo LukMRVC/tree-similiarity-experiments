@@ -110,6 +110,7 @@ fixed_values = {
 
 example_parameters_set = {
     "dataset_short_name" : "D1",
+    "algorithm_short_name" : "A1",
     "threshold" : 1.0
 }
 
