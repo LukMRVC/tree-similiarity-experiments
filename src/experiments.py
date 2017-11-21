@@ -47,7 +47,11 @@ def get_experiments_version():
     return get_respository_version(".")
 
 # http://initd.org/psycopg/docs/sql.html#module-psycopg2.sql
-def store_result(db, cur, table_name, values_dict):
+def store_result(table_name, values_dict):
+    # Connect to database.
+    db = psycopg2.connect("")
+    # Open a cursor to perform database operations
+    cur = db.cursor()
     attributes = values_dict.keys()
     query = sql.SQL("INSERT INTO {} ({}) VALUES ({})").format(
         sql.Identifier(table_name),
@@ -57,14 +61,18 @@ def store_result(db, cur, table_name, values_dict):
     print(query.as_string(cur))
     cur.execute(query, values_dict)
     db.commit()
+    # Close the cursor.
+    cur.close()
+    # Close communication with the database.
+    db.close()
 
 # values_dict -- A dictionary with attribute names and values to store.
 # IMPORTANT: Make sure that values_dict hold correct identifiers and values.
-def store_naive_self_join_result(db, cur, values_dict):
-    store_result(db, cur, 'naive_self_join', values_dict)
+def store_naive_self_join_result(values_dict):
+    store_result('naive_self_join', values_dict)
 
-def store_allpairs_baseline_self_join_result(db, cur, values_dict):
-    store_result(db, cur, 'allpairs_baseline_self_join', values_dict)
+def store_allpairs_baseline_self_join_result(values_dict):
+    store_result('allpairs_baseline_self_join', values_dict)
 
 parser = argparse.ArgumentParser()
 parser.add_argument(
@@ -142,18 +150,12 @@ example_absj_result_values_dict.update(example_parameters_set)
 example_absj_result_values_dict.update(fixed_values)
 print(example_absj_result_values_dict)
 
-# Connect to database.
-db = psycopg2.connect("")
-# Open a cursor to perform database operations
-cur = db.cursor()
 
-store_naive_self_join_result(db, cur, example_nsj_result_values_dict)
-store_allpairs_baseline_self_join_result(db, cur, example_absj_result_values_dict)
 
-# Close the cursor.
-cur.close()
-# Close communication with the database.
-db.close()
+store_naive_self_join_result(example_nsj_result_values_dict)
+store_allpairs_baseline_self_join_result(example_absj_result_values_dict)
+
+
 
 # # execute binary for all possible input configurations
 # for file in args.inputfiles:
