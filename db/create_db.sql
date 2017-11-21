@@ -1,7 +1,9 @@
 DROP TABLE IF EXISTS dataset CASCADE;
 CREATE TABLE dataset (
-  filename varchar(127) PRIMARY KEY,
-  number_trees integer,
+  short_name varchar(31) PRIMARY KEY,
+  filename varchar(127) NOT NULL,
+  short_description text,
+  number_trees integer NOT NULL,
   avg_tree_size integer,
   min_tree_size integer,
   max_tree_size integer
@@ -14,7 +16,7 @@ CREATE TABLE dataset (
 -- execution_id serial PRIMARY KEY,
 -- experiments_version varchar(127),
 -- experiments_timestamp timestamp,
--- dataset_filename varchar(127) REFERENCES dataset(filename),
+-- dataset_short_name varchar(127) REFERENCES dataset(short_name),
 -- dataset_parsing_time bigint,
 -- algorithm_name varchar(127),
 -- algorithm_version varchar(127),
@@ -27,14 +29,14 @@ CREATE TABLE naive_self_join (
   execution_id serial PRIMARY KEY,
   experiments_version varchar(127),
   experiments_timestamp timestamp,
-  dataset_filename varchar(127) REFERENCES dataset(filename),
+  dataset_short_name varchar(127) REFERENCES dataset(short_name),
   dataset_parsing_time bigint,
   algorithm_version varchar(127),
   threshold decimal,
   result_set_size integer,
   -- Algorithm-specific attributes.
-  verification_candidates integer,
-  verification_time bigint
+  verification_candidates integer, -- All pairs of trees that the join looks at and verifies.
+  verification_time bigint -- Total time of the join.
 );
 
 DROP TABLE IF EXISTS allpairs_baseline_self_join;
@@ -43,16 +45,16 @@ CREATE TABLE allpairs_baseline_self_join (
   execution_id serial PRIMARY KEY,
   experiments_version varchar(127),
   experiments_timestamp timestamp,
-  dataset_filename varchar(127) REFERENCES dataset(filename),
+  dataset_short_name varchar(127) REFERENCES dataset(short_name),
   dataset_parsing_time bigint,
   algorithm_version varchar(127),
   threshold decimal,
   result_set_size integer,
   -- Algorithm-specific attributes.
   tree_to_set_time bigint,
-  length_filter_time bigint,
-  length_filter_candidates integer,
-  length_filter_verification_time bigint,
-  verification_candidates integer,
-  verification_time bigint
+  filter_touched_pairs integer, -- Pairs of trees that the filter looks at.
+  filter_verification_candidates integer, -- Pairs of trees resulting from filter only.
+  filter_time bigint, -- Total time of the filter and its verification step.
+  verification_candidates integer, -- Pairs of trees resulting after verification step of the filter.
+  verification_time bigint -- TED verification time.
 );
