@@ -10,6 +10,7 @@ import argparse
 import subprocess
 import json
 import psycopg2
+from psycopg2 import sql
 from multiprocessing import Queue, Process
 from datetime import datetime
 
@@ -45,32 +46,25 @@ def get_algorithm_version():
 def get_experiments_version():
     return get_respository_version(".")
 
-def store_naive_self_join_result(db, cur, values):
-    # cur.execute("INSERT INTO naive_self_join VALUES ();", (,))
-    cur.execute("INSERT INTO naive_self_join( \
-        experiments_version, \
-        experiments_timestamp, \
-        dataset_filename, \
-        dataset_parsing_time, \
-        algorithm_version, \
-        threshold, \
-        result_set_size, \
-        verification_candidates, \
-        verification_time) \
-        VALUES ( \
-        %(experiments_version)s, \
-        %(experiments_timestamp)s, \
-        %(dataset_filename)s, \
-        %(dataset_parsing_time)s, \
-        %(algorithm_version)s, \
-        %(threshold)s, \
-        %(result_set_size)s, \
-        %(verification_candidates)s, \
-        %(verification_time)s)", \
-        values
+# http://initd.org/psycopg/docs/sql.html#module-psycopg2.sql
+def store_result(db, cur, table_name, values_dict):
+    attributes = values_dict.keys()
+    query = sql.SQL("INSERT INTO {} ({}) VALUES ({})").format(
+        sql.Identifier(table_name),
+        sql.SQL(', ').join(map(sql.Identifier, attributes)),
+        sql.SQL(', ').join(map(sql.Placeholder, attributes))
     )
+    print(query.as_string(cur))
+    cur.execute(query, values_dict)
     db.commit()
 
+# values_dict -- A dictionary with attribute names and values to store.
+# IMPORTANT: Make sure that values_dict hold correct identifiers and values.
+def store_naive_self_join_result(db, cur, values_dict):
+    store_result(db, cur, 'naive_self_join', values_dict)
+
+def store_allpairs_baseline_self_join_result(db, cur, values_dict):
+    store_result(db, cur, 'allpairs_baseline_self_join', values_dict)
 
 parser = argparse.ArgumentParser()
 parser.add_argument(
@@ -115,29 +109,45 @@ fixed_values = {
 }
 
 example_parameters_set = {
-    "dataset_filename" : "dataset",
-    "threshold" : 1
+    "dataset_short_name" : "D1",
+    "threshold" : 1.0
 }
 
-example_naive_join_result = '{ \
+example_naive_self_join_result = '{ \
     "dataset_parsing_time" : 10, \
     "result_set_size" : 100, \
     "verification_candidates" : 100, \
     "verification_time" : 10 \
 }'
 
-example_values_to_store = json.loads(example_naive_join_result)
-example_values_to_store.update(example_parameters_set)
-example_values_to_store.update(fixed_values)
+example_allpair_baseline_self_join_result = '{ \
+    "dataset_parsing_time" : 10, \
+    "result_set_size" : 100, \
+    "tree_to_set_time" : 10, \
+    "filter_touched_pairs" : 100, \
+    "filter_verification_candidates" : 100, \
+    "filter_time" : 10, \
+    "verification_candidates" : 100, \
+    "verification_time" : 10 \
+}'
 
-print(example_values_to_store)
+example_nsj_result_values_dict = json.loads(example_naive_self_join_result)
+example_nsj_result_values_dict.update(example_parameters_set)
+example_nsj_result_values_dict.update(fixed_values)
+print(example_nsj_result_values_dict)
+
+example_absj_result_values_dict = json.loads(example_allpair_baseline_self_join_result)
+example_absj_result_values_dict.update(example_parameters_set)
+example_absj_result_values_dict.update(fixed_values)
+print(example_absj_result_values_dict)
 
 # Connect to database.
 db = psycopg2.connect("")
 # Open a cursor to perform database operations
 cur = db.cursor()
 
-store_naive_self_join_result(db, cur, example_values_to_store)
+store_naive_self_join_result(db, cur, example_nsj_result_values_dict)
+store_allpairs_baseline_self_join_result(db, cur, example_absj_result_values_dict)
 
 # Close the cursor.
 cur.close()
