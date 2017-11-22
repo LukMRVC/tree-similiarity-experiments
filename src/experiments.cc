@@ -22,8 +22,8 @@
 /// \file src/experiments.cc
 ///
 /// \details
-/// Implements an experimental environment that executes algorithms in located in 
-/// in the folder external/. Input file, similarity threshold and algorithm are 
+/// Implements an experimental environment that executes algorithms in located in
+/// in the folder external/. Input file, similarity threshold and algorithm are
 /// passed as commandline arguments.
 
 #include "experiments.h"
@@ -31,7 +31,7 @@
 int main(int argc, char** argv) {
 
   if(argc != 4) {
-    std::cout << "Usage: ./experiments <input_file> <similarity_threshold> <algorithm>" 
+    std::cout << "Usage: ./experiments <input_file> <similarity_threshold> <algorithm>"
         << std::endl;
     std::cout << "Algorithm:" << std::endl;
     std::cout << "all ... all algorithms" << std::endl << "allpairs_baseline ... allpairs baseline" << std::endl <<
@@ -49,18 +49,18 @@ int main(int argc, char** argv) {
   std::cout << "{";
   // Path to file containing the input tree.
   std::string file_path = argv[1];
-  std::cout << "\"input_file\": \"" << file_path << "\", ";
+  // std::cout << "\"input_file\": \"" << file_path << "\", ";
   // Set similarity threshold - maximum number of allowed edit operations.
   double similarity_threshold = std::stod(argv[2]);
-  std::cout << "\"threshold\": " << similarity_threshold << ", ";
+  // std::cout << "\"threshold\": " << similarity_threshold << ", ";
 
   // Create the container to store all trees.
   std::vector<node::Node<Label>> trees_collection;
 
   ////////////////////////////////////////////////////////////////////////
-  /// PARSE INPUT 
+  /// PARSE INPUT
   ////////////////////////////////////////////////////////////////////////
-  
+
   // Initialized Timing object
   Timing::Interval * parse = timing.create_enroll("Parse");
   // Start timing
@@ -74,7 +74,7 @@ int main(int argc, char** argv) {
   parse->stop();
 
   // Write timing
-  std::cout << "\"time_parsing\": " << parse->getfloat() << ", ";
+  std::cout << "\"dataset_parsing_time\": " << parse->getfloat() << ", ";
 
 
   ////////////////////////////////////////////////////////////////////////
@@ -85,21 +85,21 @@ int main(int argc, char** argv) {
   if(argv[3] == std::string("all") || argv[3] == std::string("allpairs_baseline")) {
     // Initialize allpairs baseline
     join::AllpairsBaselineSelfJoin<Label, CostModel> absj;
-  
+
     // Initialized Timing object
     Timing::Interval * tree_to_set = timing.create_enroll("TreeToSet");
     // Start timing
     tree_to_set->start();
 
     // Convert trees to sets and get the result.
-    std::vector<std::vector<unsigned int>> sets_collection = 
+    std::vector<std::vector<unsigned int>> sets_collection =
         absj.convert_trees_to_sets(trees_collection);
 
     // Stop timing
     tree_to_set->stop();
 
     // Write timing
-    std::cout << "\"time_tree_to_set\": " << tree_to_set->getfloat() << ", ";
+    std::cout << "\"tree_to_set_time\": " << tree_to_set->getfloat() << ", ";
 
 
     // Initialized Timing object
@@ -108,14 +108,14 @@ int main(int argc, char** argv) {
     allpairs->start();
 
     // Compute candidate for the join with the allpairs algorithm
-    std::vector<std::pair<unsigned int, unsigned int>> join_candidates_absj = 
+    std::vector<std::pair<unsigned int, unsigned int>> join_candidates_absj =
         absj.get_join_candidates(sets_collection, similarity_threshold);
 
     // Stop timing
     allpairs->stop();
 
     // Write timing
-    std::cout << "\"time_pruning\": " << allpairs->getfloat() << ", ";
+    std::cout << "\"filter_time\": " << allpairs->getfloat() << ", ";
 
 
     // Initialized Timing object
@@ -124,20 +124,20 @@ int main(int argc, char** argv) {
     verify->start();
 
     // Verify all computed join candidates and return the join result
-    std::vector<join::JoinResultElement> result_set_absj = 
-        absj.verify_candidates(trees_collection, join_candidates_absj, 
+    std::vector<join::JoinResultElement> result_set_absj =
+        absj.verify_candidates(trees_collection, join_candidates_absj,
                                similarity_threshold);
 
     // Stop timing
     verify->stop();
 
     // Write timing
-    std::cout << "\"time_verify\": " << verify->getfloat() << ", ";
+    std::cout << "\"verification_time\": " << verify->getfloat() << ", ";
 
 
     // Write number of candidates and number of result pairs
-    std::cout << "\"candidates\": " << join_candidates_absj.size() << ", ";
-    std::cout << "\"resultset\": " << result_set_absj.size() << "}" << std::endl;
+    std::cout << "\"verification_candidates\": " << join_candidates_absj.size() << ", ";
+    std::cout << "\"result_set_size\": " << result_set_absj.size() << "}" << std::endl;
   }
 
   ////////////////////////////////////////////////////////////////////////
@@ -155,14 +155,16 @@ int main(int argc, char** argv) {
     naive_join->start();
 
     // Verify all computed join candidates and return the join result
-    std::vector<join::JoinResultElement> result_set_nsj = 
+    std::vector<join::JoinResultElement> result_set_nsj =
         nsj.execute_join(trees_collection, similarity_threshold);
 
     // Stop timing
     naive_join->stop();
 
     // Write timing and number of result pairs
-    std::cout << "\"time_verify\": " << naive_join->getfloat() << ", ";
-    std::cout << "\"resultset\": " << result_set_nsj.size() << "}" << std::endl;
+    int num_trees = trees_collection.size();
+    std::cout << "\"verification_candidates\" : " << (num_trees*num_trees-num_trees)/2 << ", ";
+    std::cout << "\"verification_time\" : " << naive_join->getfloat() << ", ";
+    std::cout << "\"result_set_size\" : " << result_set_nsj.size() << "}" << std::endl;
   }
 }
