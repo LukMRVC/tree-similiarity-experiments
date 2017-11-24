@@ -42,6 +42,9 @@ int main(int argc, char** argv) {
 
   using Label = label::StringLabel;
   using CostModel = cost_model::UnitCostModel<Label>;
+  using BaselineSimilarity = similarity_function::HammingBaseline;
+  using LengthFilterSimilarity = similarity_function::HammingLengthFilter;
+  using OptimalSimilarity = similarity_function::HammingOptimal;
   Timing timing;
 
 
@@ -84,7 +87,7 @@ int main(int argc, char** argv) {
   // If algorithm is either all or allpairs baseline
   if(argv[3] == std::string("all") || argv[3] == std::string("allpairs_baseline")) {
     // Initialize allpairs baseline
-    join::AllpairsBaselineSelfJoin<Label, CostModel> absj;
+    join::AllpairsGenericSelfJoin<Label, CostModel, BaselineSimilarity> absj;
 
     // Initialized Timing object
     Timing::Interval * tree_to_set = timing.create_enroll("TreeToSet");
@@ -139,6 +142,135 @@ int main(int argc, char** argv) {
     std::cout << "\"verification_candidates\": " << join_candidates_absj.size() << ", ";
     std::cout << "\"result_set_size\": " << result_set_absj.size() << "}" << std::endl;
   }
+
+
+  ////////////////////////////////////////////////////////////////////////
+  /// ALLPAIRS LENGTH FILTER ALGORITHM
+  ////////////////////////////////////////////////////////////////////////
+
+  // If algorithm is either all or allpairs baseline
+  if(argv[3] == std::string("all") || argv[3] == std::string("allpairs_length_filter")) {
+    // Initialize allpairs baseline
+    join::AllpairsGenericSelfJoin<Label, CostModel, LengthFilterSimilarity> alfsj;
+
+    // Initialized Timing object
+    Timing::Interval * tree_to_set_lf = timing.create_enroll("TreeToSet");
+    // Start timing
+    tree_to_set_lf->start();
+
+    // Convert trees to sets and get the result.
+    std::vector<std::vector<unsigned int>> sets_collection =
+        alfsj.convert_trees_to_sets(trees_collection);
+
+    // Stop timing
+    tree_to_set_lf->stop();
+
+    // Write timing
+    std::cout << "\"tree_to_set_time\": " << tree_to_set_lf->getfloat() << ", ";
+
+
+    // Initialized Timing object
+    Timing::Interval * allpairs_lf = timing.create_enroll("Allpairs");
+    // Start timing
+    allpairs_lf->start();
+
+    // Compute candidate for the join with the allpairs algorithm
+    std::vector<std::pair<unsigned int, unsigned int>> join_candidates_alfsj =
+        alfsj.get_join_candidates(sets_collection, similarity_threshold);
+
+    // Stop timing
+    allpairs_lf->stop();
+
+    // Write timing
+    std::cout << "\"filter_time\": " << allpairs_lf->getfloat() << ", ";
+
+
+    // Initialized Timing object
+    Timing::Interval * verify_lf = timing.create_enroll("Verify");
+    // Start timing
+    verify_lf->start();
+
+    // Verify all computed join candidates and return the join result
+    std::vector<join::JoinResultElement> result_set_alfsj =
+        alfsj.verify_candidates(trees_collection, join_candidates_absj,
+                               similarity_threshold);
+
+    // Stop timing
+    verify_lf->stop();
+
+    // Write timing
+    std::cout << "\"verification_time\": " << verify_lf->getfloat() << ", ";
+
+
+    // Write number of candidates and number of result pairs
+    std::cout << "\"verification_candidates\": " << join_candidates_alfsj.size() << ", ";
+    std::cout << "\"result_set_size\": " << result_set_alfsj.size() << "}" << std::endl;
+  }
+
+
+  ////////////////////////////////////////////////////////////////////////
+  /// ALLPAIRS OPTIMAL ALGORITHM
+  ////////////////////////////////////////////////////////////////////////
+
+  // If algorithm is either all or allpairs baseline
+  if(argv[3] == std::string("all") || argv[3] == std::string("allpairs_optimal")) {
+    // Initialize allpairs baseline
+    join::AllpairsGenericSelfJoin<Label, CostModel, OptimalSimilarity> aosj;
+
+    // Initialized Timing object
+    Timing::Interval * tree_to_set_o = timing.create_enroll("TreeToSet");
+    // Start timing
+    tree_to_set_o->start();
+
+    // Convert trees to sets and get the result.
+    std::vector<std::vector<unsigned int>> sets_collection =
+        aosj.convert_trees_to_sets(trees_collection);
+
+    // Stop timing
+    tree_to_set_o->stop();
+
+    // Write timing
+    std::cout << "\"tree_to_set_time\": " << tree_to_set_o->getfloat() << ", ";
+
+
+    // Initialized Timing object
+    Timing::Interval * allpairs_o = timing.create_enroll("Allpairs");
+    // Start timing
+    allpairs_o->start();
+
+    // Compute candidate for the join with the allpairs algorithm
+    std::vector<std::pair<unsigned int, unsigned int>> join_candidates_aosj =
+        aosj.get_join_candidates(sets_collection, similarity_threshold);
+
+    // Stop timing
+    allpairs_o->stop();
+
+    // Write timing
+    std::cout << "\"filter_time\": " << allpairs_o->getfloat() << ", ";
+
+
+    // Initialized Timing object
+    Timing::Interval * verify_o = timing.create_enroll("Verify");
+    // Start timing
+    verify_o->start();
+
+    // Verify all computed join candidates and return the join result
+    std::vector<join::JoinResultElement> result_set_aosj =
+        aosj.verify_candidates(trees_collection, join_candidates_absj,
+                               similarity_threshold);
+
+    // Stop timing
+    verify_o->stop();
+
+    // Write timing
+    std::cout << "\"verification_time\": " << verify_o->getfloat() << ", ";
+
+
+    // Write number of candidates and number of result pairs
+    std::cout << "\"verification_candidates\": " << join_candidates_aosj.size() << ", ";
+    std::cout << "\"result_set_size\": " << result_set_aosj.size() << "}" << std::endl;
+  }
+
 
   ////////////////////////////////////////////////////////////////////////
   /// NAIVE SELF JOIN
