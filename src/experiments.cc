@@ -192,7 +192,7 @@ int main(int argc, char** argv) {
 
     // Verify all computed join candidates and return the join result
     std::vector<join::JoinResultElement> result_set_alfsj =
-        alfsj.verify_candidates(trees_collection, join_candidates_absj,
+        alfsj.verify_candidates(trees_collection, join_candidates_alfsj,
                                similarity_threshold);
 
     // Stop timing
@@ -256,7 +256,7 @@ int main(int argc, char** argv) {
 
     // Verify all computed join candidates and return the join result
     std::vector<join::JoinResultElement> result_set_aosj =
-        aosj.verify_candidates(trees_collection, join_candidates_absj,
+        aosj.verify_candidates(trees_collection, join_candidates_aosj,
                                similarity_threshold);
 
     // Stop timing
