@@ -139,7 +139,7 @@ int main(int argc, char** argv) {
 
 
     // Write number of candidates and number of result pairs
-    std::cout << "\"pre_candidates\": " << absj.getNumberOfPreCandidates() << ", ";
+    std::cout << "\"pre_candidates\": " << absj.get_number_of_pre_candidates() << ", ";
     std::cout << "\"verification_candidates\": " << join_candidates_absj.size() << ", ";
     std::cout << "\"result_set_size\": " << result_set_absj.size() << "}" << std::endl;
   }
@@ -204,7 +204,7 @@ int main(int argc, char** argv) {
 
 
     // Write number of candidates and number of result pairs
-    std::cout << "\"pre_candidates\": " << alfsj.getNumberOfPreCandidates() << ", ";
+    std::cout << "\"pre_candidates\": " << alfsj.get_number_of_pre_candidates() << ", ";
     std::cout << "\"verification_candidates\": " << join_candidates_alfsj.size() << ", ";
     std::cout << "\"result_set_size\": " << result_set_alfsj.size() << "}" << std::endl;
   }
@@ -269,7 +269,7 @@ int main(int argc, char** argv) {
 
 
     // Write number of candidates and number of result pairs
-    std::cout << "\"pre_candidates\": " << aosj.getNumberOfPreCandidates() << ", ";
+    std::cout << "\"pre_candidates\": " << aosj.get_number_of_pre_candidates() << ", ";
     std::cout << "\"verification_candidates\": " << join_candidates_aosj.size() << ", ";
     std::cout << "\"result_set_size\": " << result_set_aosj.size() << "}" << std::endl;
   }
