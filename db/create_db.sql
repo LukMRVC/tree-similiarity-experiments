@@ -6,15 +6,16 @@ CREATE TABLE dataset (
   number_trees integer NOT NULL,
   avg_tree_size integer,
   min_tree_size integer,
-  max_tree_size integer
+  max_tree_size integer,
+  number_labels integer
 );
-
-DROP TABLE IF EXISTS algorithm CASCADE;
-CREATE TABLE algorithm (
-  short_name varchar(31) PRIMARY KEY,
-  filename varchar(127) NOT NULL,
-  short_description text
-);
+--
+-- DROP TABLE IF EXISTS algorithm CASCADE;
+-- CREATE TABLE algorithm (
+--   short_name varchar(31) PRIMARY KEY,
+--   filename varchar(127) NOT NULL,
+--   short_description text
+-- );
 
 -- Common algorithm attributes.
 --
@@ -23,9 +24,9 @@ CREATE TABLE algorithm (
 -- execution_id serial PRIMARY KEY,
 -- experiments_version varchar(127),
 -- experiments_timestamp timestamp,
+-- hostname varchar(127),
 -- dataset_short_name varchar(127) REFERENCES dataset(short_name),
 -- dataset_parsing_time bigint,
--- algorithm_short_name varchar(31) REFERENCES algorithm(short_name),
 -- algorithm_version varchar(127),
 -- threshold decimal,
 -- result_set_size integer,
@@ -36,30 +37,33 @@ CREATE TABLE naive_self_join (
   execution_id serial PRIMARY KEY,
   experiments_version varchar(127),
   experiments_timestamp timestamp,
+  hostname varchar(127),
   dataset_short_name varchar(127) REFERENCES dataset(short_name),
   dataset_parsing_time bigint,
-  algorithm_short_name varchar(31) REFERENCES algorithm(short_name),
   algorithm_version varchar(127),
   threshold decimal,
   result_set_size integer,
   -- Algorithm-specific attributes.
+  verification_algorithm varchar(31),
   verification_candidates integer, -- All pairs of trees that the join looks at and verifies.
   verification_time bigint -- Total time of the join.
 );
 
-DROP TABLE IF EXISTS allpairs_baseline_self_join;
-CREATE TABLE allpairs_baseline_self_join (
+DROP TABLE IF EXISTS allpairs_self_join;
+CREATE TABLE allpairs_self_join (
   -- Common attributes.
   execution_id serial PRIMARY KEY,
   experiments_version varchar(127),
   experiments_timestamp timestamp,
+  hostname varchar(127),
   dataset_short_name varchar(127) REFERENCES dataset(short_name),
   dataset_parsing_time bigint,
-  algorithm_short_name varchar(31) REFERENCES algorithm(short_name),
   algorithm_version varchar(127),
   threshold decimal,
   result_set_size integer,
   -- Algorithm-specific attributes.
+  similarity_function varchar(127),
+  verification_algorithm varchar(31),
   tree_to_set_time bigint,
   filter_touched_pairs integer, -- Pairs of trees that the filter looks at.
   filter_verification_candidates integer, -- Pairs of trees resulting from filter only.

@@ -19,3 +19,6 @@ cd build
 cmake ..
 make
 ```
+## PostgreSQL
+
+Create ``~/.pg_service.conf`` on the machine where you execute the experiments.
