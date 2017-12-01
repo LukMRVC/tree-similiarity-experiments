@@ -10,12 +10,14 @@ import argparse
 import subprocess
 import json
 import psycopg2
+import socket
 from psycopg2 import sql
 from multiprocessing import Queue, Process
 from datetime import datetime
 
 # TODO: Fix the paths depending on where is the script executed from.
-binary_name = "../build/ted-join-experiments"
+# Everything is executed from the project's root.
+binary_name = "build/ted-join-experiments"
 algorithms_repository_path = "external/tree-similarity-private/"
 
 # execute a command and return stdout
@@ -46,10 +48,13 @@ def get_algorithm_version():
 def get_experiments_version():
     return get_respository_version(".")
 
+def get_hostname():
+    return socket.gethostname()
+
 # http://initd.org/psycopg/docs/sql.html#module-psycopg2.sql
 def store_result(table_name, values_dict):
     # Connect to database.
-    db = psycopg2.connect("")
+    db = psycopg2.connect("service=ted-join")
     # Open a cursor to perform database operations
     cur = db.cursor()
     attributes = values_dict.keys()
@@ -66,109 +71,47 @@ def store_result(table_name, values_dict):
     # Close communication with the database.
     db.close()
 
-# values_dict -- A dictionary with attribute names and values to store.
-# IMPORTANT: Make sure that values_dict hold correct identifiers and values.
-def store_naive_self_join_result(values_dict):
-    store_result('naive_self_join', values_dict)
-
-def store_allpairs_baseline_self_join_result(values_dict):
-    store_result('allpairs_baseline_self_join', values_dict)
-
 parser = argparse.ArgumentParser()
 parser.add_argument(
-    "--datasets",
-    nargs='+',
     type=str,
-    help="Filenames of datasets containing trees in bracket notation \
-          (line seperated)."
+    dest='config_filename',
+    help="Path to experiments config file."
 )
-parser.add_argument(
-    "--path-to-datasets",
-    type=str,
-    help="Path to datasets."
-)
-parser.add_argument(
-    "--thresholds",
-    nargs='+',
-    type=float,
-    help="Threshold values for the number of edit operations in the tree edit \
-          distance.")
-parser.add_argument(
-    "--algorithms",
-    nargs='+',
-    type=str,
-    help="One or more tree similarity join algorithms that should be used."
-)
-parser.add_argument(
-    '--connection-string',
-    type=str,
-    dest='conn_string',
-    action='store',
-    help="Specify a custom database connection string (default: empty string)",
-    default="")
-
 args = parser.parse_args()
 
 # Fixed values for this execution - passed to all algorithms.
 fixed_values = {
     "experiments_timestamp" : get_experiments_timestamp(),
     "algorithm_version" : get_algorithm_version(),
-    "experiments_version" : get_experiments_version()
+    "experiments_version" : get_experiments_version(),
+    "hostname" : get_hostname()
 }
 
-example_parameters_set = {
-    "dataset_short_name" : "D1",
-    "algorithm_short_name" : "A1",
-    "threshold" : 1.0
-}
-
-example_naive_self_join_result = '{ \
-    "dataset_parsing_time" : 10, \
-    "result_set_size" : 100, \
-    "verification_candidates" : 100, \
-    "verification_time" : 10 \
-}'
-
-example_allpair_baseline_self_join_result = '{ \
-    "dataset_parsing_time" : 10, \
-    "result_set_size" : 100, \
-    "tree_to_set_time" : 10, \
-    "filter_touched_pairs" : 100, \
-    "filter_verification_candidates" : 100, \
-    "filter_time" : 10, \
-    "verification_candidates" : 100, \
-    "verification_time" : 10 \
-}'
-
-example_nsj_result_values_dict = json.loads(example_naive_self_join_result)
-example_nsj_result_values_dict.update(example_parameters_set)
-example_nsj_result_values_dict.update(fixed_values)
-print(example_nsj_result_values_dict)
-
-example_absj_result_values_dict = json.loads(example_allpair_baseline_self_join_result)
-example_absj_result_values_dict.update(example_parameters_set)
-example_absj_result_values_dict.update(fixed_values)
-print(example_absj_result_values_dict)
-
-
-
-store_naive_self_join_result(example_nsj_result_values_dict)
-store_allpairs_baseline_self_join_result(example_absj_result_values_dict)
-
-
-
-# # execute binary for all possible input configurations
-# for file in args.inputfiles:
-#   for threshold in args.thresholds:
-#     for algorithm in args.algorithms:
-#       #build command that needs to be executed
-#       cmd = []
-#       # call binary
-#       cmd.extend((binary_name, file, str(threshold), algorithm))
-#       print(' '.join(map(str,cmd)) + "\n")
-#       cmd_output = get_stdout_cmd(cmd).strip()
-#       json_data = json.loads(cmd_output)
-#       for key, value in json_data.items():
-#         print(key + "=" + str(value))
-#
-#       print("")
+data = json.load(open(args.config_filename))
+for a in data['algorithms']:
+    for d in data['datasets']:
+        for t in data['thresholds']:
+            experiment_params = {
+                "dataset_filename" : d,
+                "threshold" : t
+            }
+            # build command that needs to be executed
+            cmd = []
+            # call binary
+            if a['name'] == 'allpairs_self_join':
+                algorithm_params = {
+                    "verification_algorithm" : a['verification_algorithm'],
+                    "similarity_function" : a['similarity_function']
+                }
+                cmd.extend((binary_name, d, str(t), a['name'], a['verification_algorithm'], a['similarity_function']))
+            elif a['name'] == 'naive_self_join':
+                algorithm_params = {
+                    "verification_algorithm" : a['verification_algorithm']
+                }
+                cmd.extend((binary_name, d, str(t), a['name'], a['verification_algorithm']))
+            cmd_output = get_stdout_cmd(cmd).strip()
+            result_data = json.loads(cmd_output)
+            result_data.update(fixed_values)
+            result_data.update(experiment_params)
+            result_data.update(algorithm_params)
+            store_result(a['name'], result_data)

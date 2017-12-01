@@ -30,6 +30,7 @@
 
 #include <iostream>
 #include <time.h>
+#include <string>
 #include "timing.h"
 #include "node.h"
 #include "string_label.h"
@@ -40,5 +41,6 @@
 #include "unit_cost_model.h"
 #include "tree_to_set_converter.h"
 #include "zhang_shasha.h"
+#include "touzet.h"
 
 #endif // EXPERIMENTS_H
