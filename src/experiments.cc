@@ -50,6 +50,7 @@ void execute_naive_self_join(std::vector<node::Node<Label>>& trees_collection, d
   int num_trees = trees_collection.size();
   std::cout << "\"verification_candidates\" : " << (num_trees*num_trees-num_trees)/2 << ", ";
   std::cout << "\"verification_time\" : " << naive_join->getfloat() << ", ";
+  std::cout << "\"sum_subproblems\": " << nsj.get_subproblem_count() << ", ";
   std::cout << "\"result_set_size\" : " << result_set_nsj.size() << "}" << std::endl;
 }
 
@@ -111,6 +112,7 @@ void execute_allpairs_self_join(std::vector<node::Node<Label>>& trees_collection
   // Write number of candidates and number of result pairs
   std::cout << "\"filter_verification_candidates\": " << absj.get_number_of_pre_candidates() << ", ";
   std::cout << "\"verification_candidates\": " << join_candidates_absj.size() << ", ";
+  std::cout << "\"sum_subproblems\": " << absj.get_subproblem_count() << ", ";
   std::cout << "\"result_set_size\": " << result_set_absj.size() << "}" << std::endl;
 }
 

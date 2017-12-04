@@ -28,6 +28,7 @@ CREATE TABLE dataset (
 -- dataset_parsing_time bigint,
 -- algorithm_version varchar(127),
 -- threshold decimal,
+-- sum_subproblems bigint,
 -- result_set_size integer,
 
 DROP TABLE IF EXISTS naive_self_join;
@@ -41,6 +42,7 @@ CREATE TABLE naive_self_join (
   dataset_parsing_time bigint,
   algorithm_version varchar(127),
   threshold decimal,
+  sum_subproblems bigint,
   result_set_size integer,
   -- Algorithm-specific attributes.
   verification_algorithm varchar(31),
@@ -59,6 +61,7 @@ CREATE TABLE allpairs_self_join (
   dataset_parsing_time bigint,
   algorithm_version varchar(127),
   threshold decimal,
+  sum_subproblems bigint,
   result_set_size integer,
   -- Algorithm-specific attributes.
   similarity_function varchar(127),
