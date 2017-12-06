@@ -11,6 +11,7 @@ import subprocess
 import json
 import psycopg2
 import socket
+import os
 from psycopg2 import sql
 from multiprocessing import Queue, Process
 from datetime import datetime
@@ -96,8 +97,9 @@ data = json.load(open(args.config_filename))
 for a in data['algorithms']:
     for d in data['datasets']:
         for t in data['thresholds']:
+            path, filename = os.path.split(d)
             experiment_params = {
-                "dataset_filename" : d,
+                "dataset_filename" : filename,
                 "threshold" : t
             }
             # build command that needs to be executed
@@ -115,7 +117,7 @@ for a in data['algorithms']:
                 }
                 cmd.extend((binary_name, d, str(t), a['name'], a['verification_algorithm']))
             cmd_output = get_stdout_cmd(cmd).strip()
-            result_data = json.loads(cmd_output)
+            result_data = json.loads(cmd_output.decode('utf-8'))
             result_data.update(fixed_values)
             result_data.update(experiment_params)
             result_data.update(algorithm_params)
