@@ -71,6 +71,11 @@ def store_result(table_name, values_dict):
     # Close communication with the database.
     db.close()
 
+def print_result(table_name, values_dict):
+    algorithm_params = {"algorithm" : table_name}
+    values_dict.update(algorithm_params)
+    print(values_dict)
+
 parser = argparse.ArgumentParser()
 parser.add_argument(
     type=str,
@@ -115,3 +120,4 @@ for a in data['algorithms']:
             result_data.update(experiment_params)
             result_data.update(algorithm_params)
             store_result(a['name'], result_data)
+            # print_result(a['name'], result_data)
