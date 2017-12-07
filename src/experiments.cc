@@ -46,6 +46,36 @@ void execute_naive_self_join(std::vector<node::Node<Label>>& trees_collection, d
   // Stop timing
   naive_join->stop();
 
+
+  // Calculate optimum by verify only the resultset
+  // Initialized Timing object
+  Timing::Interval * optimum = timing.create_enroll("Optimum");
+  // Start timing
+  optimum->start();
+
+  VerificationAlgorithm ted_algorithm;
+  std::vector<join::JoinResultElement> optimum_result;
+  unsigned long long int sum_subproblem_optimum = 0;
+
+  for(auto pair: result_set_nsj) {
+    double ted_value = ted_algorithm.verify(trees_collection[pair.tree_id_1],
+                                            trees_collection[pair.tree_id_2],
+                                            similarity_threshold);
+    if(ted_value <= similarity_threshold)
+      optimum_result.emplace_back(pair.tree_id_1, pair.tree_id_2, ted_value);
+
+    // Sum up all number of subproblems
+    sum_subproblem_optimum += ted_algorithm.get_subproblem_count();
+  }
+
+  // Stop timing
+  optimum->stop();
+
+  // Write timing
+  std::cout << "\"sum_subproblem_optimum\": " << sum_subproblem_optimum << ", ";
+  std::cout << "\"optimum_time\": " << optimum->getfloat() << ", ";
+
+
   // Write timing and number of result pairs
   int num_trees = trees_collection.size();
   std::cout << "\"verification_candidates\" : " << (num_trees*num_trees-num_trees)/2 << ", ";
@@ -107,6 +137,35 @@ void execute_allpairs_self_join(std::vector<node::Node<Label>>& trees_collection
 
   // Write timing
   std::cout << "\"verification_time\": " << verify->getfloat() << ", ";
+
+
+  // Calculate optimum by verify only the resultset
+  // Initialized Timing object
+  Timing::Interval * optimum = timing.create_enroll("Optimum");
+  // Start timing
+  optimum->start();
+
+  VerificationAlgorithm ted_algorithm;
+  std::vector<join::JoinResultElement> optimum_result;
+  unsigned long long int sum_subproblem_optimum = 0;
+
+  for(auto pair: result_set_absj) {
+    double ted_value = ted_algorithm.verify(trees_collection[pair.tree_id_1],
+                                            trees_collection[pair.tree_id_2],
+                                            similarity_threshold);
+    if(ted_value <= similarity_threshold)
+      optimum_result.emplace_back(pair.tree_id_1, pair.tree_id_2, ted_value);
+
+    // Sum up all number of subproblems
+    sum_subproblem_optimum += ted_algorithm.get_subproblem_count();
+  }
+
+  // Stop timing
+  optimum->stop();
+
+  // Write timing
+  std::cout << "\"sum_subproblem_optimum\": " << sum_subproblem_optimum << ", ";
+  std::cout << "\"optimum_time\": " << optimum->getfloat() << ", ";
 
 
   // Write number of candidates and number of result pairs

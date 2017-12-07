@@ -30,6 +30,8 @@ CREATE TABLE dataset (
 -- threshold decimal,
 -- sum_subproblems bigint,
 -- result_set_size integer,
+-- sum_subproblem_optimum bigint,
+-- optimum_time bigint,
 
 DROP TABLE IF EXISTS naive_self_join;
 CREATE TABLE naive_self_join (
@@ -44,6 +46,8 @@ CREATE TABLE naive_self_join (
   threshold decimal,
   sum_subproblems bigint,
   result_set_size integer,
+  sum_subproblem_optimum bigint,
+  optimum_time bigint,
   -- Algorithm-specific attributes.
   verification_algorithm varchar(31),
   verification_candidates integer, -- All pairs of trees that the join looks at and verifies.
@@ -63,6 +67,8 @@ CREATE TABLE allpairs_self_join (
   threshold decimal,
   sum_subproblems bigint,
   result_set_size integer,
+  sum_subproblem_optimum bigint,
+  optimum_time bigint,
   -- Algorithm-specific attributes.
   similarity_function varchar(127),
   verification_algorithm varchar(31),
