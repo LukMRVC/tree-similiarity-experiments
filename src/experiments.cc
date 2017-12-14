@@ -88,56 +88,64 @@ template <typename Label, typename CostModel, typename SimilarityFunction, typen
 void execute_allpairs_self_join(std::vector<node::Node<Label>>& trees_collection, double similarity_threshold) {
   // Initialize allpairs baseline
   join::AllpairsGenericSelfJoin<Label, CostModel, SimilarityFunction, VerificationAlgorithm> absj;
-
-  // Initialized Timing object
   Timing timing;
-  Timing::Interval * tree_to_set = timing.create_enroll("TreeToSet");
-  // Start timing
-  tree_to_set->start();
+  std::vector<join::JoinResultElement> result_set;
 
-  // Convert trees to sets and get the result.
-  std::vector<std::vector<unsigned int>> sets_collection =
-      absj.convert_trees_to_sets(trees_collection);
+  // Add some scopes to ensure that the memory is deallocated
+  {
+    // Initialized Timing object
+    Timing::Interval * tree_to_set = timing.create_enroll("TreeToSet");
+    // Start timing
+    tree_to_set->start();
 
-  // Stop timing
-  tree_to_set->stop();
+    // Convert trees to sets and get the result.
+    std::vector<std::vector<unsigned int>> sets_collection;
+    absj.convert_trees_to_sets(trees_collection, sets_collection);
 
-  // Write timing
-  std::cout << "\"tree_to_set_time\": " << tree_to_set->getfloat() << ", ";
+    // Stop timing
+    tree_to_set->stop();
+
+    // Write timing
+    std::cout << "\"tree_to_set_time\": " << tree_to_set->getfloat() << ", ";
+
+    {
+      // Initialized Timing object
+      Timing::Interval * allpairs = timing.create_enroll("Allpairs");
+      // Start timing
+      allpairs->start();
+
+      // Compute candidate for the join with the allpairs algorithm
+      std::vector<std::pair<unsigned int, unsigned int>> join_candidates;
+      absj.get_join_candidates(sets_collection, join_candidates, similarity_threshold);
+
+      // Stop timing
+      allpairs->stop();
+
+      // Write timing
+      std::cout << "\"filter_time\": " << allpairs->getfloat() << ", ";
+      std::cout << "\"verification_candidates\": " << join_candidates.size() << ", ";
 
 
-  // Initialized Timing object
-  Timing::Interval * allpairs = timing.create_enroll("Allpairs");
-  // Start timing
-  allpairs->start();
+      // Initialized Timing object
+      Timing::Interval * verify = timing.create_enroll("Verify");
+      // Start timing
+      verify->start();
 
-  // Compute candidate for the join with the allpairs algorithm
-  std::vector<std::pair<unsigned int, unsigned int>> join_candidates_absj =
-      absj.get_join_candidates(sets_collection, similarity_threshold);
+      // Verify all computed join candidates and return the join result
+      absj.verify_candidates(trees_collection, join_candidates,
+                             result_set, similarity_threshold);
 
-  // Stop timing
-  allpairs->stop();
+      // Stop timing
+      verify->stop();
 
-  // Write timing
-  std::cout << "\"filter_time\": " << allpairs->getfloat() << ", ";
-
-
-  // Initialized Timing object
-  Timing::Interval * verify = timing.create_enroll("Verify");
-  // Start timing
-  verify->start();
-
-  // Verify all computed join candidates and return the join result
-  std::vector<join::JoinResultElement> result_set_absj =
-      absj.verify_candidates(trees_collection, join_candidates_absj,
-                             similarity_threshold);
-
-  // Stop timing
-  verify->stop();
-
-  // Write timing
-  std::cout << "\"verification_time\": " << verify->getfloat() << ", ";
-
+      // Write timing
+      std::cout << "\"verification_time\": " << verify->getfloat() << ", ";
+    }
+    // Write number of candidates and number of result pairs
+    std::cout << "\"filter_verification_candidates\": " << absj.get_number_of_pre_candidates() << ", ";
+    std::cout << "\"sum_subproblems\": " << absj.get_subproblem_count() << ", ";
+    std::cout << "\"result_set_size\": " << result_set.size() << ", ";
+  }
 
   // Calculate optimum by verify only the resultset
   // Initialized Timing object
@@ -149,7 +157,7 @@ void execute_allpairs_self_join(std::vector<node::Node<Label>>& trees_collection
   std::vector<join::JoinResultElement> optimum_result;
   unsigned long long int sum_subproblem_optimum = 0;
 
-  for(auto pair: result_set_absj) {
+  for(auto pair: result_set) {
     double ted_value = ted_algorithm.verify(trees_collection[pair.tree_id_1],
                                             trees_collection[pair.tree_id_2],
                                             similarity_threshold);
@@ -165,28 +173,10 @@ void execute_allpairs_self_join(std::vector<node::Node<Label>>& trees_collection
 
   // Write timing
   std::cout << "\"sum_subproblem_optimum\": " << sum_subproblem_optimum << ", ";
-  std::cout << "\"optimum_time\": " << optimum->getfloat() << ", ";
-
-
-  // Write number of candidates and number of result pairs
-  std::cout << "\"filter_verification_candidates\": " << absj.get_number_of_pre_candidates() << ", ";
-  std::cout << "\"verification_candidates\": " << join_candidates_absj.size() << ", ";
-  std::cout << "\"sum_subproblems\": " << absj.get_subproblem_count() << ", ";
-  std::cout << "\"result_set_size\": " << result_set_absj.size() << "}" << std::endl;
+  std::cout << "\"optimum_time\": " << optimum->getfloat() << "}" << std::endl;
 }
 
 int main(int argc, char** argv) {
-
-  // if(argc != 4) {
-  //   std::cout << "Usage: ./experiments <input_file> <similarity_threshold> <algorithm>"
-  //       << std::endl;
-  //   std::cout << "Algorithm:" << std::endl;
-  //   std::cout << "all ... all algorithms" << std::endl << "allpairs_baseline ... allpairs baseline" << std::endl <<
-  //       "naive ... naive join" << std::endl;
-  //   exit(-1);
-  // }
-
-
   using Label = label::StringLabel;
   using CostModel = cost_model::UnitCostModel<Label>;
   using BaselineSimilarity = similarity_function::HammingBaseline;
@@ -201,10 +191,9 @@ int main(int argc, char** argv) {
   std::cout << "{";
   // Path to file containing the input tree.
   std::string file_path = argv[1];
-  // std::cout << "\"input_file\": \"" << file_path << "\", ";
+
   // Set similarity threshold - maximum number of allowed edit operations.
   double similarity_threshold = std::stod(argv[2]);
-  // std::cout << "\"threshold\": " << similarity_threshold << ", ";
 
   // Create the container to store all trees.
   std::vector<node::Node<Label>> trees_collection;
@@ -212,22 +201,22 @@ int main(int argc, char** argv) {
   ////////////////////////////////////////////////////////////////////////
   /// PARSE INPUT
   ////////////////////////////////////////////////////////////////////////
+  {
+    // Initialized Timing object
+    Timing::Interval * parse = timing.create_enroll("Parse");
+    // Start timing
+    parse->start();
 
-  // Initialized Timing object
-  Timing::Interval * parse = timing.create_enroll("Parse");
-  // Start timing
-  parse->start();
+    // Parse the dataset.
+    parser::BracketNotationParser bnp;
+    bnp.parse_collection(trees_collection, file_path);
 
-  // Parse the dataset.
-  parser::BracketNotationParser bnp;
-  bnp.parse_collection(trees_collection, file_path);
+    // Stop timing
+    parse->stop();
 
-  // Stop timing
-  parse->stop();
-
-  // Write timing
-  std::cout << "\"dataset_parsing_time\": " << parse->getfloat() << ", ";
-
+    // Write timing
+    std::cout << "\"dataset_parsing_time\": " << parse->getfloat() << ", ";
+  }
   ////////////////////////////////////////////////////////////////////////
   /// EXECUTE ALGORITHM
   ////////////////////////////////////////////////////////////////////////
