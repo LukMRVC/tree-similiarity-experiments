@@ -105,7 +105,7 @@ for a in data['algorithms']:
             # build command that needs to be executed
             cmd = []
             # call binary
-            if a['name'] == 'allpairs_self_join':
+            if a['name'] == 'allpairs_self_join' or a['name'] == 'allpairs_multiset_baseline_self_join' or a['name'] == 'allpairs_multiset_dsf_self_join' :
                 algorithm_params = {
                     "verification_algorithm" : a['verification_algorithm'],
                     "similarity_function" : a['similarity_function']
