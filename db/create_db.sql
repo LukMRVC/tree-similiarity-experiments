@@ -2,11 +2,11 @@ DROP TABLE IF EXISTS dataset CASCADE;
 CREATE TABLE dataset (
   filename varchar(127) PRIMARY KEY,
   short_description text,
-  number_trees integer NOT NULL,
-  avg_tree_size integer,
-  min_tree_size integer,
-  max_tree_size integer,
-  number_labels integer
+  number_trees bigint NOT NULL,
+  avg_tree_size bigint,
+  min_tree_size bigint,
+  max_tree_size bigint,
+  number_labels bigint
 );
 --
 -- DROP TABLE IF EXISTS algorithm CASCADE;
@@ -29,7 +29,7 @@ CREATE TABLE dataset (
 -- algorithm_version varchar(127),
 -- threshold decimal,
 -- sum_subproblems bigint,
--- result_set_size integer,
+-- result_set_size bigint,
 -- sum_subproblem_optimum bigint,
 -- optimum_time bigint,
 
@@ -45,12 +45,12 @@ CREATE TABLE naive_self_join (
   algorithm_version varchar(127),
   threshold decimal,
   sum_subproblems bigint,
-  result_set_size integer,
+  result_set_size bigint,
   sum_subproblem_optimum bigint,
   optimum_time bigint,
   -- Algorithm-specific attributes.
   verification_algorithm varchar(31),
-  verification_candidates integer, -- All pairs of trees that the join looks at and verifies.
+  verification_candidates bigint, -- All pairs of trees that the join looks at and verifies.
   verification_time bigint -- Total time of the join.
 );
 
@@ -66,17 +66,17 @@ CREATE TABLE allpairs_self_join (
   algorithm_version varchar(127),
   threshold decimal,
   sum_subproblems bigint,
-  result_set_size integer,
+  result_set_size bigint,
   sum_subproblem_optimum bigint,
   optimum_time bigint,
   -- Algorithm-specific attributes.
   similarity_function varchar(127),
   verification_algorithm varchar(31),
   tree_to_set_time bigint,
-  filter_touched_pairs integer, -- Pairs of trees that the filter looks at.
-  filter_verification_candidates integer, -- Pairs of trees resulting from filter only.
+  filter_touched_pairs bigint, -- Pairs of trees that the filter looks at.
+  filter_verification_candidates bigint, -- Pairs of trees resulting from filter only.
   filter_time bigint, -- Total time of the filter and its verification step.
-  verification_candidates integer, -- Pairs of trees resulting after verification step of the filter.
+  verification_candidates bigint, -- Pairs of trees resulting after verification step of the filter.
   verification_time bigint -- TED verification time.
 );
 
@@ -92,17 +92,17 @@ CREATE TABLE allpairs_multiset_baseline_self_join (
   algorithm_version varchar(127),
   threshold decimal,
   sum_subproblems bigint,
-  result_set_size integer,
+  result_set_size bigint,
   sum_subproblem_optimum bigint,
   optimum_time bigint,
   -- Algorithm-specific attributes.
   similarity_function varchar(127),
   verification_algorithm varchar(31),
   tree_to_set_time bigint,
-  filter_touched_pairs integer, -- Pairs of trees that the filter looks at.
-  filter_verification_candidates integer, -- Pairs of trees resulting from filter only.
+  filter_touched_pairs bigint, -- Pairs of trees that the filter looks at.
+  filter_verification_candidates bigint, -- Pairs of trees resulting from filter only.
   filter_time bigint, -- Total time of the filter and its verification step.
-  verification_candidates integer, -- Pairs of trees resulting after verification step of the filter.
+  verification_candidates bigint, -- Pairs of trees resulting after verification step of the filter.
   verification_time bigint -- TED verification time.
 );
 
@@ -118,16 +118,16 @@ CREATE TABLE allpairs_multiset_dsf_self_join (
   algorithm_version varchar(127),
   threshold decimal,
   sum_subproblems bigint,
-  result_set_size integer,
+  result_set_size bigint,
   sum_subproblem_optimum bigint,
   optimum_time bigint,
   -- Algorithm-specific attributes.
   similarity_function varchar(127),
   verification_algorithm varchar(31),
   tree_to_set_time bigint,
-  filter_touched_pairs integer, -- Pairs of trees that the filter looks at.
-  filter_verification_candidates integer, -- Pairs of trees resulting from filter only.
+  filter_touched_pairs bigint, -- Pairs of trees that the filter looks at.
+  filter_verification_candidates bigint, -- Pairs of trees resulting from filter only.
   filter_time bigint, -- Total time of the filter and its verification step.
-  verification_candidates integer, -- Pairs of trees resulting after verification step of the filter.
+  verification_candidates bigint, -- Pairs of trees resulting after verification step of the filter.
   verification_time bigint -- TED verification time.
 );
