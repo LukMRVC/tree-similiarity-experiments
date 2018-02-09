@@ -191,7 +191,7 @@ void execute_allpairs_multiset_baseline_self_join(std::vector<node::Node<Label>>
     tree_to_set->start();
 
     // Convert trees to sets and get the result.
-    std::vector<std::pair<unsigned int, std::vector<tree_to_set_converter_multiset::SetElement>>> sets_collection;
+    std::vector<std::pair<unsigned int, std::vector<tree_to_set_converter_multiset_baseline::SetElement>>> sets_collection;
     absj.convert_trees_to_sets(trees_collection, sets_collection);
 
     // Stop timing

@@ -36,7 +36,7 @@
 #include "string_label.h"
 #include "bracket_notation_parser.h"
 #include "allpairs_generic.h"
-#include "allpairs_multiset.h"
+#include "allpairs_multiset_baseline.h"
 #include "allpairs_multiset_dsf.h"
 #include "allpairs_generic_self_join.h"
 #include "allpairs_multiset_baseline_self_join.h"
@@ -45,6 +45,7 @@
 #include "unit_cost_model.h"
 #include "tree_to_set_converter.h"
 #include "tree_to_set_converter_multiset.h"
+#include "tree_to_set_converter_multiset_baseline.h"
 #include "zhang_shasha.h"
 #include "touzet.h"
 
