@@ -47,6 +47,7 @@ void execute_naive_self_join(std::vector<node::Node<Label>>& trees_collection, d
   naive_join->stop();
 
 
+
   // Calculate optimum by verify only the resultset
   // Initialized Timing object
   Timing::Interval * optimum = timing.create_enroll("Optimum");
@@ -86,7 +87,7 @@ void execute_naive_self_join(std::vector<node::Node<Label>>& trees_collection, d
 
 template <typename Label, typename CostModel, typename SimilarityFunction, typename VerificationAlgorithm>
 void execute_allpairs_self_join(std::vector<node::Node<Label>>& trees_collection, double similarity_threshold) {
-  // Initialize allpairs baseline
+  // Initialize allpairs
   join::AllpairsGenericSelfJoin<Label, CostModel, SimilarityFunction, VerificationAlgorithm> absj;
   Timing timing;
   std::vector<join::JoinResultElement> result_set;
@@ -125,6 +126,33 @@ void execute_allpairs_self_join(std::vector<node::Node<Label>>& trees_collection
       std::cout << "\"filter_time\": " << allpairs->getfloat() << ", ";
       std::cout << "\"verification_candidates\": " << join_candidates.size() << ", ";
 
+      ted_ub::GreedyUB<Label, CostModel> gub;
+
+      // Initialized Timing object
+      Timing::Interval * greedyub = timing.create_enroll("GreedyUB");
+      // Start timing
+      greedyub->start();
+
+      std::vector<std::pair<unsigned int, unsigned int>>::iterator it = join_candidates.begin();
+      while(it != join_candidates.end()) {
+        double ub_value = gub.verify(trees_collection[it->first],
+                                      trees_collection[it->second],
+                                      similarity_threshold);
+        if(ub_value <= similarity_threshold) {
+          result_set.emplace_back(it->first, it->second, ub_value);
+          it = join_candidates.erase(it);
+        }
+        else {
+          ++it;
+        }
+      }
+
+      // Stop timing
+      greedyub->stop();
+
+      // Write timing
+      std::cout << "\"upperbound_time\": " << greedyub->getfloat() << ", ";
+      std::cout << "\"upperbound_pruned\": " << result_set.size() << ", ";
 
       // Initialized Timing object
       Timing::Interval * verify = timing.create_enroll("Verify");
@@ -178,7 +206,7 @@ void execute_allpairs_self_join(std::vector<node::Node<Label>>& trees_collection
 
 template <typename Label, typename CostModel, typename SimilarityFunction, typename VerificationAlgorithm>
 void execute_allpairs_multiset_baseline_self_join(std::vector<node::Node<Label>>& trees_collection, double similarity_threshold) {
-  // Initialize allpairs baseline
+  // Initialize allpairs multiset baseline
   join::AllpairsMultisetBaselineSelfJoin<Label, CostModel, SimilarityFunction, VerificationAlgorithm> absj;
   Timing timing;
   std::vector<join::JoinResultElement> result_set;
@@ -217,6 +245,33 @@ void execute_allpairs_multiset_baseline_self_join(std::vector<node::Node<Label>>
       std::cout << "\"filter_time\": " << allpairs->getfloat() << ", ";
       std::cout << "\"verification_candidates\": " << join_candidates.size() << ", ";
 
+      ted_ub::GreedyUB<Label, CostModel> gub;
+
+      // Initialized Timing object
+      Timing::Interval * greedyub = timing.create_enroll("GreedyUB");
+      // Start timing
+      greedyub->start();
+
+      std::vector<std::pair<unsigned int, unsigned int>>::iterator it = join_candidates.begin();
+      while(it != join_candidates.end()) {
+        double ub_value = gub.verify(trees_collection[it->first],
+                                      trees_collection[it->second],
+                                      similarity_threshold);
+        if(ub_value <= similarity_threshold) {
+          result_set.emplace_back(it->first, it->second, ub_value);
+          it = join_candidates.erase(it);
+        }
+        else {
+          ++it;
+        }
+      }
+
+      // Stop timing
+      greedyub->stop();
+
+      // Write timing
+      std::cout << "\"upperbound_time\": " << greedyub->getfloat() << ", ";
+      std::cout << "\"upperbound_pruned\": " << result_set.size() << ", ";
 
       // Initialized Timing object
       Timing::Interval * verify = timing.create_enroll("Verify");
@@ -270,7 +325,7 @@ void execute_allpairs_multiset_baseline_self_join(std::vector<node::Node<Label>>
 
 template <typename Label, typename CostModel, typename SimilarityFunction, typename VerificationAlgorithm>
 void execute_allpairs_multiset_dsf_self_join(std::vector<node::Node<Label>>& trees_collection, double similarity_threshold) {
-  // Initialize allpairs baseline
+  // Initialize allpairs multiset duplicate
   join::AllpairsMultisetDSFSelfJoin<Label, CostModel, SimilarityFunction, VerificationAlgorithm> absj;
   Timing timing;
   std::vector<join::JoinResultElement> result_set;
@@ -309,6 +364,33 @@ void execute_allpairs_multiset_dsf_self_join(std::vector<node::Node<Label>>& tre
       std::cout << "\"filter_time\": " << allpairs->getfloat() << ", ";
       std::cout << "\"verification_candidates\": " << join_candidates.size() << ", ";
 
+      ted_ub::GreedyUB<Label, CostModel> gub;
+
+      // Initialized Timing object
+      Timing::Interval * greedyub = timing.create_enroll("GreedyUB");
+      // Start timing
+      greedyub->start();
+
+      std::vector<std::pair<unsigned int, unsigned int>>::iterator it = join_candidates.begin();
+      while(it != join_candidates.end()) {
+        double ub_value = gub.verify(trees_collection[it->first],
+                                      trees_collection[it->second],
+                                      similarity_threshold);
+        if(ub_value <= similarity_threshold) {
+          result_set.emplace_back(it->first, it->second, ub_value);
+          it = join_candidates.erase(it);
+        }
+        else {
+          ++it;
+        }
+      }
+
+      // Stop timing
+      greedyub->stop();
+
+      // Write timing
+      std::cout << "\"upperbound_time\": " << greedyub->getfloat() << ", ";
+      std::cout << "\"upperbound_pruned\": " << result_set.size() << ", ";
 
       // Initialized Timing object
       Timing::Interval * verify = timing.create_enroll("Verify");

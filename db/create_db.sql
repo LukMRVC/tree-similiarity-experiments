@@ -77,7 +77,9 @@ CREATE TABLE allpairs_self_join (
   filter_verification_candidates bigint, -- Pairs of trees resulting from filter only.
   filter_time bigint, -- Total time of the filter and its verification step.
   verification_candidates bigint, -- Pairs of trees resulting after verification step of the filter.
-  verification_time bigint -- TED verification time.
+  verification_time bigint, -- TED verification time.
+  upperbound_time bigint, -- Time spent to compute upperbounds for verification candidates.
+  upperbound_pruned bigint -- Number of pairs in the result set by upperbound computation.
 );
 
 DROP TABLE IF EXISTS allpairs_multiset_baseline_self_join;
@@ -103,7 +105,9 @@ CREATE TABLE allpairs_multiset_baseline_self_join (
   filter_verification_candidates bigint, -- Pairs of trees resulting from filter only.
   filter_time bigint, -- Total time of the filter and its verification step.
   verification_candidates bigint, -- Pairs of trees resulting after verification step of the filter.
-  verification_time bigint -- TED verification time.
+  verification_time bigint, -- TED verification time.
+  upperbound_time bigint, -- Time spent to compute upperbounds for verification candidates.
+  upperbound_pruned bigint -- Number of pairs in the result set by upperbound computation.
 );
 
 DROP TABLE IF EXISTS allpairs_multiset_dsf_self_join;
@@ -129,5 +133,7 @@ CREATE TABLE allpairs_multiset_dsf_self_join (
   filter_verification_candidates bigint, -- Pairs of trees resulting from filter only.
   filter_time bigint, -- Total time of the filter and its verification step.
   verification_candidates bigint, -- Pairs of trees resulting after verification step of the filter.
-  verification_time bigint -- TED verification time.
+  verification_time bigint, -- TED verification time.
+  upperbound_time bigint, -- Time spent to compute upperbounds for verification candidates.
+  upperbound_pruned bigint -- Number of pairs in the result set by upperbound computation.
 );

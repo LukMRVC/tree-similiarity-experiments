@@ -48,5 +48,6 @@
 #include "tree_to_set_converter_multiset_baseline.h"
 #include "zhang_shasha.h"
 #include "touzet.h"
+#include "greedy_ub.h"
 
 #endif // EXPERIMENTS_H

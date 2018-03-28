@@ -50,6 +50,7 @@ target_include_directories(
   external/tree-similarity-private/src/parser
   external/tree-similarity-private/src/tree_to_set_converter
   external/tree-similarity-private/src/ted
+  external/tree-similarity-private/src/ted_ub
 )
 
 # Let the compiler know to find the header files in TreeSimilarity library.
