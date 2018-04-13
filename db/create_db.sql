@@ -137,3 +137,31 @@ CREATE TABLE allpairs_multiset_dsf_self_join (
   upperbound_time bigint, -- Time spent to compute upperbounds for verification candidates.
   upperbound_pruned bigint -- Number of pairs in the result set by upperbound computation.
 );
+
+DROP TABLE IF EXISTS partition_based_self_join;
+CREATE TABLE partition_based_self_join (
+  -- Common attributes.
+  execution_id serial PRIMARY KEY,
+  experiments_version varchar(127),
+  experiments_timestamp timestamp,
+  hostname varchar(127),
+  dataset_filename varchar(127) REFERENCES dataset(filename),
+  dataset_parsing_time bigint,
+  algorithm_version varchar(127),
+  threshold decimal,
+  sum_subproblems bigint,
+  result_set_size bigint,
+  sum_subproblem_optimum bigint,
+  optimum_time bigint,
+  -- Algorithm-specific attributes.
+  similarity_function varchar(127),
+  verification_algorithm varchar(31),
+  tree_to_binary_tree_time bigint,
+  filter_touched_pairs bigint, -- Pairs of trees that the filter looks at.
+  filter_verification_candidates bigint, -- Pairs of trees resulting from filter only.
+  filter_time bigint, -- Total time of the filter and its verification step.
+  verification_candidates bigint, -- Pairs of trees resulting after verification step of the filter.
+  verification_time bigint, -- TED verification time.
+  upperbound_time bigint, -- Time spent to compute upperbounds for verification candidates.
+  upperbound_pruned bigint -- Number of pairs in the result set by upperbound computation.
+);

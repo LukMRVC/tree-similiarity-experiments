@@ -31,6 +31,8 @@
 #include <iostream>
 #include <time.h>
 #include <string>
+#include <vector>
+#include <unordered_set>
 #include "timing.h"
 #include "node.h"
 #include "string_label.h"
@@ -41,6 +43,7 @@
 #include "allpairs_generic_self_join.h"
 #include "allpairs_multiset_baseline_self_join.h"
 #include "allpairs_multiset_dsf_self_join.h"
+#include "partition_based_self_join.h"
 #include "naive_self_join.h"
 #include "unit_cost_model.h"
 #include "tree_to_set_converter.h"

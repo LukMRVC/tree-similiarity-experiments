@@ -110,16 +110,21 @@ for a in data['algorithms']:
                     "verification_algorithm" : a['verification_algorithm'],
                     "similarity_function" : a['similarity_function']
                 }
-                cmd.extend((binary_name, d, str(t), a['name'], a['verification_algorithm'], a['similarity_function']))
+                cmd.extend((binary_name, d, str(t), a['name'], a['verification_algorithm'], a['similarity_function'], data['upperbound']))
             elif a['name'] == 'naive_self_join':
                 algorithm_params = {
                     "verification_algorithm" : a['verification_algorithm']
                 }
-                cmd.extend((binary_name, d, str(t), a['name'], a['verification_algorithm']))
+                cmd.extend((binary_name, d, str(t), a['name'], a['verification_algorithm'], "", data['upperbound']))
+            elif a['name'] == 'partition_based_self_join':
+                algorithm_params = {
+                    "verification_algorithm" : a['verification_algorithm']
+                }
+                cmd.extend((binary_name, d, str(t), a['name'], a['verification_algorithm'], "", data['upperbound']))
             cmd_output = get_stdout_cmd(cmd).strip()
             result_data = json.loads(cmd_output.decode('utf-8'))
             result_data.update(fixed_values)
             result_data.update(experiment_params)
             result_data.update(algorithm_params)
-            store_result(a['name'], result_data)
+            # store_result(a['name'], result_data)
             print_result(a['name'], result_data)
