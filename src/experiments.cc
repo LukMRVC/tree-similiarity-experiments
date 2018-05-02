@@ -142,7 +142,8 @@ void execute_allpairs_self_join(std::vector<node::Node<Label>>& trees_collection
                                         similarity_threshold);
           if(ub_value <= similarity_threshold) {
             result_set.emplace_back(it->first, it->second, ub_value);
-            it = join_candidates.erase(it);
+            *it = join_candidates.back();
+            join_candidates.pop_back();
           }
           else {
             ++it;
@@ -267,7 +268,8 @@ void execute_allpairs_multiset_baseline_self_join(std::vector<node::Node<Label>>
                                         similarity_threshold);
           if(ub_value <= similarity_threshold) {
             result_set.emplace_back(it->first, it->second, ub_value);
-            it = join_candidates.erase(it);
+            *it = join_candidates.back();
+            join_candidates.pop_back();
           }
           else {
             ++it;
@@ -392,7 +394,8 @@ void execute_allpairs_multiset_dsf_self_join(std::vector<node::Node<Label>>& tre
                                         similarity_threshold);
           if(ub_value <= similarity_threshold) {
             result_set.emplace_back(it->first, it->second, ub_value);
-            it = join_candidates.erase(it);
+            *it = join_candidates.back();
+            join_candidates.pop_back();
           }
           else {
             ++it;
