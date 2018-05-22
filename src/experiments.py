@@ -105,10 +105,11 @@ for a in data['algorithms']:
             # build command that needs to be executed
             cmd = []
             # call binary
-            if a['name'] == 'allpairs_self_join' or a['name'] == 'allpairs_multiset_baseline_self_join' or a['name'] == 'allpairs_multiset_dsf_self_join' :
+            if a['name'] == 'allpairs_self_join' or a['name'] == 'allpairs_multiset_baseline_self_join' or a['name'] == 'allpairs_multiset_dsf_self_join' or a['name'] == 'allpairs_multiset_two_layer_self_join' :
                 algorithm_params = {
                     "verification_algorithm" : a['verification_algorithm'],
-                    "similarity_function" : a['similarity_function']
+                    "similarity_function" : a['similarity_function'],
+                    "upperbound" : data['upperbound']
                 }
                 cmd.extend((binary_name, d, str(t), a['name'], a['verification_algorithm'], a['similarity_function'], data['upperbound']))
             elif a['name'] == 'naive_self_join':
@@ -118,7 +119,8 @@ for a in data['algorithms']:
                 cmd.extend((binary_name, d, str(t), a['name'], a['verification_algorithm'], "", data['upperbound']))
             elif a['name'] == 'partition_based_self_join':
                 algorithm_params = {
-                    "verification_algorithm" : a['verification_algorithm']
+                    "verification_algorithm" : a['verification_algorithm'],
+                    "upperbound" : data['upperbound']
                 }
                 cmd.extend((binary_name, d, str(t), a['name'], a['verification_algorithm'], "", data['upperbound']))
             cmd_output = get_stdout_cmd(cmd).strip()

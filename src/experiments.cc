@@ -178,6 +178,7 @@ void execute_allpairs_self_join(std::vector<node::Node<Label>>& trees_collection
     }
     // Write number of candidates and number of result pairs
     std::cout << "\"filter_verification_candidates\": " << absj.get_number_of_pre_candidates() << ", ";
+    std::cout << "\"inv_list_lookups\": " << absj.get_number_of_il_lookups() << ", ";
     std::cout << "\"sum_subproblems\": " << absj.get_subproblem_count() << ", ";
     std::cout << "\"result_set_size\": " << result_set.size() << ", ";
   }
@@ -304,6 +305,7 @@ void execute_allpairs_multiset_baseline_self_join(std::vector<node::Node<Label>>
     }
     // Write number of candidates and number of result pairs
     std::cout << "\"filter_verification_candidates\": " << absj.get_number_of_pre_candidates() << ", ";
+    std::cout << "\"inv_list_lookups\": " << absj.get_number_of_il_lookups() << ", ";
     std::cout << "\"sum_subproblems\": " << absj.get_subproblem_count() << ", ";
     std::cout << "\"result_set_size\": " << result_set.size() << ", ";
   }
@@ -430,6 +432,7 @@ void execute_allpairs_multiset_dsf_self_join(std::vector<node::Node<Label>>& tre
     }
     // Write number of candidates and number of result pairs
     std::cout << "\"filter_verification_candidates\": " << absj.get_number_of_pre_candidates() << ", ";
+    std::cout << "\"inv_list_lookups\": " << absj.get_number_of_il_lookups() << ", ";
     std::cout << "\"sum_subproblems\": " << absj.get_subproblem_count() << ", ";
     std::cout << "\"result_set_size\": " << result_set.size() << ", ";
   }
@@ -588,6 +591,133 @@ void execute_partition_based_self_join(std::vector<node::Node<Label>>& trees_col
   std::cout << "\"optimum_time\": " << optimum->getfloat() << "}" << std::endl;
 }
 
+template <typename Label, typename CostModel, typename SimilarityFunction, typename VerificationAlgorithm>
+void execute_allpairs_multiset_two_layer_self_join(std::vector<node::Node<Label>>& trees_collection, 
+    std::string upperbound, double similarity_threshold) {
+  // Initialize allpairs multiset duplicate
+  join::AllpairsMultisetTwoLayerSelfJoin<Label, CostModel, SimilarityFunction, VerificationAlgorithm> amtlsj;
+  Timing timing;
+  std::vector<join::JoinResultElement> result_set;
+
+  // Add some scopes to ensure that the memory is deallocated
+  {
+    // Initialized Timing object
+    Timing::Interval * tree_to_set = timing.create_enroll("TreeToSet");
+    // Start timing
+    tree_to_set->start();
+
+    // Convert trees to sets and get the result.
+    std::vector<std::pair<unsigned int, std::vector<tree_to_set_converter_multiset::SetElement>>> sets_collection;
+    amtlsj.convert_trees_to_sets(trees_collection, sets_collection);
+
+    // Stop timing
+    tree_to_set->stop();
+
+    // Write timing
+    std::cout << "\"tree_to_set_time\": " << tree_to_set->getfloat() << ", ";
+
+    {
+      // Initialized Timing object
+      Timing::Interval * allpairs = timing.create_enroll("Allpairs");
+      // Start timing
+      allpairs->start();
+
+      // Compute candidate for the join with the allpairs algorithm
+      std::vector<std::pair<unsigned int, unsigned int>> join_candidates;
+      amtlsj.get_join_candidates(sets_collection, join_candidates, similarity_threshold);
+
+      // Stop timing
+      allpairs->stop();
+
+      // Write timing
+      std::cout << "\"filter_time\": " << allpairs->getfloat() << ", ";
+      std::cout << "\"verification_candidates\": " << join_candidates.size() << ", ";
+
+      if(upperbound == "greedy") {
+        ted_ub::GreedyUB<Label, CostModel> gub;
+
+        // Initialized Timing object
+        Timing::Interval * greedyub = timing.create_enroll("GreedyUB");
+        // Start timing
+        greedyub->start();
+
+        std::vector<std::pair<unsigned int, unsigned int>>::iterator it = join_candidates.begin();
+        while(it != join_candidates.end()) {
+          double ub_value = gub.verify(trees_collection[it->first],
+                                        trees_collection[it->second],
+                                        similarity_threshold);
+          if(ub_value <= similarity_threshold) {
+            result_set.emplace_back(it->first, it->second, ub_value);
+            *it = join_candidates.back();
+            join_candidates.pop_back();
+          }
+          else {
+            ++it;
+          }
+        }
+
+        // Stop timing
+        greedyub->stop();
+
+        // Write timing
+        std::cout << "\"upperbound_time\": " << greedyub->getfloat() << ", ";
+        std::cout << "\"upperbound_pruned\": " << result_set.size() << ", ";
+      } else {
+        std::cout << "\"upperbound_time\": 0" << ", ";
+        std::cout << "\"upperbound_pruned\": 0" << ", ";
+      }
+
+      // Initialized Timing object
+      Timing::Interval * verify = timing.create_enroll("Verify");
+      // Start timing
+      verify->start();
+
+      // Verify all computed join candidates and return the join result
+      amtlsj.verify_candidates(trees_collection, join_candidates,
+                               result_set, similarity_threshold);
+
+      // Stop timing
+      verify->stop();
+
+      // Write timing
+      std::cout << "\"verification_time\": " << verify->getfloat() << ", ";
+    }
+    // Write number of candidates and number of result pairs
+    std::cout << "\"filter_verification_candidates\": " << amtlsj.get_number_of_pre_candidates() << ", ";
+    std::cout << "\"inv_list_lookups\": " << amtlsj.get_number_of_il_lookups() << ", ";
+    std::cout << "\"sum_subproblems\": " << amtlsj.get_subproblem_count() << ", ";
+    std::cout << "\"result_set_size\": " << result_set.size() << ", ";
+  }
+
+  // Calculate optimum by verify only the resultset
+  // Initialized Timing object
+  Timing::Interval * optimum = timing.create_enroll("Optimum");
+  // Start timing
+  optimum->start();
+
+  VerificationAlgorithm ted_algorithm;
+  std::vector<join::JoinResultElement> optimum_result;
+  unsigned long long int sum_subproblem_optimum = 0;
+
+  for(auto pair: result_set) {
+    double ted_value = ted_algorithm.verify(trees_collection[pair.tree_id_1],
+                                            trees_collection[pair.tree_id_2],
+                                            similarity_threshold);
+    if(ted_value <= similarity_threshold)
+      optimum_result.emplace_back(pair.tree_id_1, pair.tree_id_2, ted_value);
+
+    // Sum up all number of subproblems
+    sum_subproblem_optimum += ted_algorithm.get_subproblem_count();
+  }
+
+  // Stop timing
+  optimum->stop();
+
+  // Write timing
+  std::cout << "\"sum_subproblem_optimum\": " << sum_subproblem_optimum << ", ";
+  std::cout << "\"optimum_time\": " << optimum->getfloat() << "}" << std::endl;
+}
+
 int main(int argc, char** argv) {
   using Label = label::StringLabel;
   using CostModel = cost_model::UnitCostModel<Label>;
@@ -703,6 +833,24 @@ int main(int argc, char** argv) {
       execute_naive_self_join<Label, CostModel, ZhangShasha>(trees_collection, similarity_threshold);
     } else if (argv[4] == std::string("Touzet")) {
       execute_naive_self_join<Label, CostModel, Touzet>(trees_collection, similarity_threshold);
+    }
+  } else if (argv[3] == std::string("allpairs_multiset_two_layer_self_join")) {
+    if (argv[4] == std::string("ZhangShasha")) {
+      if (argv[5] == std::string("HammingBaseline")) {
+        execute_allpairs_multiset_two_layer_self_join<Label, CostModel, BaselineSimilarity, ZhangShasha>(trees_collection, upperbound, similarity_threshold);
+      } else if (argv[5] == std::string("HammingLengthFilter")) {
+        execute_allpairs_multiset_two_layer_self_join<Label, CostModel, LengthFilterSimilarity, ZhangShasha>(trees_collection, upperbound, similarity_threshold);
+      } else if (argv[5] == std::string("HammingOptimal")) {
+        execute_allpairs_multiset_two_layer_self_join<Label, CostModel, OptimalSimilarity, ZhangShasha>(trees_collection, upperbound, similarity_threshold);
+      }
+    } else if (argv[4] == std::string("Touzet")) {
+      if (argv[5] == std::string("HammingBaseline")) {
+        execute_allpairs_multiset_two_layer_self_join<Label, CostModel, BaselineSimilarity, Touzet>(trees_collection, upperbound, similarity_threshold);
+      } else if (argv[5] == std::string("HammingLengthFilter")) {
+        execute_allpairs_multiset_two_layer_self_join<Label, CostModel, LengthFilterSimilarity, Touzet>(trees_collection, upperbound, similarity_threshold);
+      } else if (argv[5] == std::string("HammingOptimal")) {
+        execute_allpairs_multiset_two_layer_self_join<Label, CostModel, OptimalSimilarity, Touzet>(trees_collection, upperbound, similarity_threshold);
+      }
     }
   }
 
