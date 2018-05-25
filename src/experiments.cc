@@ -558,6 +558,7 @@ void execute_partition_based_self_join(std::vector<node::Node<Label>>& trees_col
     }
     // Write number of candidates and number of result pairs
     std::cout << "\"filter_verification_candidates\": " << pbsj.get_number_of_pre_candidates() << ", ";
+    std::cout << "\"inv_list_lookups\": " << absj.get_number_of_il_lookups() << ", ";
     std::cout << "\"sum_subproblems\": " << pbsj.get_subproblem_count() << ", ";
     std::cout << "\"result_set_size\": " << result_set.size() << ", ";
   }
