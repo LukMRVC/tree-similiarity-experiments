@@ -727,6 +727,7 @@ int main(int argc, char** argv) {
   using OptimalSimilarity = similarity_function::HammingOptimal;
   using ZhangShasha = ted::ZhangShasha<Label, CostModel>;
   using Touzet = ted::Touzet<Label, CostModel>;
+  using APTED = ted::APTED<Label, CostModel>;
 
   Timing timing;
 
@@ -785,6 +786,14 @@ int main(int argc, char** argv) {
       } else if (argv[5] == std::string("HammingOptimal")) {
         execute_allpairs_self_join<Label, CostModel, OptimalSimilarity, Touzet>(trees_collection, upperbound, similarity_threshold);
       }
+    } else if (argv[4] == std::string("APTED")) {
+      if (argv[5] == std::string("HammingBaseline")) {
+        execute_allpairs_self_join<Label, CostModel, BaselineSimilarity, APTED>(trees_collection, upperbound, similarity_threshold);
+      } else if (argv[5] == std::string("HammingLengthFilter")) {
+        execute_allpairs_self_join<Label, CostModel, LengthFilterSimilarity, APTED>(trees_collection, upperbound, similarity_threshold);
+      } else if (argv[5] == std::string("HammingOptimal")) {
+        execute_allpairs_self_join<Label, CostModel, OptimalSimilarity, APTED>(trees_collection, upperbound, similarity_threshold);
+      }
     }
   } else if (argv[3] == std::string("allpairs_multiset_baseline_self_join")) {
     if (argv[4] == std::string("ZhangShasha")) {
@@ -803,7 +812,15 @@ int main(int argc, char** argv) {
       } else if (argv[5] == std::string("HammingOptimal")) {
         execute_allpairs_multiset_baseline_self_join<Label, CostModel, OptimalSimilarity, Touzet>(trees_collection, upperbound, similarity_threshold);
       }
-    }
+    } else if (argv[4] == std::string("APTED")) {
+     if (argv[5] == std::string("HammingBaseline")) {
+       execute_allpairs_multiset_baseline_self_join<Label, CostModel, BaselineSimilarity, APTED>(trees_collection, upperbound, similarity_threshold);
+     } else if (argv[5] == std::string("HammingLengthFilter")) {
+       execute_allpairs_multiset_baseline_self_join<Label, CostModel, LengthFilterSimilarity, APTED>(trees_collection, upperbound, similarity_threshold);
+     } else if (argv[5] == std::string("HammingOptimal")) {
+       execute_allpairs_multiset_baseline_self_join<Label, CostModel, OptimalSimilarity, APTED>(trees_collection, upperbound, similarity_threshold);
+     }
+   }
   } else if (argv[3] == std::string("allpairs_multiset_dsf_self_join")) {
     if (argv[4] == std::string("ZhangShasha")) {
       if (argv[5] == std::string("HammingBaseline")) {
@@ -821,19 +838,30 @@ int main(int argc, char** argv) {
       } else if (argv[5] == std::string("HammingOptimal")) {
         execute_allpairs_multiset_dsf_self_join<Label, CostModel, OptimalSimilarity, Touzet>(trees_collection, upperbound, similarity_threshold);
       }
+    } else if (argv[4] == std::string("APTED")) {
+      if (argv[5] == std::string("HammingBaseline")) {
+        execute_allpairs_multiset_dsf_self_join<Label, CostModel, BaselineSimilarity, APTED>(trees_collection, upperbound, similarity_threshold);
+      } else if (argv[5] == std::string("HammingLengthFilter")) {
+        execute_allpairs_multiset_dsf_self_join<Label, CostModel, LengthFilterSimilarity, APTED>(trees_collection, upperbound, similarity_threshold);
+      } else if (argv[5] == std::string("HammingOptimal")) {
+        execute_allpairs_multiset_dsf_self_join<Label, CostModel, OptimalSimilarity, APTED>(trees_collection, upperbound, similarity_threshold);
+      }
     }
   } else if (argv[3] == std::string("partition_based_self_join")) {
     if (argv[4] == std::string("ZhangShasha")) {
       execute_partition_based_self_join<Label, CostModel, ZhangShasha>(trees_collection, upperbound, similarity_threshold);
     } else if (argv[4] == std::string("Touzet")) {
       execute_partition_based_self_join<Label, CostModel, Touzet>(trees_collection, upperbound, similarity_threshold);
-
+    } else if (argv[4] == std::string("APTED")) {
+      execute_partition_based_self_join<Label, CostModel, APTED>(trees_collection, upperbound, similarity_threshold);
     }
   } else if(argv[3] == std::string("naive_self_join")) {
     if (argv[4] == std::string("ZhangShasha")) {
       execute_naive_self_join<Label, CostModel, ZhangShasha>(trees_collection, similarity_threshold);
     } else if (argv[4] == std::string("Touzet")) {
       execute_naive_self_join<Label, CostModel, Touzet>(trees_collection, similarity_threshold);
+    } else if (argv[4] == std::string("APTED")) {
+      execute_naive_self_join<Label, CostModel, APTED>(trees_collection, similarity_threshold);
     }
   } else if (argv[3] == std::string("allpairs_multiset_two_layer_self_join")) {
     if (argv[4] == std::string("ZhangShasha")) {
@@ -851,6 +879,14 @@ int main(int argc, char** argv) {
         execute_allpairs_multiset_two_layer_self_join<Label, CostModel, LengthFilterSimilarity, Touzet>(trees_collection, upperbound, similarity_threshold);
       } else if (argv[5] == std::string("HammingOptimal")) {
         execute_allpairs_multiset_two_layer_self_join<Label, CostModel, OptimalSimilarity, Touzet>(trees_collection, upperbound, similarity_threshold);
+      }
+    } else if (argv[4] == std::string("APTED")) {
+      if (argv[5] == std::string("HammingBaseline")) {
+        execute_allpairs_multiset_two_layer_self_join<Label, CostModel, BaselineSimilarity, APTED>(trees_collection, upperbound, similarity_threshold);
+      } else if (argv[5] == std::string("HammingLengthFilter")) {
+        execute_allpairs_multiset_two_layer_self_join<Label, CostModel, LengthFilterSimilarity, APTED>(trees_collection, upperbound, similarity_threshold);
+      } else if (argv[5] == std::string("HammingOptimal")) {
+        execute_allpairs_multiset_two_layer_self_join<Label, CostModel, OptimalSimilarity, APTED>(trees_collection, upperbound, similarity_threshold);
       }
     }
   }

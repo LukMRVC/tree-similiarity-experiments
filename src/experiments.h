@@ -54,5 +54,6 @@
 #include "zhang_shasha.h"
 #include "touzet.h"
 #include "greedy_ub.h"
+#include "apted.h"
 
 #endif // EXPERIMENTS_H

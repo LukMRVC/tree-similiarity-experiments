@@ -95,38 +95,39 @@ fixed_values = {
 
 data = json.load(open(args.config_filename))
 for a in data['algorithms']:
-    for d in data['datasets']:
-        for t in data['thresholds']:
-            path, filename = os.path.split(d)
-            experiment_params = {
-                "dataset_filename" : filename,
-                "threshold" : t
-            }
-            # build command that needs to be executed
-            cmd = []
-            # call binary
-            if a['name'] == 'allpairs_self_join' or a['name'] == 'allpairs_multiset_baseline_self_join' or a['name'] == 'allpairs_multiset_dsf_self_join' or a['name'] == 'allpairs_multiset_two_layer_self_join' :
-                algorithm_params = {
-                    "verification_algorithm" : a['verification_algorithm'],
-                    "similarity_function" : a['similarity_function'],
-                    "upperbound" : data['upperbound']
+    for ub in data['upperbounds']:
+        for d in data['datasets']:
+            for t in data['thresholds']:
+                path, filename = os.path.split(d)
+                experiment_params = {
+                    "dataset_filename" : filename,
+                    "threshold" : t
                 }
-                cmd.extend((binary_name, d, str(t), a['name'], a['verification_algorithm'], a['similarity_function'], data['upperbound']))
-            elif a['name'] == 'naive_self_join':
-                algorithm_params = {
-                    "verification_algorithm" : a['verification_algorithm']
-                }
-                cmd.extend((binary_name, d, str(t), a['name'], a['verification_algorithm'], "", data['upperbound']))
-            elif a['name'] == 'partition_based_self_join':
-                algorithm_params = {
-                    "verification_algorithm" : a['verification_algorithm'],
-                    "upperbound" : data['upperbound']
-                }
-                cmd.extend((binary_name, d, str(t), a['name'], a['verification_algorithm'], "", data['upperbound']))
-            cmd_output = get_stdout_cmd(cmd).strip()
-            result_data = json.loads(cmd_output.decode('utf-8'))
-            result_data.update(fixed_values)
-            result_data.update(experiment_params)
-            result_data.update(algorithm_params)
-            # store_result(a['name'], result_data)
-            print_result(a['name'], result_data)
+                # build command that needs to be executed
+                cmd = []
+                # call binary
+                if a['name'] == 'allpairs_self_join' or a['name'] == 'allpairs_multiset_baseline_self_join' or a['name'] == 'allpairs_multiset_dsf_self_join' or a['name'] == 'allpairs_multiset_two_layer_self_join' :
+                    algorithm_params = {
+                        "verification_algorithm" : a['verification_algorithm'],
+                        "similarity_function" : a['similarity_function'],
+                        "upperbound" : ub
+                    }
+                    cmd.extend((binary_name, d, str(t), a['name'], a['verification_algorithm'], a['similarity_function'], ub))
+                elif a['name'] == 'naive_self_join':
+                    algorithm_params = {
+                        "verification_algorithm" : a['verification_algorithm']
+                    }
+                    cmd.extend((binary_name, d, str(t), a['name'], a['verification_algorithm'], "", ub))
+                elif a['name'] == 'partition_based_self_join':
+                    algorithm_params = {
+                        "verification_algorithm" : a['verification_algorithm'],
+                        "upperbound" : ub
+                    }
+                    cmd.extend((binary_name, d, str(t), a['name'], a['verification_algorithm'], "", ub))
+                cmd_output = get_stdout_cmd(cmd).strip()
+                result_data = json.loads(cmd_output.decode('utf-8'))
+                result_data.update(fixed_values)
+                result_data.update(experiment_params)
+                result_data.update(algorithm_params)
+                # store_result(a['name'], result_data)
+                print_result(a['name'], result_data)
