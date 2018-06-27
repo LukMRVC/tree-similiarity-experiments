@@ -129,6 +129,6 @@ for a in data['algorithms']:
                 result_data.update(fixed_values)
                 result_data.update(experiment_params)
                 result_data.update(algorithm_params)
+                store_result(a['name'], result_data)
                 print_result(a['name'], result_data)
-                #store_result(a['name'], result_data)
-                
+
