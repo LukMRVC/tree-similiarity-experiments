@@ -18,14 +18,15 @@ parser.add_argument(
     dest = 'measure',
     type = str,
     default = 'runtime',
-    choices=['runtime', 'subproblems'],
+    choices=['runtime', 'subproblems', 'ted'],
     help='Choose measure to plot (default: runtime)'
 )
 args = parser.parse_args()
 
 measures = {
     'runtime' : 'runtime (ms)',
-    'subproblems' : '#subproblems'
+    'subproblems' : '#subproblems',
+    'ted' : 'TED value'
 }
 
 with open(args.input_filename, "r") as f:
