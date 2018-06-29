@@ -201,14 +201,9 @@ int main(int argc, char** argv) {
   
   // TED-k algorithms.
   using Touzet = ted::Touzet<Label, CostModel>;
-  // TODO: LabelGuided has no functions with the used signatures.
-  // using LabelGuided = ted_ub::GreedyUB<Label, CostModel>;
+  using LabelGuided = ted_ub::GreedyUB<Label, CostModel>;
   
   Timing timing;
-  
-  // node::Node<label::StringLabel> t1(label::StringLabel("t1"));
-  // node::Node<label::StringLabel> t2(label::StringLabel("t2"));
-  // int k = 1;
   
   // Write results as JSON object to stdout.
   // QUESTION: What's the best way of building a string output?
@@ -235,14 +230,14 @@ int main(int argc, char** argv) {
   // --tzd   Touzet - depth-based pruning      touzet_ted_depth_pruning
   // --tzs   Touzet - keyroot nodes with set   touzet_ted_kr_loop
   // --tzl   Touzet - keyroot nodes with loop  touzet_ted_kr_set
-  // --lg    LabelGuided                       TODO
-  // --lgd   LabelGuided - deprecated          TODO
+  // --lg    LabelGuided                       greedy_ub_ted
   bool alg_zs_is_set = false;
   bool alg_apted_is_set = false;
   bool alg_tz_is_set = false;
   bool alg_tzd_is_set = false;
   bool alg_tzs_is_set = false;
   bool alg_tzl_is_set = false;
+  bool alg_lg_is_set = false;
   
   // Output format
   bool output_in_json = false;
@@ -280,6 +275,9 @@ int main(int argc, char** argv) {
     }
     if (a == "--tzl") {
       alg_tzl_is_set = true;
+    }
+    if (a == "--lg") {
+      alg_lg_is_set = true;
     }
     if (a == "--output") {
       ++args_start_it;
@@ -331,6 +329,10 @@ int main(int argc, char** argv) {
   if (alg_tzl_is_set) {
     experiment.algorithm_executions.emplace_back("TouzetKrSet",
         execute_overlaping_pairs_k<Label, Touzet, &Touzet::touzet_ted_kr_set>(trees_collection, similarity_threshold));
+  }
+  if (alg_lg_is_set) {
+    experiment.algorithm_executions.emplace_back("LabelGuided",
+        execute_overlaping_pairs_k<Label, LabelGuided, &LabelGuided::greedy_ub_ted>(trees_collection, similarity_threshold));
   }
   
   // OUTPUT RESULTS
