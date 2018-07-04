@@ -34,17 +34,20 @@ struct DataItem {
   double ted;
   double runtime;
   unsigned long long int subproblems;
+  unsigned long long int top_y_updates;
   
   DataItem() {};
   DataItem(unsigned int tid1, unsigned int tid2, unsigned int s1,
-      unsigned int s2, double ted, double r, unsigned long long int s) :
+      unsigned int s2, double ted, double r, unsigned long long int s,
+      unsigned long long int top_y) :
       tree_id_1{tid1},
       tree_id_2{tid2},
       tree_size_1{s1},
       tree_size_2{s1},
       ted{ted},
       runtime{r},
-      subproblems{s}
+      subproblems{s},
+      top_y_updates{top_y}
   {};
   
   std::string to_json_string() {
@@ -55,6 +58,7 @@ struct DataItem {
     output += "\"tree_size_2\" : " + std::to_string(tree_size_2) + ", ";
     output += "\"ted\" : " + std::to_string(ted) + ", ";
     output += "\"subproblems\" : " + std::to_string(subproblems) + ", ";
+    output += "\"top_y_updates\" : " + std::to_string(top_y_updates) + ", ";
     output += "\"runtime\" : " + std::to_string(runtime);
     output += "}";
     return output;
@@ -141,7 +145,7 @@ DataItem execute_ted_alg(const unsigned int t1_id, const unsigned int t2_id, con
   auto d = (a.*_ted)(t1, t2);
   alg_time->stop();
   auto sp = a.get_subproblem_count();
-  DataItem di(t1_id, t2_id, t1.get_tree_size(), t2.get_tree_size(), d, alg_time->getfloat(), sp);
+  DataItem di(t1_id, t2_id, t1.get_tree_size(), t2.get_tree_size(), d, alg_time->getfloat(), sp, 0);
   return di;
 };
 
@@ -170,7 +174,8 @@ DataItem execute_ted_alg_k(const unsigned int t1_id, const unsigned int t2_id, c
   auto d = (a.*_ted)(t1, t2, k);
   alg_time->stop();
   auto sp = a.get_subproblem_count();
-  DataItem di(t1_id, t2_id, t1.get_tree_size(), t2.get_tree_size(), d, alg_time->getfloat(), sp);
+  auto top_y = a.get_top_y_update_count();
+  DataItem di(t1_id, t2_id, t1.get_tree_size(), t2.get_tree_size(), d, alg_time->getfloat(), sp, top_y);
   return di;
 };
 

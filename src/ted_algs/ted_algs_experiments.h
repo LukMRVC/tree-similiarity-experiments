@@ -31,6 +31,7 @@
 #include <time.h>
 #include <string>
 #include <vector>
+#include <limits>
 #include <unordered_set>
 #include "timing.h"
 #include "node.h"
