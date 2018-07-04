@@ -56,7 +56,10 @@ struct DataItem {
     output += "\"tree_id_2\" : " + std::to_string(tree_id_2) + ", ";
     output += "\"tree_size_1\" : " + std::to_string(tree_size_1) + ", ";
     output += "\"tree_size_2\" : " + std::to_string(tree_size_2) + ", ";
-    output += "\"ted\" : " + std::to_string(ted) + ", ";
+    // JSON doesn't permit infinity values, but Python's json module parses 'Infinity'.
+    // Though, Infinity has to be handled manualy while plotting.
+    // Currently, counting the Infinity values is supported.
+    output += "\"ted\" : " + (ted == std::numeric_limits<double>::infinity() ? "Infinity" : std::to_string(ted)) + ", ";
     output += "\"subproblems\" : " + std::to_string(subproblems) + ", ";
     output += "\"top_y_updates\" : " + std::to_string(top_y_updates) + ", ";
     output += "\"runtime\" : " + std::to_string(runtime);
