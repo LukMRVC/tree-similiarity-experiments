@@ -229,19 +229,23 @@ int main(int argc, char** argv) {
   // Names of the used TED agorithms (a list).
   //
   // Possible algorithms (command line arguments):
-  // --zs    Zhang and Shasha                  zhang_shasha_ted
-  // --apted APTED                             apted_ted
-  // --tz    Touzet - basic version            touzet_ted
-  // --tzd   Touzet - depth-based pruning      touzet_ted_depth_pruning
-  // --tzs   Touzet - keyroot nodes with set   touzet_ted_kr_loop
-  // --tzl   Touzet - keyroot nodes with loop  touzet_ted_kr_set
-  // --lg    LabelGuided                       greedy_ub_ted
+  // --zs    Zhang and Shasha                          zhang_shasha_ted
+  // --apted APTED                                     apted_ted
+  // --tz    Touzet - basic version                    touzet_ted
+  // --tzd   Touzet - depth-based pruning              touzet_ted_depth_pruning
+  // --tzs   Touzet - keyroot nodes with set           touzet_ted_kr_loop
+  // --tzl   Touzet - keyroot nodes with loop          touzet_ted_kr_set
+  // --tzse  Touzet - keyroot nodes with set + e_max   touzet_ted_kr_loop
+  // --tzle  Touzet - keyroot nodes with loop + e_max  touzet_ted_kr_set
+  // --lg    LabelGuided                               greedy_ub_ted
   bool alg_zs_is_set = false;
   bool alg_apted_is_set = false;
   bool alg_tz_is_set = false;
   bool alg_tzd_is_set = false;
   bool alg_tzs_is_set = false;
   bool alg_tzl_is_set = false;
+  bool alg_tzse_is_set = false;
+  bool alg_tzle_is_set = false;
   bool alg_lg_is_set = false;
   
   // Output format
@@ -280,6 +284,12 @@ int main(int argc, char** argv) {
     }
     if (a == "--tzl") {
       alg_tzl_is_set = true;
+    }
+    if (a == "--tzse") {
+      alg_tzse_is_set = true;
+    }
+    if (a == "--tzle") {
+      alg_tzle_is_set = true;
     }
     if (a == "--lg") {
       alg_lg_is_set = true;
@@ -329,11 +339,19 @@ int main(int argc, char** argv) {
   }
   if (alg_tzs_is_set) {
     experiment.algorithm_executions.emplace_back("TouzetKrLoop",
-        execute_overlaping_pairs_k<Label, Touzet, &Touzet::touzet_ted_kr_loop>(trees_collection, similarity_threshold));
+        execute_overlaping_pairs_k<Label, Touzet, &Touzet::touzet_ted_kr_loop_no_e_max>(trees_collection, similarity_threshold));
   }
   if (alg_tzl_is_set) {
     experiment.algorithm_executions.emplace_back("TouzetKrSet",
-        execute_overlaping_pairs_k<Label, Touzet, &Touzet::touzet_ted_kr_set>(trees_collection, similarity_threshold));
+        execute_overlaping_pairs_k<Label, Touzet, &Touzet::touzet_ted_kr_set_no_e_max>(trees_collection, similarity_threshold));
+  }
+  if (alg_tzse_is_set) {
+    experiment.algorithm_executions.emplace_back("TouzetKrLoopEmax",
+        execute_overlaping_pairs_k<Label, Touzet, &Touzet::touzet_ted_kr_loop_e_max>(trees_collection, similarity_threshold));
+  }
+  if (alg_tzle_is_set) {
+    experiment.algorithm_executions.emplace_back("TouzetKrSetEmax",
+        execute_overlaping_pairs_k<Label, Touzet, &Touzet::touzet_ted_kr_set_e_max>(trees_collection, similarity_threshold));
   }
   if (alg_lg_is_set) {
     experiment.algorithm_executions.emplace_back("LabelGuided",
