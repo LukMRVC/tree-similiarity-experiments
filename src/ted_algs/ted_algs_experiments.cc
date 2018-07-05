@@ -139,6 +139,10 @@ struct Experiment {
   };
 };
 
+// Experiment mechanisms.
+const unsigned int kOverlappingPairs = 1;
+const unsigned int kOneByOne         = 2;
+
 template <typename Label, typename Algorithm, double (Algorithm::*_ted)(const node::Node<Label>&, const node::Node<Label>&)>
 DataItem execute_ted_alg(const unsigned int t1_id, const unsigned int t2_id, const node::Node<Label>& t1, const node::Node<Label>& t2) {
   Algorithm a;
@@ -149,6 +153,20 @@ DataItem execute_ted_alg(const unsigned int t1_id, const unsigned int t2_id, con
   alg_time->stop();
   auto sp = a.get_subproblem_count();
   DataItem di(t1_id, t2_id, t1.get_tree_size(), t2.get_tree_size(), d, alg_time->getfloat(), sp, 0);
+  return di;
+};
+
+template <typename Label, typename Algorithm, double (Algorithm::*_ted)(const node::Node<Label>&, const node::Node<Label>&, const int k)>
+DataItem execute_ted_alg_k(const unsigned int t1_id, const unsigned int t2_id, const node::Node<Label>& t1, const node::Node<Label>& t2, const int k) {
+  Algorithm a;
+  Timing timing;
+  Timing::Interval * alg_time = timing.create_enroll("AlgorithmRuntime");
+  alg_time->start();
+  auto d = (a.*_ted)(t1, t2, k);
+  alg_time->stop();
+  auto sp = a.get_subproblem_count();
+  auto top_y = a.get_top_y_update_count();
+  DataItem di(t1_id, t2_id, t1.get_tree_size(), t2.get_tree_size(), d, alg_time->getfloat(), sp, top_y);
   return di;
 };
 
@@ -169,20 +187,6 @@ std::vector<DataItem> execute_overlaping_pairs(std::vector<node::Node<Label>>& t
 };
 
 template <typename Label, typename Algorithm, double (Algorithm::*_ted)(const node::Node<Label>&, const node::Node<Label>&, const int k)>
-DataItem execute_ted_alg_k(const unsigned int t1_id, const unsigned int t2_id, const node::Node<Label>& t1, const node::Node<Label>& t2, const int k) {
-  Algorithm a;
-  Timing timing;
-  Timing::Interval * alg_time = timing.create_enroll("AlgorithmRuntime");
-  alg_time->start();
-  auto d = (a.*_ted)(t1, t2, k);
-  alg_time->stop();
-  auto sp = a.get_subproblem_count();
-  auto top_y = a.get_top_y_update_count();
-  DataItem di(t1_id, t2_id, t1.get_tree_size(), t2.get_tree_size(), d, alg_time->getfloat(), sp, top_y);
-  return di;
-};
-
-template <typename Label, typename Algorithm, double (Algorithm::*_ted)(const node::Node<Label>&, const node::Node<Label>&, const int k)>
 std::vector<DataItem> execute_overlaping_pairs_k(std::vector<node::Node<Label>>& trees_collection, const int k) {
   std::vector<DataItem> execution_results;
   auto tc_start_it = std::begin(trees_collection);
@@ -194,6 +198,56 @@ std::vector<DataItem> execute_overlaping_pairs_k(std::vector<node::Node<Label>>&
     execution_results.push_back(execute_ted_alg_k<Label, Algorithm, _ted>(tree_id, tree_id+1, t1, t2, k));
     ++tc_start_it;
     ++tree_id;
+  }
+  return execution_results;
+};
+
+template <typename Label, typename Algorithm, double (Algorithm::*_ted)(const node::Node<Label>&, const node::Node<Label>&)>
+std::vector<DataItem> execute_one_by_one(std::vector<node::Node<Label>>& trees_collection) {
+  std::vector<DataItem> execution_results;
+  unsigned int tree_id = 0;
+  for (auto& t : trees_collection) {
+    execution_results.push_back(execute_ted_alg<Label, Algorithm, _ted>(tree_id, tree_id+1, t, t));
+    ++tree_id;
+  }
+  return execution_results;
+};
+
+template <typename Label, typename Algorithm, double (Algorithm::*_ted)(const node::Node<Label>&, const node::Node<Label>&, const int k)>
+std::vector<DataItem> execute_one_by_one_k(std::vector<node::Node<Label>>& trees_collection, const int k) {
+  std::vector<DataItem> execution_results;
+  unsigned int tree_id = 0;
+  for (auto& t : trees_collection) {
+    execution_results.push_back(execute_ted_alg_k<Label, Algorithm, _ted>(tree_id, tree_id+1, t, t, k));
+    ++tree_id;
+  }
+  return execution_results;
+};
+
+template <typename Label, typename Algorithm, double (Algorithm::*_ted)(const node::Node<Label>&, const node::Node<Label>&)>
+std::vector<DataItem> execute_mechanism(std::vector<node::Node<Label>>& trees_collection, unsigned int mechanism) {
+  std::vector<DataItem> execution_results;
+  switch(mechanism) {
+    case kOverlappingPairs :
+      execution_results = execute_overlaping_pairs<Label, Algorithm, _ted>(trees_collection);
+      break;
+    case kOneByOne :
+      execution_results = execute_one_by_one<Label, Algorithm, _ted>(trees_collection);
+      break;
+  }
+  return execution_results;
+};
+
+template <typename Label, typename Algorithm, double (Algorithm::*_ted)(const node::Node<Label>&, const node::Node<Label>&, const int k)>
+std::vector<DataItem> execute_mechanism_k(std::vector<node::Node<Label>>& trees_collection, unsigned int mechanism, const int k) {
+  std::vector<DataItem> execution_results;
+  switch(mechanism) {
+    case kOverlappingPairs :
+      execution_results = execute_overlaping_pairs_k<Label, Algorithm, _ted>(trees_collection, k);
+      break;
+    case kOneByOne :
+      execution_results = execute_one_by_one_k<Label, Algorithm, _ted>(trees_collection, k);
+      break;
   }
   return execution_results;
 };
@@ -219,11 +273,12 @@ int main(int argc, char** argv) {
   // Path to file containing the input trees.
   std::string input_file_path;
   
-  // // Experiment mechanism.
-  // //
+  // Experiment mechanism.
+  //
   // Possible execution mechanisms over the input dataset:
-  // --overlaping-pairs (default) First with second, second with third, and so on.
-  // std::string experiment_mechanism;
+  // --overlaping-pairs First with second, second with third, and so on (default).
+  // --one-by-one       Self distance.
+  unsigned int mechanism_to_execute = 1;
   
   // Set similarity threshold - maximum number of allowed edit operations.
   // TODO: If no threshold is provided, it should be set to something reasonable (default).
@@ -297,6 +352,9 @@ int main(int argc, char** argv) {
     if (a == "--lg") {
       alg_lg_is_set = true;
     }
+    if (a == "--one-by-one") {
+      mechanism_to_execute = kOneByOne;
+    }
     if (a == "--output") {
       ++args_start_it;
       a = *args_start_it;
@@ -326,39 +384,39 @@ int main(int argc, char** argv) {
   // EXECUTE ALGORITHMS
   if (alg_zs_is_set) {
     experiment.algorithm_executions.emplace_back("ZhangShasha",
-        execute_overlaping_pairs<Label, ZhangShasha, &ZhangShasha::zhang_shasha_ted>(trees_collection));
+        execute_mechanism<Label, ZhangShasha, &ZhangShasha::zhang_shasha_ted>(trees_collection, mechanism_to_execute));
   }
   if (alg_apted_is_set) {
     experiment.algorithm_executions.emplace_back("APTED",
-        execute_overlaping_pairs<Label, APTED, &APTED::apted_ted>(trees_collection));
+        execute_mechanism<Label, APTED, &APTED::apted_ted>(trees_collection, mechanism_to_execute));
   }
   if (alg_tz_is_set) {
     experiment.algorithm_executions.emplace_back("Touzet",
-        execute_overlaping_pairs_k<Label, Touzet, &Touzet::touzet_ted>(trees_collection, similarity_threshold));
+        execute_mechanism_k<Label, Touzet, &Touzet::touzet_ted>(trees_collection, mechanism_to_execute, similarity_threshold));
   }
   if (alg_tzd_is_set) {
     experiment.algorithm_executions.emplace_back("TouzetDP",
-        execute_overlaping_pairs_k<Label, Touzet, &Touzet::touzet_ted_depth_pruning>(trees_collection, similarity_threshold));
+        execute_mechanism_k<Label, Touzet, &Touzet::touzet_ted_depth_pruning>(trees_collection, mechanism_to_execute, similarity_threshold));
   }
   if (alg_tzs_is_set) {
     experiment.algorithm_executions.emplace_back("TouzetKrLoop",
-        execute_overlaping_pairs_k<Label, Touzet, &Touzet::touzet_ted_kr_loop_no_e_max>(trees_collection, similarity_threshold));
+        execute_mechanism_k<Label, Touzet, &Touzet::touzet_ted_kr_loop_no_e_max>(trees_collection, mechanism_to_execute, similarity_threshold));
   }
   if (alg_tzl_is_set) {
     experiment.algorithm_executions.emplace_back("TouzetKrSet",
-        execute_overlaping_pairs_k<Label, Touzet, &Touzet::touzet_ted_kr_set_no_e_max>(trees_collection, similarity_threshold));
+        execute_mechanism_k<Label, Touzet, &Touzet::touzet_ted_kr_set_no_e_max>(trees_collection, mechanism_to_execute, similarity_threshold));
   }
   if (alg_tzse_is_set) {
     experiment.algorithm_executions.emplace_back("TouzetKrLoopEmax",
-        execute_overlaping_pairs_k<Label, Touzet, &Touzet::touzet_ted_kr_loop_e_max>(trees_collection, similarity_threshold));
+        execute_mechanism_k<Label, Touzet, &Touzet::touzet_ted_kr_loop_e_max>(trees_collection, mechanism_to_execute, similarity_threshold));
   }
   if (alg_tzle_is_set) {
     experiment.algorithm_executions.emplace_back("TouzetKrSetEmax",
-        execute_overlaping_pairs_k<Label, Touzet, &Touzet::touzet_ted_kr_set_e_max>(trees_collection, similarity_threshold));
+        execute_mechanism_k<Label, Touzet, &Touzet::touzet_ted_kr_set_e_max>(trees_collection, mechanism_to_execute, similarity_threshold));
   }
   if (alg_lg_is_set) {
     experiment.algorithm_executions.emplace_back("LabelGuided",
-        execute_overlaping_pairs_k<Label, LabelGuided, &LabelGuided::greedy_ub_ted>(trees_collection, similarity_threshold));
+        execute_mechanism_k<Label, LabelGuided, &LabelGuided::greedy_ub_ted>(trees_collection, mechanism_to_execute, similarity_threshold));
   }
   
   // OUTPUT RESULTS
