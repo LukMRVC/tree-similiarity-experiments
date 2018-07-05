@@ -19,6 +19,11 @@ measures = {
     'top_y_updates' : 'top_y node updates (#times)'
 }
 
+xlabels = {
+    'tree_id_1'   : 'tree id in collection',
+    'tree_size_1' : 'size of left-hand tree (#nodes)',
+}
+
 algorithms = {
     'ZhangShasha' : 'zs',
     'APTED' : 'apted',
@@ -44,6 +49,16 @@ parser.add_argument(
     default = 'runtime',
     choices = measures.keys(),
     help = 'Choose measure to plot (default: runtime).'
+)
+parser.add_argument(
+    '--xlabel',
+    dest = 'xlabel',
+    type = str,
+    default = 'tree_id_1',
+    choices = xlabels.keys(),
+    help = 'Choose labels on X axis to plot (default: tree_id_1). NOTE:\
+            Choosing tree_size_1 requires input dataset to be sorted by tree\
+            size.'
 )
 parser.add_argument(
     '--algs',
@@ -72,7 +87,7 @@ markers = ['x','+','o','.']
 markercycler = cycle(markers)
 
 df = json_normalize(data['algorithm_executions'], ['data_items'], meta=['algorithm_name'])
-df.set_index('tree_id_1', inplace=True)
+df = df.set_index(args.xlabel)
 groups = df.groupby('algorithm_name')[args.measure]
 
 line_labels = []
@@ -81,7 +96,7 @@ for name, group in groups:
         ax.plot(group, label=name, linestyle=next(linecycler), marker=next(markercycler))
         line_labels.append(name)
 
-ax.set(xlabel='tree id', ylabel=measures[args.measure], title='TED algorithms ('+os.path.split(args.input_filename)[1]+')')
+ax.set(xlabel=xlabels[args.xlabel], ylabel=measures[args.measure], title='TED algorithms ('+os.path.split(args.input_filename)[1]+')')
 ax.grid()
 
 if args.print_inf:
