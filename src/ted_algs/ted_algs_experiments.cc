@@ -111,15 +111,22 @@ struct AlgorithmItem {
 };
 
 struct Experiment {
+  std::string dataset_file;
+  int k;
   double dataset_parsing_time;
   std::vector<AlgorithmItem> algorithm_executions;
   
   Experiment() {};
-  Experiment(double p_time) : dataset_parsing_time{p_time} {};
+  Experiment(std::string dataset_file, int k) :
+      dataset_file{dataset_file},
+      k{k}
+  {};
   
   std::string to_json_string() {
     std::string output;
-    output += "{\"dataset_parsing_time\" : " + std::to_string(dataset_parsing_time) +
+    output += "{\"dataset_file\" : \"" + dataset_file + "\"" +
+        ", \"k\" : " + std::to_string(k) +
+        ", \"dataset_parsing_time\" : " + std::to_string(dataset_parsing_time) +
         ", \"algorithm_executions\" : [";
     for (auto a : algorithm_executions) {
       output += a.to_json_string() + ",";
@@ -328,7 +335,7 @@ int main(int argc, char** argv) {
   
   // Set similarity threshold - maximum number of allowed edit operations.
   // TODO: If no threshold is provided, it should be set to something reasonable (default).
-  int similarity_threshold;
+  int similarity_threshold = 0;
   
   // Names of the used TED agorithms (a list).
   //
@@ -421,7 +428,7 @@ int main(int argc, char** argv) {
     ++args_start_it;
   }
 
-  Experiment experiment;
+  Experiment experiment(input_file_path, similarity_threshold);
 
   // PARSE INPUT
   // The input is parsed once for the entire experiment.
