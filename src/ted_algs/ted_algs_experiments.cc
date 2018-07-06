@@ -151,6 +151,9 @@ struct MechanismParams {
   unsigned int mechanism;
   unsigned int t1_id;
   unsigned int t2_id;
+  unsigned int k_min;
+  unsigned int k_max;
+  unsigned int k_step;
   
   MechanismParams() {};
   MechanismParams(unsigned int mechanism) :
@@ -161,12 +164,22 @@ struct MechanismParams {
       t1_id{t1_id},
       t2_id{t2_id}
   {};
+  MechanismParams(unsigned int mechanism, unsigned int t1_id, unsigned int t2_id,
+      unsigned int k_min, unsigned int k_max, unsigned int k_step) :
+      mechanism{mechanism},
+      t1_id{t1_id},
+      t2_id{t2_id},
+      k_min{k_min},
+      k_max{k_max},
+      k_step{k_step}
+  {};
 };
 
 // Experiment mechanisms.
 const unsigned int kOverlappingPairs = 1;
 const unsigned int kOneByOne         = 2;
 const unsigned int kChoosePair       = 3;
+const unsigned int kChoosePairKRange = 4;
 
 template <typename Label, typename Algorithm, double (Algorithm::*_ted)(const node::Node<Label>&, const node::Node<Label>&, const int k)>
 DataItem execute_ted_alg(const unsigned int t1_id, const unsigned int t2_id, const node::Node<Label>& t1, const node::Node<Label>& t2, const int k) {
@@ -221,6 +234,19 @@ std::vector<DataItem> execute_choose_pair(std::vector<node::Node<Label>>& trees_
 };
 
 template <typename Label, typename Algorithm, double (Algorithm::*_ted)(const node::Node<Label>&, const node::Node<Label>&, const int k)>
+std::vector<DataItem> execute_choose_pair_k_range(std::vector<node::Node<Label>>& trees_collection, MechanismParams& mp, const int k) {
+  std::vector<DataItem> execution_results;
+  for (unsigned int k_i = mp.k_min; k_i <= mp.k_max; k_i = k_i + mp.k_step) {
+    execution_results.push_back(
+        execute_ted_alg<Label, Algorithm, _ted>(mp.t1_id, mp.t2_id,
+            trees_collection.at(mp.t1_id), trees_collection.at(mp.t2_id), k_i
+        )
+    );
+  }
+  return execution_results;
+};
+
+template <typename Label, typename Algorithm, double (Algorithm::*_ted)(const node::Node<Label>&, const node::Node<Label>&, const int k)>
 std::vector<DataItem> execute_mechanism(std::vector<node::Node<Label>>& trees_collection, MechanismParams& mp, const int k) {
   std::vector<DataItem> execution_results;
   switch(mp.mechanism) {
@@ -232,6 +258,9 @@ std::vector<DataItem> execute_mechanism(std::vector<node::Node<Label>>& trees_co
       break;
     case kChoosePair :
       execution_results = execute_choose_pair<Label, Algorithm, _ted>(trees_collection, mp, k);
+      break;
+    case kChoosePairKRange :
+      execution_results = execute_choose_pair_k_range<Label, Algorithm, _ted>(trees_collection, mp, k);
       break;
   }
   return execution_results;
@@ -348,6 +377,16 @@ int main(int argc, char** argv) {
           std::stoi(*(args_start_it+2))
       );
       args_start_it += 2;
+    }
+    if (a == "--choose-pair-k-range") {
+      mp = MechanismParams(kChoosePairKRange,
+          std::stoi(*(args_start_it+1)),
+          std::stoi(*(args_start_it+2)),
+          std::stoi(*(args_start_it+3)),
+          std::stoi(*(args_start_it+4)),
+          std::stoi(*(args_start_it+5))
+      );
+      args_start_it += 5;
     }
     if (a == "--output") {
       ++args_start_it;

@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 import argparse
 import os
 import json 
@@ -22,6 +23,7 @@ measures = {
 xlabels = {
     'tree_id_1'   : 'tree id in collection',
     'tree_size_1' : 'size of left-hand tree (#nodes)',
+    'k'           : 'similarity threshold'
 }
 
 algorithms = {
