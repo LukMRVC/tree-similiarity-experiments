@@ -124,9 +124,7 @@ struct Experiment {
   
   std::string to_json_string() {
     std::string output;
-    output += "{\"dataset_file\" : \"" + dataset_file + "\"" +
-        ", \"k\" : " + std::to_string(k) +
-        ", \"dataset_parsing_time\" : " + std::to_string(dataset_parsing_time) +
+    output += "{\"dataset_parsing_time\" : " + std::to_string(dataset_parsing_time) +
         ", \"algorithm_executions\" : [";
     for (auto a : algorithm_executions) {
       output += a.to_json_string() + ",";
