@@ -29,6 +29,7 @@
 struct DataItem {
   unsigned int tree_id_1;
   unsigned int tree_id_2;
+  int k;
   unsigned int tree_size_1;
   unsigned int tree_size_2;
   double ted;
@@ -37,11 +38,12 @@ struct DataItem {
   unsigned long long int top_y_updates;
   
   DataItem() {};
-  DataItem(unsigned int tid1, unsigned int tid2, unsigned int s1,
+  DataItem(unsigned int tid1, unsigned int tid2, int k, unsigned int s1,
       unsigned int s2, double ted, double r, unsigned long long int s,
       unsigned long long int top_y) :
       tree_id_1{tid1},
       tree_id_2{tid2},
+      k{k},
       tree_size_1{s1},
       tree_size_2{s1},
       ted{ted},
@@ -54,6 +56,7 @@ struct DataItem {
     std::string output = "{";
     output += "\"tree_id_1\" : " + std::to_string(tree_id_1) + ", ";
     output += "\"tree_id_2\" : " + std::to_string(tree_id_2) + ", ";
+    output += "\"k\" : " + std::to_string(k) + ", ";
     output += "\"tree_size_1\" : " + std::to_string(tree_size_1) + ", ";
     output += "\"tree_size_2\" : " + std::to_string(tree_size_2) + ", ";
     // JSON doesn't permit infinity values, but Python's json module parses 'Infinity'.
@@ -165,21 +168,8 @@ const unsigned int kOverlappingPairs = 1;
 const unsigned int kOneByOne         = 2;
 const unsigned int kChoosePair       = 3;
 
-template <typename Label, typename Algorithm, double (Algorithm::*_ted)(const node::Node<Label>&, const node::Node<Label>&)>
-DataItem execute_ted_alg(const unsigned int t1_id, const unsigned int t2_id, const node::Node<Label>& t1, const node::Node<Label>& t2) {
-  Algorithm a;
-  Timing timing;
-  Timing::Interval * alg_time = timing.create_enroll("AlgorithmRuntime");
-  alg_time->start();
-  auto d = (a.*_ted)(t1, t2);
-  alg_time->stop();
-  auto sp = a.get_subproblem_count();
-  DataItem di(t1_id, t2_id, t1.get_tree_size(), t2.get_tree_size(), d, alg_time->getfloat(), sp, 0);
-  return di;
-};
-
 template <typename Label, typename Algorithm, double (Algorithm::*_ted)(const node::Node<Label>&, const node::Node<Label>&, const int k)>
-DataItem execute_ted_alg_k(const unsigned int t1_id, const unsigned int t2_id, const node::Node<Label>& t1, const node::Node<Label>& t2, const int k) {
+DataItem execute_ted_alg(const unsigned int t1_id, const unsigned int t2_id, const node::Node<Label>& t1, const node::Node<Label>& t2, const int k) {
   Algorithm a;
   Timing timing;
   Timing::Interval * alg_time = timing.create_enroll("AlgorithmRuntime");
@@ -187,13 +177,13 @@ DataItem execute_ted_alg_k(const unsigned int t1_id, const unsigned int t2_id, c
   auto d = (a.*_ted)(t1, t2, k);
   alg_time->stop();
   auto sp = a.get_subproblem_count();
-  auto top_y = a.get_top_y_update_count();
-  DataItem di(t1_id, t2_id, t1.get_tree_size(), t2.get_tree_size(), d, alg_time->getfloat(), sp, top_y);
+  // auto top_y = a.get_top_y_update_count(); NOTE: Disabled due to unifying ted and ted_k algorithms.
+  DataItem di(t1_id, t2_id, k, t1.get_tree_size(), t2.get_tree_size(), d, alg_time->getfloat(), sp, 0);
   return di;
 };
 
-template <typename Label, typename Algorithm, double (Algorithm::*_ted)(const node::Node<Label>&, const node::Node<Label>&)>
-std::vector<DataItem> execute_overlaping_pairs(std::vector<node::Node<Label>>& trees_collection, MechanismParams& mp) {
+template <typename Label, typename Algorithm, double (Algorithm::*_ted)(const node::Node<Label>&, const node::Node<Label>&, const int k)>
+std::vector<DataItem> execute_overlaping_pairs(std::vector<node::Node<Label>>& trees_collection, MechanismParams& mp, const int k) {
   std::vector<DataItem> execution_results;
   auto tc_start_it = std::begin(trees_collection);
   auto tc_end_it = std::end(trees_collection);
@@ -201,7 +191,7 @@ std::vector<DataItem> execute_overlaping_pairs(std::vector<node::Node<Label>>& t
   while (tc_start_it < tc_end_it-1) {
     auto t1 = *tc_start_it;
     auto t2 = *(tc_start_it+1);
-    execution_results.push_back(execute_ted_alg<Label, Algorithm, _ted>(tree_id, tree_id+1, t1, t2));
+    execution_results.push_back(execute_ted_alg<Label, Algorithm, _ted>(tree_id, tree_id+1, t1, t2, k));
     ++tc_start_it;
     ++tree_id;
   }
@@ -209,94 +199,39 @@ std::vector<DataItem> execute_overlaping_pairs(std::vector<node::Node<Label>>& t
 };
 
 template <typename Label, typename Algorithm, double (Algorithm::*_ted)(const node::Node<Label>&, const node::Node<Label>&, const int k)>
-std::vector<DataItem> execute_overlaping_pairs_k(std::vector<node::Node<Label>>& trees_collection, MechanismParams& mp, const int k) {
-  std::vector<DataItem> execution_results;
-  auto tc_start_it = std::begin(trees_collection);
-  auto tc_end_it = std::end(trees_collection);
-  unsigned int tree_id = 0;
-  while (tc_start_it < tc_end_it-1) {
-    auto t1 = *tc_start_it;
-    auto t2 = *(tc_start_it+1);
-    execution_results.push_back(execute_ted_alg_k<Label, Algorithm, _ted>(tree_id, tree_id+1, t1, t2, k));
-    ++tc_start_it;
-    ++tree_id;
-  }
-  return execution_results;
-};
-
-template <typename Label, typename Algorithm, double (Algorithm::*_ted)(const node::Node<Label>&, const node::Node<Label>&)>
-std::vector<DataItem> execute_one_by_one(std::vector<node::Node<Label>>& trees_collection, MechanismParams& mp) {
+std::vector<DataItem> execute_one_by_one(std::vector<node::Node<Label>>& trees_collection, MechanismParams& mp, const int k) {
   std::vector<DataItem> execution_results;
   unsigned int tree_id = 0;
   for (auto& t : trees_collection) {
-    execution_results.push_back(execute_ted_alg<Label, Algorithm, _ted>(tree_id, tree_id, t, t));
+    execution_results.push_back(execute_ted_alg<Label, Algorithm, _ted>(tree_id, tree_id, t, t, k));
     ++tree_id;
   }
   return execution_results;
 };
 
 template <typename Label, typename Algorithm, double (Algorithm::*_ted)(const node::Node<Label>&, const node::Node<Label>&, const int k)>
-std::vector<DataItem> execute_one_by_one_k(std::vector<node::Node<Label>>& trees_collection, MechanismParams& mp, const int k) {
-  std::vector<DataItem> execution_results;
-  unsigned int tree_id = 0;
-  for (auto& t : trees_collection) {
-    execution_results.push_back(execute_ted_alg_k<Label, Algorithm, _ted>(tree_id, tree_id, t, t, k));
-    ++tree_id;
-  }
-  return execution_results;
-};
-
-template <typename Label, typename Algorithm, double (Algorithm::*_ted)(const node::Node<Label>&, const node::Node<Label>&)>
-std::vector<DataItem> execute_choose_pair(std::vector<node::Node<Label>>& trees_collection, MechanismParams& mp) {
+std::vector<DataItem> execute_choose_pair(std::vector<node::Node<Label>>& trees_collection, MechanismParams& mp, const int k) {
   std::vector<DataItem> execution_results;
   execution_results.push_back(
-      execute_ted_alg<Label, Algorithm, _ted>(mp.t2_id, mp.t2_id,
-          trees_collection.at(mp.t1_id), trees_collection.at(mp.t2_id)
-      )
-  );
-  return execution_results;
-};
-
-template <typename Label, typename Algorithm, double (Algorithm::*_ted)(const node::Node<Label>&, const node::Node<Label>&, const int k)>
-std::vector<DataItem> execute_choose_pair_k(std::vector<node::Node<Label>>& trees_collection, MechanismParams& mp, const int k) {
-  std::vector<DataItem> execution_results;
-  execution_results.push_back(
-      execute_ted_alg_k<Label, Algorithm, _ted>(mp.t1_id, mp.t2_id,
+      execute_ted_alg<Label, Algorithm, _ted>(mp.t1_id, mp.t2_id,
           trees_collection.at(mp.t1_id), trees_collection.at(mp.t2_id), k
       )
   );
   return execution_results;
 };
 
-template <typename Label, typename Algorithm, double (Algorithm::*_ted)(const node::Node<Label>&, const node::Node<Label>&)>
-std::vector<DataItem> execute_mechanism(std::vector<node::Node<Label>>& trees_collection, MechanismParams& mp) {
-  std::vector<DataItem> execution_results;
-  switch(mp.mechanism) {
-    case kOverlappingPairs :
-      execution_results = execute_overlaping_pairs<Label, Algorithm, _ted>(trees_collection, mp);
-      break;
-    case kOneByOne :
-      execution_results = execute_one_by_one<Label, Algorithm, _ted>(trees_collection, mp);
-      break;
-    case kChoosePair :
-      execution_results = execute_choose_pair<Label, Algorithm, _ted>(trees_collection, mp);
-      break;
-  }
-  return execution_results;
-};
-
 template <typename Label, typename Algorithm, double (Algorithm::*_ted)(const node::Node<Label>&, const node::Node<Label>&, const int k)>
-std::vector<DataItem> execute_mechanism_k(std::vector<node::Node<Label>>& trees_collection, MechanismParams& mp, const int k) {
+std::vector<DataItem> execute_mechanism(std::vector<node::Node<Label>>& trees_collection, MechanismParams& mp, const int k) {
   std::vector<DataItem> execution_results;
   switch(mp.mechanism) {
     case kOverlappingPairs :
-      execution_results = execute_overlaping_pairs_k<Label, Algorithm, _ted>(trees_collection, mp, k);
+      execution_results = execute_overlaping_pairs<Label, Algorithm, _ted>(trees_collection, mp, k);
       break;
     case kOneByOne :
-      execution_results = execute_one_by_one_k<Label, Algorithm, _ted>(trees_collection, mp, k);
+      execution_results = execute_one_by_one<Label, Algorithm, _ted>(trees_collection, mp, k);
       break;
     case kChoosePair :
-      execution_results = execute_choose_pair_k<Label, Algorithm, _ted>(trees_collection, mp, k);
+      execution_results = execute_choose_pair<Label, Algorithm, _ted>(trees_collection, mp, k);
       break;
   }
   return execution_results;
@@ -443,39 +378,39 @@ int main(int argc, char** argv) {
   // EXECUTE ALGORITHMS
   if (alg_zs_is_set) {
     experiment.algorithm_executions.emplace_back("ZhangShasha",
-        execute_mechanism<Label, ZhangShasha, &ZhangShasha::zhang_shasha_ted>(trees_collection, mp));
+        execute_mechanism<Label, ZhangShasha, &ZhangShasha::zhang_shasha_ted_k>(trees_collection, mp, similarity_threshold));
   }
   if (alg_apted_is_set) {
     experiment.algorithm_executions.emplace_back("APTED",
-        execute_mechanism<Label, APTED, &APTED::apted_ted>(trees_collection, mp));
+        execute_mechanism<Label, APTED, &APTED::apted_ted_k>(trees_collection, mp, similarity_threshold));
   }
   if (alg_tz_is_set) {
     experiment.algorithm_executions.emplace_back("Touzet",
-        execute_mechanism_k<Label, Touzet, &Touzet::touzet_ted>(trees_collection, mp, similarity_threshold));
+        execute_mechanism<Label, Touzet, &Touzet::touzet_ted>(trees_collection, mp, similarity_threshold));
   }
   if (alg_tzd_is_set) {
     experiment.algorithm_executions.emplace_back("TouzetDP",
-        execute_mechanism_k<Label, Touzet, &Touzet::touzet_ted_depth_pruning>(trees_collection, mp, similarity_threshold));
+        execute_mechanism<Label, Touzet, &Touzet::touzet_ted_depth_pruning>(trees_collection, mp, similarity_threshold));
   }
   if (alg_tzs_is_set) {
     experiment.algorithm_executions.emplace_back("TouzetKrLoop",
-        execute_mechanism_k<Label, Touzet, &Touzet::touzet_ted_kr_loop_no_e_max>(trees_collection, mp, similarity_threshold));
+        execute_mechanism<Label, Touzet, &Touzet::touzet_ted_kr_loop_no_e_max>(trees_collection, mp, similarity_threshold));
   }
   if (alg_tzl_is_set) {
     experiment.algorithm_executions.emplace_back("TouzetKrSet",
-        execute_mechanism_k<Label, Touzet, &Touzet::touzet_ted_kr_set_no_e_max>(trees_collection, mp, similarity_threshold));
+        execute_mechanism<Label, Touzet, &Touzet::touzet_ted_kr_set_no_e_max>(trees_collection, mp, similarity_threshold));
   }
   if (alg_tzse_is_set) {
     experiment.algorithm_executions.emplace_back("TouzetKrLoopEmax",
-        execute_mechanism_k<Label, Touzet, &Touzet::touzet_ted_kr_loop_e_max>(trees_collection, mp, similarity_threshold));
+        execute_mechanism<Label, Touzet, &Touzet::touzet_ted_kr_loop_e_max>(trees_collection, mp, similarity_threshold));
   }
   if (alg_tzle_is_set) {
     experiment.algorithm_executions.emplace_back("TouzetKrSetEmax",
-        execute_mechanism_k<Label, Touzet, &Touzet::touzet_ted_kr_set_e_max>(trees_collection, mp, similarity_threshold));
+        execute_mechanism<Label, Touzet, &Touzet::touzet_ted_kr_set_e_max>(trees_collection, mp, similarity_threshold));
   }
   if (alg_lg_is_set) {
     experiment.algorithm_executions.emplace_back("LabelGuided",
-        execute_mechanism_k<Label, LabelGuided, &LabelGuided::greedy_ub_ted>(trees_collection, mp, similarity_threshold));
+        execute_mechanism<Label, LabelGuided, &LabelGuided::greedy_ub_ted>(trees_collection, mp, similarity_threshold));
   }
   
   // OUTPUT RESULTS
