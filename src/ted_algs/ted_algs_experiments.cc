@@ -325,6 +325,10 @@ int main(int argc, char** argv) {
   bool output_in_json = false;
   bool output_in_csv = false;
   
+  // Use to increase the stack size.
+  bool increase_stack_size = false;
+  rlim_t new_stack_size = 16777216;
+  
   // Parse command line arguments.
   // TODO: Check for possible errors.
   std::vector<std::string> args(argv, argv + argc);
@@ -393,11 +397,33 @@ int main(int argc, char** argv) {
         output_in_csv = true;
       }
       args_start_it += 2;
+    } else if (a == "--stack") {
+      increase_stack_size = true;
+      new_stack_size = (rlim_t)std::stol(*(args_start_it+1));
+      args_start_it += 2;
     }
   }
 
   Experiment experiment(input_file_path, similarity_threshold);
-
+  
+  // INCREASE STACK SIZE
+  // Source: https://www.go4expert.com/articles/getrlimit-setrlimit-control-resources-t27477/
+  if (increase_stack_size) {
+    // Define and object of structure rlimit. 
+    struct rlimit rl; 
+    // First get the time limit on CPU 
+    getrlimit (RLIMIT_STACK, &rl); 
+    // printf("\n Default value is : %lld\n", (long long int)rl.rlim_cur); 
+    // Change the time limit 
+    rl.rlim_cur = new_stack_size;
+    // Now call setrlimit() to set the  
+    // changed value. 
+    setrlimit (RLIMIT_STACK, &rl);
+    // Again get the limit and check 
+    getrlimit (RLIMIT_STACK, &rl); 
+    // printf("\n Default value now is : %lld\n", (long long int)rl.rlim_cur); 
+  }
+  
   // PARSE INPUT
   // The input is parsed once for the entire experiment.
   std::vector<node::Node<Label>> trees_collection;

@@ -28,6 +28,7 @@
 #define TED_ALGS_EXPERIMENTS_H
 
 #include <iostream>
+#include <sys/resource.h>
 #include <time.h>
 #include <string>
 #include <vector>
