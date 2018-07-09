@@ -330,55 +330,53 @@ int main(int argc, char** argv) {
   std::vector<std::string> args(argv, argv + argc);
   auto args_start_it = std::begin(args);
   auto args_end_it = std::end(args);
+  ++args_start_it;
   while (args_start_it != args_end_it) {
     std::string a = *args_start_it;
     if (a == "--input") {
-      ++args_start_it;
-      input_file_path = *args_start_it;
-    }
-    if (a == "--threshold") {
-      ++args_start_it;
-      similarity_threshold = static_cast <int> (std::ceil(std::stod(*args_start_it)));
-    }
-    if (a == "--zs") {
+      input_file_path = *(args_start_it + 1);
+      args_start_it += 2;
+    } else if (a == "--threshold") {
+      similarity_threshold = static_cast <int> (std::ceil(std::stod(*(args_start_it + 1))));
+      args_start_it += 2;
+    } else if (a == "--zs") {
       alg_zs_is_set = true;
-    }
-    if (a == "--apted") {
+      args_start_it += 1;
+    } else if (a == "--apted") {
       alg_apted_is_set = true;
-    }
-    if (a == "--tz") {
+      args_start_it += 1;
+    } else if (a == "--tz") {
       alg_tz_is_set = true;
-    }
-    if (a == "--tzd") {
+      args_start_it += 1;
+    } else if (a == "--tzd") {
       alg_tzd_is_set = true;
-    }
-    if (a == "--tzs") {
+      args_start_it += 1;
+    } else if (a == "--tzs") {
       alg_tzs_is_set = true;
-    }
-    if (a == "--tzl") {
+      args_start_it += 1;
+    } else if (a == "--tzl") {
       alg_tzl_is_set = true;
-    }
-    if (a == "--tzse") {
+      args_start_it += 1;
+    } else if (a == "--tzse") {
       alg_tzse_is_set = true;
-    }
-    if (a == "--tzle") {
+      args_start_it += 1;
+    } else if (a == "--tzle") {
       alg_tzle_is_set = true;
-    }
-    if (a == "--lg") {
+      args_start_it += 1;
+    } else if (a == "--lg") {
       alg_lg_is_set = true;
-    }
-    if (a == "--one-by-one") {
+      args_start_it += 1;
+    } else if (a == "--one-by-one") {
       // mechanism_to_execute = kOneByOne;
       mp = MechanismParams(kOneByOne);
-    }
-    if (a == "--choose-pair") {
+      args_start_it += 1;
+    } else if (a == "--choose-pair") {
       mp = MechanismParams(kChoosePair,
           std::stoi(*(args_start_it+1)),
           std::stoi(*(args_start_it+2))
       );
-      args_start_it += 2;
-    }
-    if (a == "--choose-pair-k-range") {
+      args_start_it += 3;
+    } else if (a == "--choose-pair-k-range") {
       mp = MechanismParams(kChoosePairKRange,
           std::stoi(*(args_start_it+1)),
           std::stoi(*(args_start_it+2)),
@@ -386,18 +384,16 @@ int main(int argc, char** argv) {
           std::stoi(*(args_start_it+4)),
           std::stoi(*(args_start_it+5))
       );
-      args_start_it += 5;
-    }
-    if (a == "--output") {
-      ++args_start_it;
-      a = *args_start_it;
+      args_start_it += 6;
+    } else if (a == "--output") {
+      a = *(args_start_it + 1);
       if (a == "json") {
         output_in_json = true;
       } else if (a == "csv") {
         output_in_csv = true;
       }
+      args_start_it += 2;
     }
-    ++args_start_it;
   }
 
   Experiment experiment(input_file_path, similarity_threshold);
@@ -405,14 +401,12 @@ int main(int argc, char** argv) {
   // PARSE INPUT
   // The input is parsed once for the entire experiment.
   std::vector<node::Node<Label>> trees_collection;
-  {
-    Timing::Interval * parse = timing.create_enroll("Parse");
-    parse->start();
-    parser::BracketNotationParser bnp;
-    bnp.parse_collection(trees_collection, input_file_path);
-    parse->stop();
-    experiment.dataset_parsing_time = parse->getfloat();
-  }
+  Timing::Interval * parse = timing.create_enroll("Parse");
+  parse->start();
+  parser::BracketNotationParser bnp;
+  bnp.parse_collection(trees_collection, input_file_path);
+  parse->stop();
+  experiment.dataset_parsing_time = parse->getfloat();
   
   // EXECUTE ALGORITHMS
   if (alg_zs_is_set) {
@@ -459,6 +453,5 @@ int main(int argc, char** argv) {
   if (output_in_csv) {
     std::cout << experiment.to_csv_string() << std::endl;
   }
-  
   return 0;
 }
