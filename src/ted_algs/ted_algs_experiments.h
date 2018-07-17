@@ -28,6 +28,8 @@
 #define TED_ALGS_EXPERIMENTS_H
 
 #include <iostream>
+#include <unistd.h>
+#include <ctime>
 #include <sys/resource.h>
 #include <time.h>
 #include <string>
