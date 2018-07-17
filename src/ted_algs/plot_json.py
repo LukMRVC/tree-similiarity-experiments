@@ -76,6 +76,12 @@ parser.add_argument(
     action = 'store_true',
     help = 'Set if inf values should be printed as some high value (default: not set).'
 )
+parser.add_argument(
+    '--logscale',
+    dest = 'logscale',
+    action = 'store_true',
+    help = 'Set legscale for Y-axis (default: not set).'
+)
 args = parser.parse_args()
 
 with open(args.input_filename, "r") as f:
@@ -100,6 +106,9 @@ for name, group in groups:
 
 ax.set(xlabel=xlabels[args.xlabel], ylabel=measures[args.measure], title='TED algorithms ('+os.path.split(args.input_filename)[1]+')')
 ax.grid()
+
+if args.logscale:
+    ax.set_yscale('log')
 
 if args.print_inf:
     dcsummary = pandas.DataFrame([df.groupby('algorithm_name')[args.measure].apply(lambda x: x[x == float('inf')].count())],index=['inf count'])
@@ -133,6 +142,6 @@ ax.xaxis.set_major_locator(MaxNLocator(integer=True))
 # plt.legend(dcsummary)
 
 fig.set_size_inches(8,6)
-fig.savefig(os.path.split(args.input_filename)[1]+'.pdf', bbox_inches='tight')
+fig.savefig(os.path.split(args.input_filename)[1] + '_' + args.measure + ('_logY' if args.logscale else '') + '.pdf', bbox_inches='tight')
 
 plt.show()
