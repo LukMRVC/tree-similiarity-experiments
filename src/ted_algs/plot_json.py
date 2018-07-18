@@ -71,16 +71,28 @@ parser.add_argument(
     help = 'Choose the algorithms to plot (default: all).'
 )
 parser.add_argument(
-    '--print-inf',
-    dest = 'print_inf',
+    '--print-num-inf',
+    dest = 'print_num_inf',
     action = 'store_true',
-    help = 'Set if inf values should be printed as some high value (default: not set).'
+    help = 'Set if count of inf values should be printed (default: not set).'
+)
+parser.add_argument(
+    '--print-num-zero',
+    dest = 'print_num_zero',
+    action = 'store_true',
+    help = 'Set if count of zero values should be printed (default: not set).'
 )
 parser.add_argument(
     '--logscale',
     dest = 'logscale',
     action = 'store_true',
     help = 'Set legscale for Y-axis (default: not set).'
+)
+parser.add_argument(
+    '--no-lines',
+    dest = 'no_lines',
+    action = 'store_true',
+    help = 'Remove the lines form the plot (default: not set).'
 )
 args = parser.parse_args()
 
@@ -90,6 +102,8 @@ with open(args.input_filename, "r") as f:
 fig, ax = plt.subplots()
 
 lines = ['-','--','-.',':']
+if args.no_lines:
+    lines = [' ']
 linecycler = cycle(lines)
 markers = ['x','+','o','.']
 markercycler = cycle(markers)
@@ -110,8 +124,12 @@ ax.grid()
 if args.logscale:
     ax.set_yscale('log')
 
-if args.print_inf:
+if args.print_num_inf:
     dcsummary = pandas.DataFrame([df.groupby('algorithm_name')[args.measure].apply(lambda x: x[x == float('inf')].count())],index=['inf count'])
+    dcsummary = dcsummary.transpose()
+    ax.legend([x[0] + ': ' + str(x[1]) for x in zip(line_labels,dcsummary['inf count'].tolist())])
+elif args.print_num_zero:
+    dcsummary = pandas.DataFrame([df.groupby('algorithm_name')[args.measure].apply(lambda x: x[x == 0].count())],index=['inf count'])
     dcsummary = dcsummary.transpose()
     ax.legend([x[0] + ': ' + str(x[1]) for x in zip(line_labels,dcsummary['inf count'].tolist())])
 else:
