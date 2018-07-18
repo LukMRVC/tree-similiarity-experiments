@@ -169,6 +169,9 @@ ax.xaxis.set_major_locator(MaxNLocator(integer=True))
 # plt.legend(dcsummary)
 
 fig.set_size_inches(8,6)
-fig.savefig(os.path.split(args.input_filename)[1] + '_' + args.measure + ('_logY' if args.logscale else '') + '.pdf', bbox_inches='tight')
+fig.savefig(os.path.split(args.input_filename)[1] + '_' + args.measure +
+    ('_logY' if args.logscale else '') +
+    (('_pick_' + str(args.pick)) if args.pick > 0 else '') +
+    '.pdf', bbox_inches='tight')
 
 plt.show()
