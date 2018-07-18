@@ -63,6 +63,13 @@ parser.add_argument(
             size.'
 )
 parser.add_argument(
+    '--pick',
+    dest = 'pick',
+    type = int,
+    default = 0,
+    help = 'Pick every pick\'th datapoint.'
+)
+parser.add_argument(
     '--algs',
     dest = 'algs',
     nargs = '+',
@@ -115,6 +122,8 @@ groups = df.groupby('algorithm_name')[args.measure]
 line_labels = []
 for name, group in groups:
     if (algorithms[name] in args.algs):
+        if (args.pick > 0):
+            group = group[0::args.pick]
         ax.plot(group, label=name, linestyle=next(linecycler), marker=next(markercycler))
         line_labels.append(name)
 
