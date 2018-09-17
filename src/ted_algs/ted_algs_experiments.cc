@@ -358,6 +358,7 @@ int main(int argc, char** argv) {
   bool alg_tzse_is_set = false;
   bool alg_tzle_is_set = false;
   bool alg_lg_is_set = false;
+  bool alg_lg_depr_is_set = false;
   
   // Output format
   bool output_in_json = false;
@@ -410,6 +411,9 @@ int main(int argc, char** argv) {
       args_start_it += 1;
     } else if (a == "--lg") {
       alg_lg_is_set = true;
+      args_start_it += 1;
+    } else if (a == "--lgdepr") {
+      alg_lg_depr_is_set = true;
       args_start_it += 1;
     } else if (a == "--one-by-one") {
       // mechanism_to_execute = kOneByOne;
@@ -524,6 +528,11 @@ int main(int argc, char** argv) {
   if (alg_lg_is_set) {
     experiment.algorithm_executions.emplace_back("LabelGuided",
         execute_mechanism<Label, LabelGuided, &LabelGuided::greedy_ub_ted>(
+            trees_collection, mp, similarity_threshold, lp));
+  }
+  if (alg_lg_depr_is_set) {
+    experiment.algorithm_executions.emplace_back("LabelGuidedDeprecated",
+        execute_mechanism<Label, LabelGuided, &LabelGuided::greedy_ub_ted_deprecated>(
             trees_collection, mp, similarity_threshold, lp));
   }
   
