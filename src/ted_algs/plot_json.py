@@ -35,7 +35,8 @@ algorithms = {
     'TouzetKrLoop' : 'tzl',
     'TouzetKrSetEmax' : 'tzse',
     'TouzetKrLoopEmax' : 'tzle',
-    'LabelGuided' : 'lg'
+    'LabelGuided' : 'lg',
+    'LabelGuidedDeprecated' : 'lgdepr'
 }
 
 parser = argparse.ArgumentParser()
