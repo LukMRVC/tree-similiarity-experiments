@@ -108,6 +108,12 @@ parser.add_argument(
     action = 'store_true',
     help = 'Compute averages if multiple points per x-value.'
 )
+parser.add_argument(
+    '--show',
+    dest = 'show',
+    action = 'store_true',
+    help = 'Display the plot after processing.'
+)
 args = parser.parse_args()
 
 with open(args.input_filename, "r") as f:
@@ -183,4 +189,5 @@ fig.savefig(os.path.split(args.input_filename)[1] + '_' + args.measure +
     (('_pick_' + str(args.pick)) if args.pick > 0 else '') +
     '.pdf', bbox_inches='tight')
 
-plt.show()
+if args.show:
+    plt.show()
