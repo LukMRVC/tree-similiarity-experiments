@@ -102,6 +102,12 @@ parser.add_argument(
     action = 'store_true',
     help = 'Remove the lines form the plot (default: not set).'
 )
+parser.add_argument(
+    '--avg-per-x-value',
+    dest = 'avg_per_x_value',
+    action = 'store_true',
+    help = 'Compute averages if multiple points per x-value.'
+)
 args = parser.parse_args()
 
 with open(args.input_filename, "r") as f:
@@ -122,6 +128,8 @@ groups = df.groupby('algorithm_name')[args.measure]
 
 line_labels = []
 for name, group in groups:
+    if (args.avg_per_x_value):
+        group = group.groupby(level=0).mean() # Not really sure about this line.
     if (algorithms[name] in args.algs):
         if (args.pick > 0):
             group = group[0::args.pick]
