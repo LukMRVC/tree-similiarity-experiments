@@ -1,4 +1,6 @@
 #!/usr/bin/python3
+import os
+import matplotlib
 import argparse
 import os
 import json 
@@ -11,6 +13,12 @@ from matplotlib.ticker import MaxNLocator
 from itertools import cycle
 from matplotlib.lines import Line2D
 
+# Solving computing plots on the server. Taken from:
+# https://stackoverflow.com/questions/37604289/tkinter-tclerror-no-display-name-and-no-display-environment-variable
+if os.environ.get('DISPLAY','') == '':
+    print('No display found. Using non-interactive Agg (Anti-grain geometry engine) backend.')
+    matplotlib.use('Agg')
+# End: Solving computing plots on the server
 
 measures = {
     'runtime'       : 'runtime (ms)',
