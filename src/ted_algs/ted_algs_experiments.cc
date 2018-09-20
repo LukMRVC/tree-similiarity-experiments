@@ -45,7 +45,7 @@ struct DataItem {
       tree_id_2{tid2},
       k{k},
       tree_size_1{s1},
-      tree_size_2{s1},
+      tree_size_2{s2},
       ted{ted},
       runtime{r},
       subproblems{s},
