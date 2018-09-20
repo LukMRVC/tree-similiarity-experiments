@@ -61,64 +61,54 @@ def print_result(table_name, values_dict):
     print(values_dict)
 
 # http://initd.org/psycopg/docs/sql.html#module-psycopg2.sql
-def store_result(table_name, values_dict):
+def store_ted_experiment_params(service, params_dict):
     # Connect to database.
-    db = psycopg2.connect("service=ted-exp-local-test")
+    db = psycopg2.connect("service=" + service)
     # Open a cursor to perform database operations
     cur = db.cursor()
-    attributes = values_dict.keys()
-    query = sql.SQL("INSERT INTO {} ({}) VALUES ({})").format(
-        sql.Identifier(table_name),
+    attributes = params_dict.keys()
+    query = sql.SQL("INSERT INTO ted_experiment_params ({}) VALUES ({}) RETURNING ted_experiment_params_id").format(
         sql.SQL(', ').join(map(sql.Identifier, attributes)),
         sql.SQL(', ').join(map(sql.Placeholder, attributes))
     )
-    print(query.as_string(cur))
-    cur.execute(query, values_dict)
+    # print(query.as_string(cur))
+    cur.execute(query, params_dict)
+    new_params_id = cur.fetchone()[0]
     db.commit()
     # Close the cursor.
     cur.close()
     # Close communication with the database.
     db.close()
+    return new_params_id
 
-def store_multirow_results(table_name):
-    values = [
-        {'ted': 1.0,
-         'tree_id_1': 0,
-         'subproblems': 1,
-         'tree_id_2': 1,
-         'tree_size_2': 1,
-         'tree_size_1': 1,
-         'runtime': 0.026643},
-        {'ted': 1.0,
-         'tree_id_1': 1,
-         'subproblems': 1,
-         'tree_id_2': 2,
-         'tree_size_2': 1,
-         'tree_size_1': 1,
-         'runtime': 0.015511},
-        {'ted': 1.0,
-         'tree_id_1': 2,
-         'subproblems': 2,
-         'tree_id_2': 3,
-         'tree_size_2': 2,
-         'tree_size_1': 2,
-         'runtime': 0.021519}
-    ]
-    db = psycopg2.connect("service=ted-exp-local-test")
+# Store multiple-rows results at once.
+def store_multirow_results(service, table_name, results, new_params_id, store_threshold, store_has_mapping):
+    db = psycopg2.connect("service=" + service)
     cur = db.cursor()
-    attributes = values[0].keys()
+    attributes = list(results[0].keys())
+    # Remove the threshold if algorithm doesn't use it (APTED, ZS).
+    if not store_threshold:
+        attributes.remove('ted_threshold')
+    # Remove the has_ted_mapping if algorithm doesn't use it (LG).
+    if not store_has_mapping:
+        attributes.remove('has_ted_mapping')
+    # Add ted_experiment_params FK to attributes.
+    # attributes.append('ted_experiment_params_id')
+    # Prepare the query.
     query = sql.SQL("INSERT INTO {} ({}) VALUES %s").format(
         sql.Identifier(table_name),
-        sql.SQL(', ').join(map(sql.Identifier, attributes))
+        sql.SQL(', ').join(map(sql.Identifier, attributes + ['ted_experiment_params_id']))
     )
-    # query = "INSERT INTO ted_apted (tree_id_1, subproblems, ted, runtime, tree_size_2, tree_id_2, tree_size_1) VALUES %s"
-    print(query.as_string(cur))
-    psycopg2.extras.execute_values(
+    # print(query.as_string(cur))
+    extras.execute_values(
         cur,
         query.as_string(cur),
-        values,
-        template='(' + sql.SQL(', ').join(map(sql.Placeholder, attributes)).as_string(cur) + ')'
+        results,
+        template='(' + sql.SQL(', ').join(map(sql.Placeholder, attributes)).as_string(cur) + ',' + str(new_params_id) + ')'
     )
+    
+    # TODO: Dump data in case of failed INSERT.
+    
     db.commit()
     cur.close()
     db.close()
@@ -128,6 +118,11 @@ parser.add_argument(
     type=str,
     dest='config_filename',
     help="Path to experiments config file."
+)
+parser.add_argument(
+    type=str,
+    dest='service_name',
+    help="Service name to use from '~/.pg_service.conf' file."
 )
 args = parser.parse_args()
 
@@ -140,6 +135,16 @@ ted_experiment_params = {
 }
 
 ted_algs = ["--apted", "--zs"]
+tedk_algs = ["--tz", "--tzd"]
+tedub_algs = ["--lg",]
+
+table_names = {
+    '--apted' : 'ted_apted',
+    '--zs' : 'ted_zhangshasha',
+    '--tz' : 'tedk_touzet',
+    '--tzd' : 'tedk_touzetd',
+    '--lg' : 'tedk_labelguided'
+}
 
 data = json.load(open(args.config_filename))
 for a in data['algorithms']:
@@ -147,47 +152,42 @@ for a in data['algorithms']:
         for t in data['thresholds']:
             path, filename = os.path.split(d)
             ted_experiment_params.update({
-                "dataset_filename" : filename,
-                "ted_threshold" : t
+                "dataset_filename" : filename
             })
-            print(ted_experiment_params)
+            print("EXECUTING: " + filename + ";" + a + ";" + str(t))
+            new_params_id = store_ted_experiment_params(args.service_name, ted_experiment_params)
             
             # build command that needs to be executed
             cmd = []
-            # call binary
-            # ted-algs-experiments
-            # --input
-            # ~/temp/programming/RTED/branches/tods-experiments/datasets/artificial/zz/zz-200-2000.dataset
-            # --tz --tzd --tzs --tzse --tzl --tzle --lg
-            # --one-by-one
-            # --threshold 20 --output json
             cmd.extend([
                 binary_name,
                 '--input', str(d),
                 '--output' , 'json',
                 '--threshold', str(t),
+                '--log'
             ])
             if 'mechanism' in data:
                 cmd.extend([data['mechanism'],])
             cmd.extend([a,])
-            print(cmd)
-
+            
+            # TODO: Verify if an experiment like that has been already executed
+            #       and how many values it has.
+            
             cmd_output = get_stdout_cmd(cmd).strip()
             result_data = json.loads(cmd_output.decode('utf-8'))
-            # # result_data.update(algorithm_params)
-            # # store_result(a['name'], result_data)
-            # # print_result(a['name'], result_data)
-            # print(result_data)
-                        
-            print(result_data['algorithm_executions'][0]['data_items'])
             
-            store_multirow_results("ted_apted")
+            print("STORING ...")
             
-            # TODO: Handle inf correctly.
+            store_multirow_results(
+                args.service_name,
+                table_names[a],
+                result_data['algorithm_executions'][0]['data_items'],
+                new_params_id,
+                (a in tedk_algs or a in tedub_algs),
+                (a in tedk_algs)
+            )
             
-            # TODO: Store ted_experiment_params and retrieve its id.
-            
-            # TODO: Store the results.
+            # TODO: Handle errors in storing.
             
             # non-tedk algorithms should be executed once disregarding the thresholds
             if a in ted_algs:

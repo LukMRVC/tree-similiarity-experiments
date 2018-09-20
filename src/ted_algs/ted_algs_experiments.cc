@@ -56,15 +56,23 @@ struct DataItem {
     std::string output = "{";
     output += "\"tree_id_1\" : " + std::to_string(tree_id_1) + ", ";
     output += "\"tree_id_2\" : " + std::to_string(tree_id_2) + ", ";
-    output += "\"k\" : " + std::to_string(k) + ", ";
+    output += "\"ted_threshold\" : " + std::to_string(k) + ", ";
     output += "\"tree_size_1\" : " + std::to_string(tree_size_1) + ", ";
     output += "\"tree_size_2\" : " + std::to_string(tree_size_2) + ", ";
     // JSON doesn't permit infinity values, but Python's json module parses 'Infinity'.
     // Though, Infinity has to be handled manualy while plotting.
     // Currently, counting the Infinity values is supported.
-    output += "\"ted\" : " + (ted == std::numeric_limits<double>::infinity() ? "Infinity" : std::to_string(ted)) + ", ";
+    // TODO: Handle the changed schema (has_ted_mapping) and Inf to NULL in ted_value.
+    if (ted == std::numeric_limits<double>::infinity()) {
+      output += "\"ted_value\" : null, ";
+      output += "\"has_ted_mapping\" : \"False\", ";
+    } else {
+      output += "\"ted_value\" : " + std::to_string(ted) + ", ";
+      output += "\"has_ted_mapping\" : \"True\", ";
+    }
+    // output += "\"ted_value\" : " + (ted == std::numeric_limits<double>::infinity() ? "Infinity" : std::to_string(ted)) + ", ";
     output += "\"subproblems\" : " + std::to_string(subproblems) + ", ";
-    output += "\"top_y_updates\" : " + std::to_string(top_y_updates) + ", ";
+    // output += "\"top_y_updates\" : " + std::to_string(top_y_updates) + ", ";
     output += "\"runtime\" : " + std::to_string(runtime);
     output += "}";
     return output;
