@@ -5,7 +5,7 @@ project(ted-experiments)
 
 # Compiler flags.
 # MUST be declared after project().
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall -O3")
 
 # Verify which timing implementation to use.
 # NOTE: Comes from common-code.
