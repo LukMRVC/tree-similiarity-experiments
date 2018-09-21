@@ -163,8 +163,7 @@ for a in data['algorithms']:
                 binary_name,
                 '--input', str(d),
                 '--output' , 'json',
-                '--threshold', str(t),
-                '--log'
+                '--threshold', str(t)
             ])
             if 'mechanism' in data:
                 cmd.extend([data['mechanism'],])
