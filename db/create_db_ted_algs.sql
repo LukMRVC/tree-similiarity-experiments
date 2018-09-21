@@ -46,7 +46,7 @@ CREATE TABLE ted_zhangshasha (
   tree_size_2 integer,
   ted_value decimal,
   subproblems bigint,
-  runtime bigint
+  runtime double precision
 );
 
 DROP TABLE IF EXISTS ted_apted;
@@ -59,7 +59,7 @@ CREATE TABLE ted_apted (
   tree_size_2 integer,
   ted_value decimal,
   subproblems bigint,
-  runtime bigint
+  runtime double precision
 );
 
 -- Touzet's algorithm - baseline version without the depth-based pruning
@@ -73,7 +73,7 @@ CREATE TABLE tedk_touzet (
   tree_size_2 integer,
   ted_value decimal,
   subproblems bigint,
-  runtime bigint,
+  runtime double precision,
   has_ted_mapping boolean, -- if TRUE ted_value >=0; if FALSE ted_value = NULL
   ted_threshold decimal
 );
@@ -89,7 +89,7 @@ CREATE TABLE tedk_touzetd (
   tree_size_2 integer,
   ted_value decimal,
   subproblems bigint,
-  runtime bigint,
+  runtime double precision,
   has_ted_mapping boolean, -- if TRUE ted_value >=0; if FALSE ted_value = NULL
   ted_threshold decimal
 );
@@ -105,6 +105,6 @@ CREATE TABLE tedk_labelguided (
   tree_size_2 integer,
   ted_value decimal,
   subproblems bigint,
-  runtime bigint,
+  runtime double precision,
   ted_threshold decimal
 );
