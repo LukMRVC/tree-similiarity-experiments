@@ -1,3 +1,15 @@
 REFRESH MATERIALIZED VIEW sentiment_apted_x_avg_pair_tree_size_y_avg_runtime;
 REFRESH MATERIALIZED VIEW sentiment_labelguided_x_avg_pair_tree_size_y_avg_runtime_k10;
 REFRESH MATERIALIZED VIEW sentiment_touzetd_x_avg_pair_tree_size_y_avg_runtime_k10;
+
+REFRESH MATERIALIZED VIEW dblp_apted_x_avg_pair_tree_size_y_avg_runtime;
+REFRESH MATERIALIZED VIEW dblp_labelguided_x_avg_pair_tree_size_y_avg_runtime_k10;
+REFRESH MATERIALIZED VIEW dblp_touzetd_x_avg_pair_tree_size_y_avg_runtime_k10;
+
+REFRESH MATERIALIZED VIEW sentiment_apted_x_pair_id_y_ted;
+REFRESH MATERIALIZED VIEW sentiment_labelguided_x_pair_id_y_ted_k10;
+REFRESH MATERIALIZED VIEW sentiment_touzetd_x_pair_id_y_ted_k10;
+
+REFRESH MATERIALIZED VIEW dblp_apted_x_pair_id_y_ted;
+REFRESH MATERIALIZED VIEW dblp_labelguided_x_pair_id_y_ted_k10;
+REFRESH MATERIALIZED VIEW dblp_touzetd_x_pair_id_y_ted_k10;
