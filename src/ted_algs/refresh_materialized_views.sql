@@ -1,0 +1,3 @@
+REFRESH MATERIALIZED VIEW sentiment_apted_x_avg_pair_tree_size_y_avg_runtime;
+REFRESH MATERIALIZED VIEW sentiment_labelguided_x_avg_pair_tree_size_y_avg_runtime_k10;
+REFRESH MATERIALIZED VIEW sentiment_touzetd_x_avg_pair_tree_size_y_avg_runtime_k10;
