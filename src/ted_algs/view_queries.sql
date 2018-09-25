@@ -45,7 +45,7 @@ CREATE MATERIALIZED VIEW sentiment_touzetd_x_avg_pair_tree_size_y_avg_runtime_k1
 WITH DATA;
 
 -- DBLP ted_apted.
-DROP MATERIALIZED VIEW IF EXISTS sentiment_apted_x_avg_pair_tree_size_y_avg_runtime;
+DROP MATERIALIZED VIEW IF EXISTS dblp_apted_x_avg_pair_tree_size_y_avg_runtime;
 CREATE MATERIALIZED VIEW dblp_apted_x_avg_pair_tree_size_y_avg_runtime AS
   SELECT avg_pair_tree_size, avg(runtime) AS avg_runtime
   FROM (
@@ -53,6 +53,7 @@ CREATE MATERIALIZED VIEW dblp_apted_x_avg_pair_tree_size_y_avg_runtime AS
     FROM ted_apted AS a, ted_experiment_params AS p
     WHERE a.ted_experiment_params_id = p.ted_experiment_params_id
     AND p.dataset_filename = 'dblp_no_www_db8be93_sorted.bracket'
+    AND abs(a.tree_size_1-a.tree_size_2)<=10
   ) AS input
   GROUP BY avg_pair_tree_size
   ORDER BY avg_pair_tree_size
@@ -68,6 +69,7 @@ CREATE MATERIALIZED VIEW dblp_labelguided_x_avg_pair_tree_size_y_avg_runtime_k10
     WHERE a.ted_experiment_params_id = p.ted_experiment_params_id
     AND p.dataset_filename = 'dblp_no_www_db8be93_sorted.bracket'
     AND a.ted_threshold = 10
+    AND abs(a.tree_size_1-a.tree_size_2)<=10
   ) AS input
   GROUP BY avg_pair_tree_size
   ORDER BY avg_pair_tree_size
@@ -83,6 +85,7 @@ CREATE MATERIALIZED VIEW dblp_touzetd_x_avg_pair_tree_size_y_avg_runtime_k10 AS
     WHERE a.ted_experiment_params_id = p.ted_experiment_params_id
     AND p.dataset_filename = 'dblp_no_www_db8be93_sorted.bracket'
     AND a.ted_threshold = 10
+    AND abs(a.tree_size_1-a.tree_size_2)<=10
   ) AS input
   GROUP BY avg_pair_tree_size
   ORDER BY avg_pair_tree_size
@@ -143,6 +146,7 @@ CREATE MATERIALIZED VIEW dblp_apted_x_pair_id_y_ted AS
     FROM ted_apted AS a, ted_experiment_params AS p
     WHERE a.ted_experiment_params_id = p.ted_experiment_params_id
     AND p.dataset_filename = 'dblp_no_www_db8be93_sorted.bracket'
+    AND abs(a.tree_size_1-a.tree_size_2)<=10
   ) AS input
   GROUP BY avg_pair_tree_size
   ORDER BY avg_pair_tree_size
@@ -158,6 +162,7 @@ CREATE MATERIALIZED VIEW dblp_labelguided_x_pair_id_y_ted_k10 AS
     WHERE a.ted_experiment_params_id = p.ted_experiment_params_id
     AND p.dataset_filename = 'dblp_no_www_db8be93_sorted.bracket'
     AND a.ted_threshold = 10
+    AND abs(a.tree_size_1-a.tree_size_2)<=10
   ) AS input
   GROUP BY avg_pair_tree_size
   ORDER BY avg_pair_tree_size
@@ -173,6 +178,7 @@ CREATE MATERIALIZED VIEW dblp_touzetd_x_pair_id_y_ted_k10 AS
     WHERE a.ted_experiment_params_id = p.ted_experiment_params_id
     AND p.dataset_filename = 'dblp_no_www_db8be93_sorted.bracket'
     AND a.ted_threshold = 10
+    AND abs(a.tree_size_1-a.tree_size_2)<=10
   ) AS input
   GROUP BY avg_pair_tree_size
   ORDER BY avg_pair_tree_size
