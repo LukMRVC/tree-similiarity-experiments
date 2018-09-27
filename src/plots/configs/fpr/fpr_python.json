@@ -1,0 +1,45 @@
+{
+    "title": "False Positive Ratio",
+    "print_title": "no",
+    "legend": "upper right",
+    "legend_font_size": 18,
+    "grid": "True",
+    "dataset_name": "Python AST",
+    "markers": ["P"],
+    "colors": ["darkorange"],
+    "tables": [
+        {
+            "table_name": "allpairs_multiset_dsf_self_join", 
+            "attributes": [
+                {
+                    "attr_name": "avg(1.0 - (result_set_size::decimal / NULLIF(verification_candidates::decimal,0)))"
+                }
+            ],
+            "name": "LUV"
+        }
+    ],
+    "constraints": {
+        "hostname": "cluster1",
+        "algorithm_version": "168f9925b841335588aaa9060530a38addb0a044",
+        "dataset_filename": "python_ast_sorted.bracket",
+        "verification_algorithm": "Touzet",
+        "similarity_function": "HammingOptimal",
+        "upperbound": "greedy"
+    },
+    "x_axis": {
+        "db_column": "threshold",
+        "name": "Threshold",
+        "xticks": 2,
+        "xmin": 1,
+        "xmax": 20.001, 
+        "font_size": 18, 
+        "ticks_font_size": 16
+    },
+    "y_axis": {
+        "name": "False Positive Ratio",
+        "ymin": 0,
+        "ymax": 1, 
+        "font_size": 18, 
+        "ticks_font_size": 16
+    }
+}

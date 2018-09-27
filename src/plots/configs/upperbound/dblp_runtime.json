@@ -1,0 +1,52 @@
+{
+    "title": "Runtime",
+    "print_title": "no",
+    "legend": "upper left",
+    "legend_font_size": 18,
+    "grid": "True",
+    "dataset_name": "DBLP",
+    "markers": ["+", "x", "."],
+    "colors": ["limegreen", "chocolate", "hotpink"],
+    "lines": [" ", " ", " "],
+    "tables": [
+        {
+            "table_name": "dblp_apted_x_avg_pair_tree_size_y_avg_runtime", 
+            "attributes": [
+                {
+                    "attr_name": "avg(avg_runtime)"
+                }
+            ],
+            "name": "APTED"
+        },
+        {
+            "table_name": "dblp_touzetd_x_avg_pair_tree_size_y_avg_runtime_k10", 
+            "attributes": [
+                {
+                    "attr_name": "avg(avg_runtime)"
+                }
+            ],
+            "name": "BSM"
+        },
+        {
+            "table_name": "dblp_labelguided_x_avg_pair_tree_size_y_avg_runtime_k10", 
+            "attributes": [
+                {
+                    "attr_name": "avg(avg_runtime)"
+                }
+            ],
+            "name": "LGM"
+        }
+    ],
+    "x_axis": {
+        "db_column": "avg_pair_tree_size",
+        "name": "Tree Size", 
+        "font_size": 18, 
+        "ticks_font_size": 16
+    },
+    "y_axis": {
+        "name": "Runtime [ms]",
+        "scale": "log", 
+        "font_size": 18, 
+        "ticks_font_size": 16
+    }
+}

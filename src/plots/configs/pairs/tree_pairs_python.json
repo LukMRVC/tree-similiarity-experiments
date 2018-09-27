@@ -1,0 +1,56 @@
+{
+    "title": "Tree Pairs",
+    "print_title": "no",
+    "legend_font_size": 18,
+    "legend": "upper left",
+    "grid": "True",
+    "dataset_name": "Python AST",
+    "markers": ["o", "p", "^"],
+    "colors": ["blueviolet", "green", "turquoise"],
+    "tables": [
+        {
+            "table_name": "allpairs_multiset_dsf_self_join", 
+            "attributes": [
+                {
+                    "attr_name": "verification_candidates", 
+                    "name": "Candidates"
+                }, 
+                {
+                    "attr_name": "result_set_size", 
+                    "name": "Result set"
+                }, 
+                {
+                    "attr_name": "upperbound_pruned", 
+                    "name": "Upperbound"
+                }
+            ],
+            "name": "LUV"
+        }
+    ],
+    "constraints": {
+        "hostname": "cluster1",
+        "algorithm_version": "168f9925b841335588aaa9060530a38addb0a044",
+        "dataset_filename": "python_ast_sorted.bracket",
+        "verification_algorithm": "Touzet",
+        "similarity_function": "HammingOptimal",
+        "upperbound": "greedy"
+    },
+    "x_axis": {
+        "db_column": "threshold",
+        "name": "Threshold",
+        "xticks": 2,
+        "xmin": 1,
+        "xmax": 20.001, 
+        "font_size": 18, 
+        "ticks_font_size": 16
+    },
+    "y_axis": {
+        "name": "Number of Tree Pairs",
+        "aggregate": "avg",
+        "ymin": 0,
+        "ymax": 70000000, 
+        "font_size": 18, 
+        "ticks_font_size": 16, 
+        "scientific": "yes"
+    }
+}

@@ -1,0 +1,63 @@
+{
+    "title": "Times",
+    "print_title": "no",
+    "legend_font_size": 18,
+    "legend": "lower right",
+    "grid": "True",
+    "dataset_name": "Python AST",
+    "markers": ["s", "D", "P", "X"],
+    "colors": ["blue", "dodgerblue", "darkorange", "orange"],
+    "tables": [
+        {
+            "table_name": "partition_based_self_join", 
+            "attributes": [
+                {
+                    "attr_name": "avg(filter_time + verification_time)/1000", 
+                    "name": "Total Time"
+                },
+                {
+                    "attr_name": "avg(filter_time)/1000", 
+                    "name": "Filter Time"
+                }
+            ],
+            "name": "PRT"
+        },
+        {
+            "table_name": "allpairs_multiset_dsf_self_join", 
+            "attributes": [
+                {
+                    "attr_name": "avg(tree_to_set_time + filter_time + upperbound_time + verification_time)/1000", 
+                    "name": "Total Time"
+                },
+                {
+                    "attr_name": "avg(filter_time)/1000", 
+                    "name": "Filter Time"
+                }
+            ],
+            "name": "LUV"
+        }
+    ],
+    "constraints": {
+        "hostname": "cluster1",
+        "algorithm_version": "168f9925b841335588aaa9060530a38addb0a044",
+        "dataset_filename": "python_ast_sorted.bracket",
+        "verification_algorithm": "Touzet",
+        "upperbound": "greedy"
+    },
+    "x_axis": {
+        "db_column": "threshold",
+        "name": "Threshold",
+        "xticks": 2,
+        "xmin": 1,
+        "xmax": 20.001, 
+        "font_size": 18, 
+        "ticks_font_size": 16
+    },
+    "y_axis": {
+        "name": "Time [s]",
+        "scale": "log",
+        "ymax": 10000, 
+        "font_size": 18, 
+        "ticks_font_size": 16
+    }
+}
