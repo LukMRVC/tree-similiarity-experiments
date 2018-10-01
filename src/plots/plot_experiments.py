@@ -111,7 +111,7 @@ if 'font_size' in data['y_axis']:
 plt.xlabel(data['x_axis']['name'], fontsize=x_axis_font_size)
 plt.ylabel(data['y_axis']['name'], fontsize=y_axis_font_size)
 if 'ticks_font_size' in data['x_axis']:
-  plt.yticks(fontsize=data['x_axis']['ticks_font_size'])
+  plt.xticks(fontsize=data['x_axis']['ticks_font_size'])
 if 'ticks_font_size' in data['y_axis']:
   plt.yticks(fontsize=data['y_axis']['ticks_font_size'])
 if 'scale' in data['y_axis']:
