@@ -1,12 +1,12 @@
 {
     "title": "Error",
     "print_title": "no",
-    "legend": "upper left",
+    "legend": "best",
     "legend_font_size": 18,
     "grid": "True",
     "dataset_name": "Sentiment",
-    "markers": ["+"],
-    "colors": ["darkgreen"],
+    "markers": ["+", "."],
+    "colors": ["darkgreen", "darkblue"],
     "lines": [" ", " ", " "],
     "tables": [
         {
@@ -17,6 +17,15 @@
                 }
             ],
             "name": "(LGM-TED)/TED"
+        },
+        {
+            "table_name": "sentiment_labelguided_x_avg_pair_tree_size_y_ted_error_k10", 
+            "attributes": [
+                {
+                    "attr_name": "avg(dis)"
+                }
+            ],
+            "name": "TED/|T|"
         }
     ],
     "x_axis": {
@@ -26,7 +35,7 @@
         "ticks_font_size": 16
     },
     "y_axis": {
-        "name": "Error", 
+        "name": "Error/Dis", 
         "font_size": 18, 
         "ticks_font_size": 16
     }
