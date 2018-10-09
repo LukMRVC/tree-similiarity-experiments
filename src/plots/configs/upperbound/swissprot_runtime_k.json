@@ -4,38 +4,37 @@
     "legend": "upper left",
     "legend_font_size": 18,
     "grid": "on",
-    "dataset_name": "Sentiment",
+    "dataset_name": "Swissprot",
     "markers": ["+", "x", "."],
     "colors": ["limegreen", "chocolate", "hotpink"],
-    "lines": [" ", " ", " "],
     "tables": [
         {
-            "table_name": "sentiment_apted_x_avg_pair_tree_size_y_ted", 
+            "table_name": "swissprot_touzetd_x_threshold_y_runtime_sum", 
             "attributes": [
                 {
-                    "attr_name": "avg(avg_ted_value)"
+                    "attr_name": "avg(sum_runtime)"
                 }
             ],
-            "name": "APTED"
+            "name": "BSM"
         },
         {
-            "table_name": "sentiment_labelguided_x_avg_pair_tree_size_y_ted_k10", 
+            "table_name": "swissprot_labelguided_x_threshold_y_runtime_sum", 
             "attributes": [
                 {
-                    "attr_name": "avg(avg_ted_value)"
+                    "attr_name": "avg(sum_runtime)"
                 }
             ],
             "name": "LGM"
         }
     ],
     "x_axis": {
-        "db_column": "avg_pair_tree_size",
-        "name": "Tree Size", 
+        "db_column": "ted_threshold",
+        "name": "Threshold", 
         "font_size": 18, 
         "ticks_font_size": 16
     },
     "y_axis": {
-        "name": "TED Value", 
+        "name": "Runtime [ms]", 
         "font_size": 18, 
         "ticks_font_size": 16
     }

@@ -3,7 +3,7 @@
     "print_title": "no",
     "legend_font_size": 18,
     "legend": "upper left",
-    "grid": "True",
+    "grid": "on",
     "dataset_name": "Sentiment",
     "markers": ["o", "p", "^"],
     "colors": ["blueviolet", "green", "turquoise"],

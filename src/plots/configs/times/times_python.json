@@ -3,7 +3,7 @@
     "print_title": "no",
     "legend_font_size": 18,
     "legend": "lower right",
-    "grid": "True",
+    "grid": "on",
     "dataset_name": "Python AST",
     "markers": ["s", "D", "P", "X"],
     "colors": ["blue", "dodgerblue", "darkorange", "orange"],

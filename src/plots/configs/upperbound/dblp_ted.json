@@ -3,14 +3,14 @@
     "print_title": "no",
     "legend": "upper left",
     "legend_font_size": 18,
-    "grid": "True",
+    "grid": "on",
     "dataset_name": "DBLP",
     "markers": ["+", "x", "."],
     "colors": ["limegreen", "chocolate", "hotpink"],
     "lines": [" ", " ", " "],
     "tables": [
         {
-            "table_name": "dblp_apted_x_pair_id_y_ted", 
+            "table_name": "dblp_apted_x_avg_pair_tree_size_y_ted", 
             "attributes": [
                 {
                     "attr_name": "avg(avg_ted_value)"
@@ -19,7 +19,7 @@
             "name": "APTED"
         },
         {
-            "table_name": "dblp_labelguided_x_pair_id_y_ted_k10", 
+            "table_name": "dblp_labelguided_x_avg_pair_tree_size_y_ted_k10", 
             "attributes": [
                 {
                     "attr_name": "avg(avg_ted_value)"

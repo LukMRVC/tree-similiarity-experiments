@@ -230,6 +230,62 @@ CREATE MATERIALIZED VIEW python_touzetd_x_threshold_y_runtime_sum AS
   ORDER BY a.ted_threshold
 WITH DATA;
 
+-- Swissprot tedk_labelguided k10.
+DROP MATERIALIZED VIEW IF EXISTS swissprot_labelguided_x_avg_pair_tree_size_y_avg_runtime_k10;
+CREATE MATERIALIZED VIEW swissprot_labelguided_x_avg_pair_tree_size_y_avg_runtime_k10 AS
+  SELECT avg_pair_tree_size, avg(runtime) AS avg_runtime
+  FROM (
+    SELECT a.runtime, a.tree_size_1, a.tree_size_2, (a.tree_size_1+a.tree_size_2)/2.0 as avg_pair_tree_size
+    FROM tedk_labelguided AS a, ted_experiment_params AS p
+    WHERE a.ted_experiment_params_id = p.ted_experiment_params_id
+    AND p.dataset_filename = 'swissprot_sorted.bracket'
+    AND a.ted_threshold = 10
+    AND abs(a.tree_size_1-a.tree_size_2)<=10
+  ) AS input
+  GROUP BY avg_pair_tree_size
+  ORDER BY avg_pair_tree_size
+WITH DATA;
+
+-- Swissprot tedk_touzetd k10.
+DROP MATERIALIZED VIEW IF EXISTS swissprot_touzetd_x_avg_pair_tree_size_y_avg_runtime_k10;
+CREATE MATERIALIZED VIEW swissprot_touzetd_x_avg_pair_tree_size_y_avg_runtime_k10 AS
+  SELECT avg_pair_tree_size, avg(runtime) AS avg_runtime
+  FROM (
+    SELECT a.runtime, a.tree_size_1, a.tree_size_2, (a.tree_size_1+a.tree_size_2)/2.0 as avg_pair_tree_size
+    FROM tedk_touzetd AS a, ted_experiment_params AS p
+    WHERE a.ted_experiment_params_id = p.ted_experiment_params_id
+    AND p.dataset_filename = 'swissprot_sorted.bracket'
+    AND a.ted_threshold = 10
+    AND abs(a.tree_size_1-a.tree_size_2)<=10
+  ) AS input
+  GROUP BY avg_pair_tree_size
+  ORDER BY avg_pair_tree_size
+WITH DATA;
+
+-- Swissprot tedk_labelguided runtime sum per threshold.
+DROP MATERIALIZED VIEW IF EXISTS swissprot_labelguided_x_threshold_y_runtime_sum;
+CREATE MATERIALIZED VIEW swissprot_labelguided_x_threshold_y_runtime_sum AS
+  SELECT a.ted_threshold as ted_threshold, sum(a.runtime) as sum_runtime, count(a.runtime)
+  FROM tedk_labelguided AS a, ted_experiment_params AS p
+  WHERE a.ted_experiment_params_id = p.ted_experiment_params_id
+  AND p.dataset_filename = 'swissprot_sorted.bracket'
+  AND abs(a.tree_size_1-a.tree_size_2) <= a.ted_threshold
+  GROUP BY a.ted_threshold
+  ORDER BY a.ted_threshold
+WITH DATA;
+
+-- Swissprot tedk_touzetd runtime sum per threshold.
+DROP MATERIALIZED VIEW IF EXISTS swissprot_touzetd_x_threshold_y_runtime_sum;
+CREATE MATERIALIZED VIEW swissprot_touzetd_x_threshold_y_runtime_sum AS
+  SELECT a.ted_threshold as ted_threshold, sum(a.runtime) as sum_runtime, count(a.runtime)
+  FROM tedk_touzetd AS a, ted_experiment_params AS p
+  WHERE a.ted_experiment_params_id = p.ted_experiment_params_id
+  AND p.dataset_filename = 'swissprot_sorted.bracket'
+  AND abs(a.tree_size_1-a.tree_size_2) <= a.ted_threshold
+  GROUP BY a.ted_threshold
+  ORDER BY a.ted_threshold
+WITH DATA;
+
 -- TED value per pair in collection.
 
 -- Sentiment ted_apted.
