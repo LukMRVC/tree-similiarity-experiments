@@ -3,7 +3,7 @@
     "print_title": "no",
     "legend": "upper left",
     "legend_font_size": 18,
-    "grid": "True",
+    "grid": "on",
     "dataset_name": "DBLP",
     "markers": ["+", "x", "."],
     "colors": ["limegreen", "chocolate", "hotpink"],

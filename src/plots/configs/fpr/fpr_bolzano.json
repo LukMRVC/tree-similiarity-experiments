@@ -3,7 +3,7 @@
     "print_title": "no",
     "legend": "lower right",
     "legend_font_size": 18,
-    "grid": "True",
+    "grid": "on",
     "dataset_name": "Bolzano",
     "markers": ["s", "P"],
     "colors": ["blue", "darkorange"],

@@ -3,13 +3,13 @@
     "print_title": "no",
     "legend": "upper left",
     "legend_font_size": 18,
-    "grid": "True",
+    "grid": "on",
     "dataset_name": "Sentiment",
     "markers": ["+", "x", "."],
     "colors": ["limegreen", "chocolate", "hotpink"],
     "tables": [
         {
-            "table_name": "sentiment_touzetd_x_runtime_sum_y_threshold", 
+            "table_name": "sentiment_touzetd_x_threshold_y_runtime_sum", 
             "attributes": [
                 {
                     "attr_name": "avg(sum_runtime)"
@@ -18,7 +18,7 @@
             "name": "BSM"
         },
         {
-            "table_name": "sentiment_labelguided_x_runtime_sum_y_threshold", 
+            "table_name": "sentiment_labelguided_x_threshold_y_runtime_sum", 
             "attributes": [
                 {
                     "attr_name": "avg(sum_runtime)"

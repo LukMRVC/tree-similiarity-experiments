@@ -124,6 +124,12 @@ parser.add_argument(
     dest='service_name',
     help="Service name to use from '~/.pg_service.conf' file."
 )
+parser.add_argument(
+    '--store',
+    dest = 'store',
+    action = 'store_true',
+    help = 'Set to store results in the database (default: not set).'
+)
 args = parser.parse_args()
 
 # Fixed values for this execution - passed to all algorithms.
@@ -155,7 +161,8 @@ for a in data['algorithms']:
                 "dataset_filename" : filename
             })
             print("EXECUTING: " + filename + ";" + a + ";" + str(t))
-            new_params_id = store_ted_experiment_params(args.service_name, ted_experiment_params)
+            if args.store:
+                new_params_id = store_ted_experiment_params(args.service_name, ted_experiment_params)
             
             # build command that needs to be executed
             cmd = []
@@ -175,16 +182,20 @@ for a in data['algorithms']:
             cmd_output = get_stdout_cmd(cmd).strip()
             result_data = json.loads(cmd_output.decode('utf-8'))
             
-            print("STORING ...")
+            if not args.store:
+                print("RESULTS:")
+                print(cmd_output)
             
-            store_multirow_results(
-                args.service_name,
-                table_names[a],
-                result_data['algorithm_executions'][0]['data_items'],
-                new_params_id,
-                (a in tedk_algs or a in tedub_algs),
-                (a in tedk_algs)
-            )
+            if args.store:
+                print("STORING ...")
+                store_multirow_results(
+                    args.service_name,
+                    table_names[a],
+                    result_data['algorithm_executions'][0]['data_items'],
+                    new_params_id,
+                    (a in tedk_algs or a in tedub_algs),
+                    (a in tedk_algs)
+                )
             
             # TODO: Handle errors in storing.
             
