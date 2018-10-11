@@ -52,6 +52,6 @@
         "ymax": 2000000, 
         "font_size": 18, 
         "ticks_font_size": 16, 
-        "scientific": "yes"
+        "suffix": "yes"
     }
 }
