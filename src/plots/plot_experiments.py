@@ -13,6 +13,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import psycopg2
 from psycopg2 import sql
+from matplotlib.ticker import EngFormatter
 
 # http://initd.org/psycopg/docs/sql.html#module-psycopg2.sql
 def db_request(select_args, table_args, where_args, group_args, order_args):
@@ -132,6 +133,14 @@ if 'scientific' in data['x_axis'] and data['x_axis']['scientific'] == 'yes':
   ax.ticklabel_format(style='sci', axis='x', scilimits=(0,0))
 if 'scientific' in data['y_axis'] and data['y_axis']['scientific'] == 'yes':
   ax.ticklabel_format(style='sci', axis='y', scilimits=(0,0))
+
+if 'suffix' in data['y_axis'] and data['y_axis']['suffix'] == 'yes':
+  formatter = EngFormatter()
+  ax.yaxis.set_major_formatter(formatter)
+
+if 'suffix' in data['x_axis'] and data['x_axis']['suffix'] == 'yes':
+  formatter = EngFormatter()
+  ax.xaxis.set_major_formatter(formatter)
 
 legend_parameters = {}
 if 'legend_font_size' in data:
