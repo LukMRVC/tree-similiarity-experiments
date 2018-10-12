@@ -89,11 +89,15 @@ for table in data['tables']:
     if 'name' in table:
       label += table['name']
     if 'name' in attr:
-      label += " - " + attr['name']
+      label += attr['name']
     if label != '':
       plot_parameters['label'] = label
     if 'markers' in data:
       plot_parameters['marker'] = data['markers'][marker_cnt]
+    if 'markersize' in data:
+      plot_parameters['markersize'] = data['markersize'][marker_cnt]
+    if 'markerfacecolor' in data:
+      plot_parameters['mfc'] = data['markerfacecolor']
     if 'colors' in data:
       plot_parameters['color'] = data['colors'][marker_cnt]
     if 'lines' in data:
