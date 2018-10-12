@@ -9,7 +9,7 @@
     "colors": ["limegreen", "chocolate", "hotpink"],
     "tables": [
         {
-            "table_name": "sentiment_touzetd_x_threshold_y_runtime_sum", 
+            "table_name": "sentiment_touzetd_x_threshold_y_runtime_sum_9305acf1", 
             "attributes": [
                 {
                     "attr_name": "avg(sum_runtime)"
@@ -18,7 +18,7 @@
             "name": "BSM"
         },
         {
-            "table_name": "sentiment_labelguided_x_threshold_y_runtime_sum", 
+            "table_name": "sentiment_labelguided_x_threshold_y_runtime_sum_9305acf1", 
             "attributes": [
                 {
                     "attr_name": "avg(sum_runtime)"
