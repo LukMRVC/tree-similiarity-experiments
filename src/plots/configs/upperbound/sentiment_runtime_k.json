@@ -9,19 +9,19 @@
     "colors": ["limegreen", "chocolate", "hotpink"],
     "tables": [
         {
-            "table_name": "sentiment_touzetd_x_threshold_y_runtime_sum", 
+            "table_name": "sentiment_touzetd_x_threshold_y_runtime_sum_9305acf1", 
             "attributes": [
                 {
-                    "attr_name": "avg(sum_runtime)"
+                    "attr_name": "avg(sum_runtime/1000)"
                 }
             ],
             "name": "BSM"
         },
         {
-            "table_name": "sentiment_labelguided_x_threshold_y_runtime_sum", 
+            "table_name": "sentiment_labelguided_x_threshold_y_runtime_sum_9305acf1", 
             "attributes": [
                 {
-                    "attr_name": "avg(sum_runtime)"
+                    "attr_name": "avg(sum_runtime/1000)"
                 }
             ],
             "name": "LGM"
@@ -30,12 +30,14 @@
     "x_axis": {
         "db_column": "ted_threshold",
         "name": "Threshold", 
-        "font_size": 18, 
-        "ticks_font_size": 16
+        "font_size": 20, 
+        "ticks_font_size": 20,
+        "xticks": 5.0,
+        "xmin": 0.0
     },
     "y_axis": {
-        "name": "Runtime [ms]", 
-        "font_size": 18, 
-        "ticks_font_size": 16
+        "name": "Runtime [s]", 
+        "font_size": 20, 
+        "ticks_font_size": 20
     }
 }

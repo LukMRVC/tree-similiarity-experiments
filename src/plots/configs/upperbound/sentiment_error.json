@@ -16,7 +16,7 @@
                     "attr_name": "avg(error)"
                 }
             ],
-            "name": "(LGM-TED)/TED"
+            "name": "TED (size normalized)"
         },
         {
             "table_name": "sentiment_labelguided_x_avg_pair_tree_size_y_ted_error_k10", 
@@ -25,18 +25,18 @@
                     "attr_name": "avg(dis)"
                 }
             ],
-            "name": "TED/|T|"
+            "name": "relative error"
         }
     ],
     "x_axis": {
         "db_column": "avg_pair_tree_size",
         "name": "Tree Size", 
-        "font_size": 18, 
-        "ticks_font_size": 16
+        "font_size": 20, 
+        "ticks_font_size": 20
     },
     "y_axis": {
-        "name": "Error/Dis", 
-        "font_size": 18, 
-        "ticks_font_size": 16
+        "name": "", 
+        "font_size": 20, 
+        "ticks_font_size": 20
     }
 }
