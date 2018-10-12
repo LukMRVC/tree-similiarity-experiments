@@ -16,8 +16,8 @@ CREATE MATERIALIZED VIEW sentiment_apted_x_avg_pair_tree_size_y_avg_runtime AS
 WITH DATA;
 
 -- Sentiment tedk_labelguided k10.
-DROP MATERIALIZED VIEW IF EXISTS sentiment_labelguided_x_avg_pair_tree_size_y_avg_runtime_k10;
-CREATE MATERIALIZED VIEW sentiment_labelguided_x_avg_pair_tree_size_y_avg_runtime_k10 AS
+DROP MATERIALIZED VIEW IF EXISTS sentiment_labelguided_x_avg_pair_tree_size_y_avg_runtime_k10_9305acf1;
+CREATE MATERIALIZED VIEW sentiment_labelguided_x_avg_pair_tree_size_y_avg_runtime_k10_9305acf1 AS
   SELECT avg_pair_tree_size, avg(runtime) AS avg_runtime
   FROM (
     SELECT a.runtime, a.tree_size_1, a.tree_size_2, (a.tree_size_1+a.tree_size_2)/2.0 as avg_pair_tree_size
@@ -26,6 +26,7 @@ CREATE MATERIALIZED VIEW sentiment_labelguided_x_avg_pair_tree_size_y_avg_runtim
     AND p.dataset_filename = 'sentiment_sorted.bracket'
     AND a.ted_threshold = 10
     AND abs(a.tree_size_1-a.tree_size_2)<=10
+    AND p.algorithm_source_commit = '9305acf17d6841bfb32d19b3d86f7245841048dd'
   ) AS input
   GROUP BY avg_pair_tree_size
   ORDER BY avg_pair_tree_size
@@ -89,8 +90,8 @@ CREATE MATERIALIZED VIEW dblp_apted_x_avg_pair_tree_size_y_avg_runtime AS
 WITH DATA;
 
 -- DBLP tedk_labelguided k10.
-DROP MATERIALIZED VIEW IF EXISTS dblp_labelguided_x_avg_pair_tree_size_y_avg_runtime_k10;
-CREATE MATERIALIZED VIEW dblp_labelguided_x_avg_pair_tree_size_y_avg_runtime_k10 AS
+DROP MATERIALIZED VIEW IF EXISTS dblp_labelguided_x_avg_pair_tree_size_y_avg_runtime_k10_9305acf1;
+CREATE MATERIALIZED VIEW dblp_labelguided_x_avg_pair_tree_size_y_avg_runtime_k10_9305acf1 AS
   SELECT avg_pair_tree_size, avg(runtime) AS avg_runtime
   FROM (
     SELECT a.runtime, a.tree_size_1, a.tree_size_2, (a.tree_size_1+a.tree_size_2)/2.0 as avg_pair_tree_size
@@ -99,6 +100,7 @@ CREATE MATERIALIZED VIEW dblp_labelguided_x_avg_pair_tree_size_y_avg_runtime_k10
     AND p.dataset_filename = 'dblp_no_www_db8be93_sorted.bracket'
     AND a.ted_threshold = 10
     AND abs(a.tree_size_1-a.tree_size_2)<=10
+    AND p.algorithm_source_commit = '9305acf17d6841bfb32d19b3d86f7245841048dd'
   ) AS input
   GROUP BY avg_pair_tree_size
   ORDER BY avg_pair_tree_size

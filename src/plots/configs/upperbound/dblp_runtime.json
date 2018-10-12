@@ -28,7 +28,7 @@
             "name": "BSM"
         },
         {
-            "table_name": "dblp_labelguided_x_avg_pair_tree_size_y_avg_runtime_k10", 
+            "table_name": "dblp_labelguided_x_avg_pair_tree_size_y_avg_runtime_k10_9305acf", 
             "attributes": [
                 {
                     "attr_name": "avg(avg_runtime)"
@@ -40,13 +40,13 @@
     "x_axis": {
         "db_column": "avg_pair_tree_size",
         "name": "Tree Size", 
-        "font_size": 18, 
-        "ticks_font_size": 16
+        "font_size": 20, 
+        "ticks_font_size": 20
     },
     "y_axis": {
         "name": "Runtime [ms]",
         "scale": "log", 
-        "font_size": 18, 
-        "ticks_font_size": 16
+        "font_size": 20, 
+        "ticks_font_size": 20
     }
 }
