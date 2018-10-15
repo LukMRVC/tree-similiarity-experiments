@@ -30,13 +30,22 @@
                 {
                     "attr_name": "avg(filter_time + verification_time)/1000", 
                     "name": " - Join time"
-                },
+                }
+            ],
+            "name": "Tang+BSM",
+            "constraints": {
+                "verification_algorithm": "Touzet"
+            }
+        },
+        {
+            "table_name": "partition_based_self_join", 
+            "attributes": [
                 {
                     "attr_name": "avg(filter_time)/1000", 
                     "name": " - Cand. time"
                 }
             ],
-            "name": "Tang+BSM",
+            "name": "Tang",
             "constraints": {
                 "verification_algorithm": "Touzet"
             }
