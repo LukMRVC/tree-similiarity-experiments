@@ -14,10 +14,6 @@
             "table_name": "partition_based_self_join", 
             "attributes": [
                 {
-                    "attr_name": "avg(filter_time + verification_time)/1000", 
-                    "name": " - Join time"
-                },
-                {
                     "attr_name": "avg(filter_time)/1000", 
                     "name": " - Cand. time"
                 }
@@ -63,9 +59,9 @@
         "ticks_font_size": 20
     },
     "textbox": {
-        "text": "$\\mathtt{Tang}$ ($\\tau = 1$)\nTotal Time=38485s\nFilter Time=38473s",
-        "x": 0.44,
-        "y": 0.28,
+        "text": "$\\mathtt{Tang}$ ($\\tau = 1$)\nCand. time=38473s",
+        "x": 0.43,
+        "y": 0.20,
         "font_size": 20
     }
 }
