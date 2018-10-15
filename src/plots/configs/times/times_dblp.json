@@ -63,7 +63,7 @@
         "ticks_font_size": 20
     },
     "textbox": {
-        "text": "Tang ($\\tau = 1$)\nTotal Time=38485s\nFilter Time=38473s",
+        "text": "$\\mathtt{Tang}$ ($\\tau = 1$)\nTotal Time=38485s\nFilter Time=38473s",
         "x": 0.44,
         "y": 0.28,
         "font_size": 20
