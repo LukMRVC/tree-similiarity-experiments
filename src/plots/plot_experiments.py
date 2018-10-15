@@ -82,7 +82,7 @@ for table in data['tables']:
       where_args += ' AND '.join("{!s}={!r}".format(key,val) for (key,val) in data['constraints'].items())
     if 'constraints' in table:
       if where_args == '': 
-        where_args = ' WHERE '
+        where_args += ' WHERE '
       else:
         where_args += ' AND '
       where_args += ' AND '.join("{!s}={!r}".format(key,val) for (key,val) in table['constraints'].items())
