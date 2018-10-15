@@ -5,7 +5,9 @@
     "legend_font_size": 18,
     "grid": "on",
     "dataset_name": "Swissprot",
-    "markers": ["P"],
+    "markers": ["*"],
+    "markersize": [20],
+    "markerfacecolor": "none",
     "colors": ["darkorange"],
     "tables": [
         {
@@ -15,7 +17,7 @@
                     "attr_name": "avg(1.0 - (result_set_size::decimal / NULLIF(verification_candidates::decimal,0)))"
                 }
             ],
-            "name": "LUV"
+            "name": "TEDJoin"
         }
     ],
     "constraints": {
@@ -32,14 +34,20 @@
         "xticks": 10,
         "xmin": 0,
         "xmax": 60.001, 
-        "font_size": 18, 
-        "ticks_font_size": 16
+        "font_size": 20, 
+        "ticks_font_size": 20
     },
     "y_axis": {
         "name": "False Positive Ratio",
         "ymin": 0,
         "ymax": 1, 
-        "font_size": 18, 
-        "ticks_font_size": 16
+        "font_size": 20, 
+        "ticks_font_size": 20
+    },
+    "textbox": {
+        "text": "Tang: timeout",
+        "x": 0.04,
+        "y": 0.95,
+        "font_size": 20
     }
 }

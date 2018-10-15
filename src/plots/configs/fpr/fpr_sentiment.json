@@ -5,7 +5,9 @@
     "legend_font_size": 18,
     "grid": "on",
     "dataset_name": "Sentiment",
-    "markers": ["s", "P"],
+    "markers": ["s", "*"],
+    "markersize": [15, 20],
+    "markerfacecolor": "none",
     "colors": ["blue", "darkorange"],
     "tables": [
         {
@@ -15,7 +17,7 @@
                     "attr_name": "avg(1.0 - (result_set_size::decimal / NULLIF(verification_candidates::decimal,0)))"
                 }
             ],
-            "name": "PRT"
+            "name": "Tang"
         },
         {
             "table_name": "allpairs_multiset_dsf_self_join", 
@@ -24,7 +26,7 @@
                     "attr_name": "avg(1.0 - (result_set_size::decimal / NULLIF(verification_candidates::decimal,0)))"
                 }
             ],
-            "name": "LUV"
+            "name": "TEDJoin"
         }
     ],
     "constraints": {
@@ -41,14 +43,14 @@
         "xticks": 2,
         "xmin": 1,
         "xmax": 15.001, 
-        "font_size": 18, 
-        "ticks_font_size": 16
+        "font_size": 20, 
+        "ticks_font_size": 20
     },
     "y_axis": {
         "name": "False Positive Ratio",
         "ymin": 0,
         "ymax": 1, 
-        "font_size": 18, 
-        "ticks_font_size": 16
+        "font_size": 20, 
+        "ticks_font_size": 20
     }
 }
