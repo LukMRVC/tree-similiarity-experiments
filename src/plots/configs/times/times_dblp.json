@@ -15,11 +15,11 @@
             "attributes": [
                 {
                     "attr_name": "avg(filter_time + verification_time)/1000", 
-                    "name": " - Total Time"
+                    "name": " - Join time"
                 },
                 {
                     "attr_name": "avg(filter_time)/1000", 
-                    "name": " - Candidate Time"
+                    "name": " - Cand. time"
                 }
             ],
             "name": "Tang"
@@ -29,11 +29,11 @@
             "attributes": [
                 {
                     "attr_name": "avg(tree_to_set_time + filter_time + upperbound_time + verification_time)/1000", 
-                    "name": " - Total Time"
+                    "name": " - Join time"
                 },
                 {
                     "attr_name": "avg(filter_time)/1000", 
-                    "name": " - Candidate Time"
+                    "name": " - Cand. time"
                 }
             ],
             "name": "TEDJoin"

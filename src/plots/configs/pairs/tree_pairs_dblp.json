@@ -19,7 +19,7 @@
                 }, 
                 {
                     "attr_name": "result_set_size", 
-                    "name": "Result set"
+                    "name": "Join result"
                 }, 
                 {
                     "attr_name": "upperbound_pruned", 
