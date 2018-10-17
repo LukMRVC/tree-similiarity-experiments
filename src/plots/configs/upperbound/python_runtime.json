@@ -19,7 +19,7 @@
             "name": "BSM"
         },
         {
-            "table_name": "python_labelguided_x_avg_pair_tree_size_y_avg_runtime_k10", 
+            "table_name": "python_labelguided_x_avg_pair_tree_size_y_avg_runtime_k10_9305a", 
             "attributes": [
                 {
                     "attr_name": "avg(avg_runtime)"

@@ -164,6 +164,23 @@ CREATE MATERIALIZED VIEW python_labelguided_x_avg_pair_tree_size_y_avg_runtime_k
   ORDER BY avg_pair_tree_size
 WITH DATA;
 
+-- Python tedk_labelguided k10 9305acf1.
+DROP MATERIALIZED VIEW IF EXISTS python_labelguided_x_avg_pair_tree_size_y_avg_runtime_k10_9305a;
+CREATE MATERIALIZED VIEW python_labelguided_x_avg_pair_tree_size_y_avg_runtime_k10_9305a AS
+  SELECT avg_pair_tree_size, avg(runtime) AS avg_runtime
+  FROM (
+    SELECT a.runtime, a.tree_size_1, a.tree_size_2, (a.tree_size_1+a.tree_size_2)/2.0 as avg_pair_tree_size
+    FROM tedk_labelguided AS a, ted_experiment_params AS p
+    WHERE a.ted_experiment_params_id = p.ted_experiment_params_id
+    AND p.dataset_filename = 'python_ast_sorted.bracket'
+    AND a.ted_threshold = 10
+    AND abs(a.tree_size_1-a.tree_size_2)<=10
+    AND p.algorithm_source_commit = '9305acf17d6841bfb32d19b3d86f7245841048dd'
+  ) AS input
+  GROUP BY avg_pair_tree_size
+  ORDER BY avg_pair_tree_size
+WITH DATA;
+
 -- Python tedk_touzetd k10.
 DROP MATERIALIZED VIEW IF EXISTS python_touzetd_x_avg_pair_tree_size_y_avg_runtime_k10;
 CREATE MATERIALIZED VIEW python_touzetd_x_avg_pair_tree_size_y_avg_runtime_k10 AS
@@ -249,6 +266,23 @@ CREATE MATERIALIZED VIEW swissprot_labelguided_x_avg_pair_tree_size_y_avg_runtim
     AND p.dataset_filename = 'swissprot_sorted.bracket'
     AND a.ted_threshold = 10
     AND abs(a.tree_size_1-a.tree_size_2)<=10
+  ) AS input
+  GROUP BY avg_pair_tree_size
+  ORDER BY avg_pair_tree_size
+WITH DATA;
+
+-- Swissprot tedk_labelguided k10 9305acf1.
+DROP MATERIALIZED VIEW IF EXISTS swissprot_labelguided_x_avg_pair_tree_size_y_avg_runtime_k10_93;
+CREATE MATERIALIZED VIEW swissprot_labelguided_x_avg_pair_tree_size_y_avg_runtime_k10_93 AS
+  SELECT avg_pair_tree_size, avg(runtime) AS avg_runtime
+  FROM (
+    SELECT a.runtime, a.tree_size_1, a.tree_size_2, (a.tree_size_1+a.tree_size_2)/2.0 as avg_pair_tree_size
+    FROM tedk_labelguided AS a, ted_experiment_params AS p
+    WHERE a.ted_experiment_params_id = p.ted_experiment_params_id
+    AND p.dataset_filename = 'swissprot_sorted.bracket'
+    AND a.ted_threshold = 10
+    AND abs(a.tree_size_1-a.tree_size_2)<=10
+    AND p.algorithm_source_commit = '9305acf17d6841bfb32d19b3d86f7245841048dd'
   ) AS input
   GROUP BY avg_pair_tree_size
   ORDER BY avg_pair_tree_size
