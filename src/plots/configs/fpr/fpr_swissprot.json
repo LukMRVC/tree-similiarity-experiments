@@ -8,7 +8,7 @@
     "markers": ["*"],
     "markersize": [20],
     "markerfacecolor": "none",
-    "colors": ["darkorange"],
+    "colors": ["green"],
     "tables": [
         {
             "table_name": "allpairs_multiset_dsf_self_join", 
@@ -17,7 +17,7 @@
                     "attr_name": "avg(1.0 - (result_set_size::decimal / NULLIF(verification_candidates::decimal,0)))"
                 }
             ],
-            "name": "TEDJoin"
+            "name": "$\\mathtt{TJoin}$"
         }
     ],
     "constraints": {

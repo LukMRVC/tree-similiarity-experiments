@@ -80,6 +80,12 @@ for table in data['tables']:
     if 'constraints' in data:
       where_args = ' WHERE '
       where_args += ' AND '.join("{!s}={!r}".format(key,val) for (key,val) in data['constraints'].items())
+    if 'constraints' in table:
+      if where_args == '': 
+        where_args += ' WHERE '
+      else:
+        where_args += ' AND '
+      where_args += ' AND '.join("{!s}={!r}".format(key,val) for (key,val) in table['constraints'].items())
     if 'db_column' in data['x_axis']:
       group_args = ' GROUP BY ' + data['x_axis']['db_column']
       order_args = ' ORDER BY ' + data['x_axis']['db_column']

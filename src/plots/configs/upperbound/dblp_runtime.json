@@ -6,7 +6,7 @@
     "grid": "on",
     "dataset_name": "DBLP",
     "markers": ["+", "x", "."],
-    "colors": ["limegreen", "chocolate", "hotpink"],
+    "colors": ["red", "blue", "green"],
     "lines": [" ", " ", " "],
     "tables": [
         {

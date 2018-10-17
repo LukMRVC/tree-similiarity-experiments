@@ -8,7 +8,7 @@
     "markers": ["s", "*"],
     "markersize": [15, 20],
     "markerfacecolor": "none",
-    "colors": ["blue", "darkorange"],
+    "colors": ["red", "green"],
     "tables": [
         {
             "table_name": "partition_based_self_join",  
@@ -17,7 +17,7 @@
                     "attr_name": "avg(1.0 - (result_set_size::decimal / NULLIF(verification_candidates::decimal,0)))"
                 }
             ],
-            "name": "Tang"
+            "name": "$\\mathtt{Tang}$"
         },
         {
             "table_name": "allpairs_multiset_dsf_self_join", 
@@ -26,7 +26,7 @@
                     "attr_name": "avg(1.0 - (result_set_size::decimal / NULLIF(verification_candidates::decimal,0)))"
                 }
             ],
-            "name": "TEDJoin"
+            "name": "$\\mathtt{TJoin}$"
         }
     ],
     "constraints": {
@@ -53,7 +53,7 @@
         "ticks_font_size": 20
     },
     "textbox": {
-        "text": "Tang:\n$\\tau = 1$: FPR=100%\n$\\tau > 1$: timeout",
+        "text": "$\\mathtt{Tang}$:\n$\\tau = 1$: FPR=100%\n$\\tau > 1$: timeout",
         "x": 0.04,
         "y": 0.95,
         "font_size": 18
