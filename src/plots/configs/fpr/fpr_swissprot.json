@@ -14,7 +14,7 @@
             "table_name": "t_join", 
             "attributes": [
                 {
-                    "attr_name": "avg(1.0 - (result_set_size::decimal / NULLIF(verification_candidates::decimal,0)))"
+                    "attr_name": "avg(1.0 - (join_result_size::decimal / NULLIF(verification_candidates::decimal,0)))"
                 }
             ],
             "name": "$\\mathtt{TJoin}$",

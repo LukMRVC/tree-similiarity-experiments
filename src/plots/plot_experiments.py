@@ -16,9 +16,9 @@ from psycopg2 import sql
 from matplotlib.ticker import EngFormatter
 
 # http://initd.org/psycopg/docs/sql.html#module-psycopg2.sql
-def db_request(select_args, table_args, where_args, group_args, order_args):
+def db_request(service, select_args, table_args, where_args, group_args, order_args):
   # Connect to database.
-  db = psycopg2.connect("service=ted-join")
+  db = psycopg2.connect("service=" + service)
   # # Open a cursor to perform database operations
   cur = db.cursor()
   # Build query
@@ -45,6 +45,8 @@ parser.add_argument("--config", type=str,
   help="path to input config file (json")
 parser.add_argument("--storeplot", type=str, default="", 
   help="path and filename where the plot should be stored")
+parser.add_argument('--service', type=str, required=True,  
+  help="Service name for db connection. Specify this parameter to store the results in a database.")
 args = parser.parse_args()
 
 path, filename = os.path.split(args.config)

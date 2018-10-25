@@ -18,7 +18,7 @@
                     "name": "Candidates"
                 }, 
                 {
-                    "attr_name": "result_set_size", 
+                    "attr_name": "join_result_size", 
                     "name": "Join result"
                 }, 
                 {
