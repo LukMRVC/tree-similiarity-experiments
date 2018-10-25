@@ -98,7 +98,6 @@ CREATE TABLE tang_join (
   join_result_size bigint,
   sum_subproblem_optimum bigint,
   optimum_time bigint,
-  inv_list_lookups bigint,
   -- Algorithm-specific attributes.
   similarity_function varchar(127),
   verification_algorithm varchar(31),
