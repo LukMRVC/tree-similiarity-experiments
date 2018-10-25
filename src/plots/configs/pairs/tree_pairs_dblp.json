@@ -11,7 +11,7 @@
     "colors": ["blueviolet", "green", "turquoise"],
     "tables": [
         {
-            "table_name": "allpairs_multiset_dsf_self_join", 
+            "table_name": "t_join", 
             "attributes": [
                 {
                     "attr_name": "verification_candidates", 
@@ -29,10 +29,7 @@
         }
     ],
     "constraints": {
-        "experiments_version": "de8744854648746a76ce66b40ba84f1fe2d7bbe9",
-        "hostname": "cluster5",
-        "algorithm_version": "913a36996fc478c7e8f77fc638c450c79da4d149",
-        "dataset_filename": "dblp_no_www_db8be93_sorted.bracket",
+        "dataset_filename": "dblp_no_www_sorted.bracket",
         "verification_algorithm": "Touzet",
         "upperbound": "greedy"
     },

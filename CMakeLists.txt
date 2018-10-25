@@ -17,8 +17,8 @@ endif()
 
 # Build executable with the experiments.
 add_executable(
-  ted-join-experiments # EXECUTABLE NAME
-  src/experiments.cc   # EXECUTABLE SOURCE
+  ted-join-experiments                   # EXECUTABLE NAME
+  src/join_algs/join_algs_experiments.cc # EXECUTABLE SOURCE
 )
 target_link_libraries(
   ted-join-experiments # TARGET EXECUTABLE NAME
@@ -55,16 +55,17 @@ add_library(
 )
 target_include_directories(
   TreeSimilarity INTERFACE
-  external/tree-similarity-private/src/allpairs
-  external/tree-similarity-private/src/cost_model
-  external/tree-similarity-private/src/data_structures
-  external/tree-similarity-private/src/join
-  external/tree-similarity-private/src/label
-  external/tree-similarity-private/src/node
-  external/tree-similarity-private/src/parser
-  external/tree-similarity-private/src/tree_to_set_converter
-  external/tree-similarity-private/src/ted
-  external/tree-similarity-private/src/ted_ub
+  external/tree-similarity/src/cost_model
+  external/tree-similarity/src/data_structures
+  external/tree-similarity/src/join
+  external/tree-similarity/src/join/tjoin
+  external/tree-similarity/src/join/tang
+  external/tree-similarity/src/join/naive
+  external/tree-similarity/src/label
+  external/tree-similarity/src/node
+  external/tree-similarity/src/parser
+  external/tree-similarity/src/ted
+  external/tree-similarity/src/ted_ub
 )
 
 # Let the compiler know to find the header files in TreeSimilarity library.

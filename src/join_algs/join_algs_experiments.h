@@ -19,14 +19,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-/// \file src/experiments.h
+/// \file src/join_algs/join_algs_experiments.h
 ///
 /// \details
 /// Implements an experimental environment that executes algorithms in located in
 /// in the folder external/.
 
-#ifndef EXPERIMENTS_H
-#define EXPERIMENTS_H
+#ifndef JOIN_ALGS_EXPERIMENTS_H
+#define JOIN_ALGS_EXPERIMENTS_H
 
 #include <iostream>
 #include <time.h>
@@ -37,23 +37,15 @@
 #include "node.h"
 #include "string_label.h"
 #include "bracket_notation_parser.h"
-#include "allpairs_generic.h"
-#include "allpairs_multiset_baseline.h"
-#include "allpairs_multiset_dsf.h"
-#include "allpairs_multiset_two_layer.h"
-#include "allpairs_generic_self_join.h"
-#include "allpairs_multiset_baseline_self_join.h"
-#include "allpairs_multiset_dsf_self_join.h"
-#include "allpairs_multiset_two_layer_self_join.h"
-#include "partition_based_self_join.h"
-#include "naive_self_join.h"
+#include "t_join.h"
+#include "tang_join.h"
+#include "naive_join.h"
 #include "unit_cost_model.h"
-#include "tree_to_set_converter.h"
-#include "tree_to_set_converter_multiset.h"
-#include "tree_to_set_converter_multiset_baseline.h"
+#include "label_set_converter.h"
+#include "binary_tree_converter.h"
 #include "zhang_shasha.h"
 #include "touzet.h"
 #include "greedy_ub.h"
 #include "apted.h"
 
-#endif // EXPERIMENTS_H
+#endif // JOIN_ALGS_EXPERIMENTS_H

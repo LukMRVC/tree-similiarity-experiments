@@ -11,7 +11,7 @@
     "colors": ["blueviolet", "green", "turquoise"],
     "tables": [
         {
-            "table_name": "allpairs_multiset_dsf_self_join", 
+            "table_name": "t_join", 
             "attributes": [
                 {
                     "attr_name": "verification_candidates", 
@@ -29,11 +29,8 @@
         }
     ],
     "constraints": {
-        "hostname": "cluster1",
-        "algorithm_version": "168f9925b841335588aaa9060530a38addb0a044",
-        "dataset_filename": "python_ast_sorted.bracket",
+        "dataset_filename": "python_sorted.bracket",
         "verification_algorithm": "Touzet",
-        "similarity_function": "HammingOptimal",
         "upperbound": "greedy"
     },
     "x_axis": {

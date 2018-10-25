@@ -9,7 +9,7 @@ cd external
 # Timing library.
 git clone git@frosch.cosy.sbg.ac.at:wmann/common-code.git
 # Tree Similarity library.
-git clone git@frosch.cosy.sbg.ac.at:thuetter/tree-similarity-private.git
+git clone -b develop https://github.com/DatabaseGroup/tree-similarity.git
 ```
 
 Then execute the following from the project's root directory.

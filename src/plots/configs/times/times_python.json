@@ -11,7 +11,7 @@
     "colors": ["orangered", "darkorange", "green", "limegreen"],
     "tables": [
         {
-            "table_name": "partition_based_self_join", 
+            "table_name": "tang_join", 
             "attributes": [
                 {
                     "attr_name": "avg(filter_time + verification_time)/1000", 
@@ -25,7 +25,7 @@
             "name": "$\\mathtt{Tang}$"
         },
         {
-            "table_name": "allpairs_multiset_dsf_self_join", 
+            "table_name": "t_join", 
             "attributes": [
                 {
                     "attr_name": "avg(tree_to_set_time + filter_time + upperbound_time + verification_time)/1000", 
@@ -36,15 +36,15 @@
                     "name": " - Cand. time"
                 }
             ],
-            "name": "$\\mathtt{TJoin}$"
+            "name": "$\\mathtt{TJoin}$",
+            "constraints": {
+                "upperbound": "greedy"
+            }
         }
     ],
     "constraints": {
-        "hostname": "cluster1",
-        "algorithm_version": "168f9925b841335588aaa9060530a38addb0a044",
-        "dataset_filename": "python_ast_sorted.bracket",
-        "verification_algorithm": "Touzet",
-        "upperbound": "greedy"
+        "dataset_filename": "python_sorted.bracket",
+        "verification_algorithm": "Touzet"
     },
     "x_axis": {
         "db_column": "threshold",
