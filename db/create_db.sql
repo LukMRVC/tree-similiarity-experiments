@@ -29,7 +29,7 @@ CREATE TABLE dataset (
 -- algorithm_version varchar(127),
 -- threshold decimal,
 -- sum_subproblems bigint,
--- result_set_size bigint,
+-- join_result_size bigint,
 -- sum_subproblem_optimum bigint,
 -- optimum_time bigint
 
@@ -45,7 +45,7 @@ CREATE TABLE naive_join (
   algorithm_version varchar(127),
   threshold decimal,
   sum_subproblems bigint,
-  result_set_size bigint,
+  join_result_size bigint,
   sum_subproblem_optimum bigint,
   optimum_time bigint,
   -- Algorithm-specific attributes.
@@ -66,7 +66,7 @@ CREATE TABLE t_join (
   algorithm_version varchar(127),
   threshold decimal,
   sum_subproblems bigint,
-  result_set_size bigint,
+  join_result_size bigint,
   sum_subproblem_optimum bigint,
   optimum_time bigint,
   -- Algorithm-specific attributes.
@@ -95,7 +95,7 @@ CREATE TABLE tang_join (
   algorithm_version varchar(127),
   threshold decimal,
   sum_subproblems bigint,
-  result_set_size bigint,
+  join_result_size bigint,
   sum_subproblem_optimum bigint,
   optimum_time bigint,
   inv_list_lookups bigint,
