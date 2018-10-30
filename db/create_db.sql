@@ -70,7 +70,6 @@ CREATE TABLE t_join (
   sum_subproblem_optimum bigint,
   optimum_time bigint,
   -- Algorithm-specific attributes.
-  similarity_function varchar(127),
   verification_algorithm varchar(31),
   tree_to_set_time bigint,
   inv_list_lookups bigint, -- Pairs of trees that the index looks at.
@@ -99,7 +98,6 @@ CREATE TABLE tang_join (
   sum_subproblem_optimum bigint,
   optimum_time bigint,
   -- Algorithm-specific attributes.
-  similarity_function varchar(127),
   verification_algorithm varchar(31),
   tree_to_binary_tree_time bigint,
   inv_list_lookups bigint, -- Pairs of trees that the index looks at.
