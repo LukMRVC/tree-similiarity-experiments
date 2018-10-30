@@ -14,11 +14,11 @@
             "table_name": "tang_join", 
             "attributes": [
                 {
-                    "attr_name": "avg(filter_time + verification_time)/1000", 
+                    "attr_name": "avg(index_time + verification_time)/1000", 
                     "name": " - Join time"
                 },
                 {
-                    "attr_name": "avg(filter_time)/1000", 
+                    "attr_name": "avg(index_time)/1000", 
                     "name": " - Cand. time"
                 }
             ],
@@ -28,11 +28,11 @@
             "table_name": "t_join", 
             "attributes": [
                 {
-                    "attr_name": "avg(tree_to_set_time + filter_time + upperbound_time + verification_time)/1000", 
+                    "attr_name": "avg(tree_to_set_time + index_time + upperbound_time + verification_time)/1000", 
                     "name": " - Join time"
                 },
                 {
-                    "attr_name": "avg(filter_time)/1000", 
+                    "attr_name": "avg(index_time)/1000", 
                     "name": " - Cand. time"
                 }
             ],

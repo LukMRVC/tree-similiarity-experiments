@@ -15,25 +15,21 @@ import psycopg2
 from psycopg2 import sql
 from matplotlib.ticker import EngFormatter
 
-# http://initd.org/psycopg/docs/sql.html#module-psycopg2.sql
+
 def db_request(service, select_args, table_args, where_args, group_args, order_args):
   # Connect to database.
   db = psycopg2.connect("service=" + service)
-  # # Open a cursor to perform database operations
+  # Open a cursor to perform database operations
   cur = db.cursor()
   # Build query
   query = "SELECT " + select_args + " FROM " + table_args + where_args + group_args + order_args
-  print(query)
   cur.execute(query)
   # Fetch query result
   rows = cur.fetchall()
-  print("\nShow me the databases:\n")
-  for row in rows:
-      print("   ", row)
   db.commit()
-  # # Close the cursor.
+  # Close the cursor.
   cur.close()
-  # # Close communication with the database.
+  # Close communication with the database.
   db.close()
 
   return rows
@@ -70,7 +66,6 @@ plot_parameters = {}
 # execute the query
 for table in data['tables']:
   for attr in table['attributes']:
-    print(" === TABLE NAME === ")
     if 'aggregate' in data['y_axis']:
       select_args = data['x_axis']['db_column'] + ", " + data['y_axis']['aggregate'] + "(" + attr['attr_name'] + ")"
     else:
@@ -91,7 +86,7 @@ for table in data['tables']:
     if 'db_column' in data['x_axis']:
       group_args = ' GROUP BY ' + data['x_axis']['db_column']
       order_args = ' ORDER BY ' + data['x_axis']['db_column']
-    result = db_request(select_args, table_args, where_args, group_args, order_args)
+    result = db_request(args.service, select_args, table_args, where_args, group_args, order_args)
 
     label = ""
     if 'name' in table:
