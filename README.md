@@ -19,6 +19,17 @@ cd build
 cmake ..
 make
 ```
+
 ## PostgreSQL
 
-Create ``~/.pg_service.conf`` on the machine where you execute the experiments.
+Create a database using the SQL file ``./db/create_db.sql``.
+
+Further, create ``~/.pg_service.conf`` on the machine where you execute the experiments. 
+Insert a service for the database used to store experimental results.
+
+## Executing
+
+Use Python3 to run the experiments script by executing the following command from the root directory of the repository. 
+```bash
+python3 src/join_algs/join_algs_experiments.py --config configs/icde2019/bolzano.json --dataset_path /path_to/ted-datasets/ --service service
+```
