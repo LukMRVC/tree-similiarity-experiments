@@ -172,8 +172,6 @@ for a in data['algorithms']:
                 "dataset_filename" : filename
             })
             print("EXECUTING: " + filename + ";" + a + ";" + str(t))
-            if args.store and not args.debug:
-                new_params_id = store_ted_experiment_params(args.service_name, ted_experiment_params)
             
             # build command that needs to be executed
             cmd = []
@@ -205,6 +203,7 @@ for a in data['algorithms']:
             
             if args.store and not args.debug:
                 print("STORING ...")
+                new_params_id = store_ted_experiment_params(args.service_name, ted_experiment_params)
                 store_multirow_results(
                     args.service_name,
                     table_names[a],
