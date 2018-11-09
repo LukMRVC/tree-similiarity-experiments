@@ -9,22 +9,13 @@
     "colors": ["limegreen", "chocolate", "hotpink"],
     "tables": [
         {
-            "table_name": "sentiment_touzetd_x_threshold_y_runtime_sum_9305acf1", 
+            "table_name": "sentiment_x_threshold_y_runtime_factor", 
             "attributes": [
                 {
-                    "attr_name": "avg(sum_runtime/1000)"
+                    "attr_name": "avg(runtime_factor)"
                 }
             ],
-            "name": "BSM"
-        },
-        {
-            "table_name": "sentiment_labelguided_x_threshold_y_runtime_sum_9305acf1", 
-            "attributes": [
-                {
-                    "attr_name": "avg(sum_runtime/1000)"
-                }
-            ],
-            "name": "LGM"
+            "name": "BSM / LGM"
         }
     ],
     "x_axis": {
@@ -36,7 +27,7 @@
         "xmin": 0.0
     },
     "y_axis": {
-        "name": "Runtime [s]", 
+        "name": "Runtime factor", 
         "font_size": 20, 
         "ticks_font_size": 20
     }

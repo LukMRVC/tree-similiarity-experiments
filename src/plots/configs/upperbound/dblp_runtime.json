@@ -10,7 +10,7 @@
     "lines": [" ", " ", " "],
     "tables": [
         {
-            "table_name": "dblp_apted_x_avg_pair_tree_size_y_avg_runtime", 
+            "table_name": "dblp_apted_x_avg_pair_tree_size_y_avg_runtime_k10", 
             "attributes": [
                 {
                     "attr_name": "avg(avg_runtime)"
@@ -28,7 +28,7 @@
             "name": "BSM"
         },
         {
-            "table_name": "dblp_labelguided_x_avg_pair_tree_size_y_avg_runtime_k10_9305acf", 
+            "table_name": "dblp_labelguided_x_avg_pair_tree_size_y_avg_runtime_k10", 
             "attributes": [
                 {
                     "attr_name": "avg(avg_runtime)"

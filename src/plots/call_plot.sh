@@ -1,19 +1,10 @@
 ### Upperbound
+python3 plot_experiments.py --config configs/upperbound/sentiment_runtime.json --storeplot "./plots/sentiment_runtime.pdf" --service ted-join
+python3 plot_experiments.py --config configs/upperbound/dblp_runtime.json --storeplot "./plots/dblp_runtime.pdf" --service ted-join
+python3 plot_experiments.py --config configs/upperbound/sentiment_runtime_k.json --storeplot "./plots/sentiment_runtime_k.pdf" --service ted-join
+python3 plot_experiments.py --config configs/upperbound/sentiment_error.json --storeplot "./plots/sentiment_error.pdf" --service ted-join
+
 python3 plot_experiments.py --config configs/upperbound/dblp_error.json --storeplot "./plots/dblp_error.pdf"
-python3 plot_experiments.py --config configs/upperbound/dblp_runtime_k.json --storeplot "./plots/dblp_runtime_k_9305acf1.pdf"
-python3 plot_experiments.py --config configs/upperbound/dblp_runtime.json --storeplot "./plots/dblp_runtime_9305acf1.pdf"
-python3 plot_experiments.py --config configs/upperbound/dblp_ted.json --storeplot "./plots/dblp_ted.pdf"
-
-python3 plot_experiments.py --config configs/upperbound/python_runtime_k.json --storeplot "./plots/python_runtime_k_9305acf1.pdf"
-python3 plot_experiments.py --config configs/upperbound/python_runtime.json --storeplot "./plots/python_runtime_9305acf1.pdf"
-
-python3 plot_experiments.py --config configs/upperbound/sentiment_error.json --storeplot "./plots/sentiment_error.pdf"
-python3 plot_experiments.py --config configs/upperbound/sentiment_runtime_k.json --storeplot "./plots/sentiment_runtime_k_9305acf1.pdf"
-python3 plot_experiments.py --config configs/upperbound/sentiment_runtime.json --storeplot "./plots/sentiment_runtime_9305acf1.pdf"
-python3 plot_experiments.py --config configs/upperbound/sentiment_ted.json --storeplot "./plots/sentiment_ted.pdf"
-
-python3 plot_experiments.py --config configs/upperbound/swissprot_runtime_k.json --storeplot "./plots/swissprot_runtime_k_9305acf1.pdf"
-python3 plot_experiments.py --config configs/upperbound/swissprot_runtime.json --storeplot "./plots/swissprot_runtime_9305acf1.pdf"
 
 ### FPR
 python3 plot_experiments.py --config configs/fpr/fpr_bolzano.json --storeplot "./plots/bolzano_fpr.pdf"
