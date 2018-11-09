@@ -179,7 +179,7 @@ for a in data['algorithms']:
             cmd = []
             cmd.extend([
                 binary_name,
-                '--input', str(d),
+                '--input', str(args.dataset_path + d),
                 '--output' , 'json',
                 '--threshold', str(t)
             ])
