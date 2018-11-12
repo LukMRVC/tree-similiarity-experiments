@@ -128,27 +128,17 @@ void execute_t_join(std::vector<node::Node<Label>>& trees_collection, std::strin
       std::cout << "\"verification_candidates\": " << join_candidates.size() << ", ";
 
       if(upperbound == "greedy") {
-        ted_ub::GreedyUB<Label, CostModel> gub;
+        // ted_ub::GreedyUB<Label, CostModel> gub;
 
         // Initialized Timing object
         Timing::Interval * greedyub = timing.create_enroll("GreedyUB");
         // Start timing
         greedyub->start();
 
-        std::vector<std::pair<unsigned int, unsigned int>>::iterator it = join_candidates.begin();
-        while(it != join_candidates.end()) {
-          double ub_value = gub.verify(trees_collection[it->first],
-                                        trees_collection[it->second],
-                                        distance_threshold);
-          if(ub_value <= distance_threshold) {
-            join_result.emplace_back(it->first, it->second, ub_value);
-            *it = join_candidates.back();
-            join_candidates.pop_back();
-          }
-          else {
-            ++it;
-          }
-        }
+        // Send candidates to the result if their label guided mapping upper 
+        // bound is below the threshold.
+        tj.upperbound(trees_collection, join_candidates,
+                      join_result, distance_threshold);
 
         // Stop timing
         greedyub->stop();
@@ -267,6 +257,7 @@ void execute_tang_join(std::vector<node::Node<Label>>& trees_collection,
           double ub_value = gub.verify(trees_collection[it->first],
                                         trees_collection[it->second],
                                         distance_threshold);
+
           if(ub_value <= distance_threshold) {
             join_result.emplace_back(it->first, it->second, ub_value);
             it = join_candidates.erase(it);
