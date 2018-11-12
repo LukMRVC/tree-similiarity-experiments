@@ -491,7 +491,7 @@ int main(int argc, char** argv) {
   }
   if (alg_lg_is_set) {
     experiment.algorithm_executions.emplace_back("LabelGuided",
-        execute_mechanism<Label, LabelGuided, &LabelGuided::verify_bool>(
+        execute_mechanism<Label, LabelGuided, &LabelGuided::greedy_ub_ted>(
             trees_collection, mp, similarity_threshold, lp));
   }
   
