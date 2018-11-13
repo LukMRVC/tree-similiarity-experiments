@@ -1,10 +1,9 @@
 ### Upperbound
 python3 plot_experiments.py --config configs/upperbound/sentiment_runtime.json --storeplot "./plots/sentiment_runtime.pdf" --service ted-join
-python3 plot_experiments.py --config configs/upperbound/dblp_runtime.json --storeplot "./plots/dblp_runtime.pdf" --service ted-join
 python3 plot_experiments.py --config configs/upperbound/sentiment_runtime_k.json --storeplot "./plots/sentiment_runtime_k.pdf" --service ted-join
 python3 plot_experiments.py --config configs/upperbound/sentiment_error.json --storeplot "./plots/sentiment_error.pdf" --service ted-join
-
-python3 plot_experiments.py --config configs/upperbound/dblp_error.json --storeplot "./plots/dblp_error.pdf"
+python3 plot_experiments.py --config configs/upperbound/dblp_runtime.json --storeplot "./plots/dblp_runtime.pdf" --service ted-join
+python3 plot_experiments.py --config configs/upperbound/dblp_error.json --storeplot "./plots/dblp_error.pdf" --service ted-join
 
 ### FPR
 python3 plot_experiments.py --config configs/fpr/fpr_bolzano.json --storeplot "./plots/bolzano_fpr.pdf"
