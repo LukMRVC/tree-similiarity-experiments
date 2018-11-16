@@ -4,7 +4,6 @@ CREATE MATERIALIZED VIEW sentiment_apted_x_avg_pair_tree_size_y_avg_runtime_k10 
   SELECT (tree_size_1+tree_size_2)/2.0 AS avg_pair_tree_size, avg(runtime) AS avg_runtime
   FROM ted_apted NATURAL JOIN ted_experiment_params
   WHERE dataset_filename = 'sentiment_sorted.bracket'
-  AND algorithm_source_commit = 'e288c558d2b7af978d6d2239a31430bdba6b8d41'
   AND abs(tree_size_1-tree_size_2)<=10
   GROUP BY avg_pair_tree_size
   ORDER BY avg_pair_tree_size
@@ -16,7 +15,6 @@ CREATE MATERIALIZED VIEW sentiment_labelguided_x_avg_pair_tree_size_y_avg_runtim
   SELECT (tree_size_1+tree_size_2)/2.0 AS avg_pair_tree_size, avg(runtime) AS avg_runtime
   FROM tedk_labelguided NATURAL JOIN ted_experiment_params
   WHERE dataset_filename = 'sentiment_sorted.bracket'
-  AND algorithm_source_commit = 'e288c558d2b7af978d6d2239a31430bdba6b8d41'
   AND abs(tree_size_1-tree_size_2)<=10
   AND ted_threshold = 10
   GROUP BY avg_pair_tree_size
@@ -29,7 +27,6 @@ CREATE MATERIALIZED VIEW sentiment_touzetd_x_avg_pair_tree_size_y_avg_runtime_k1
   SELECT (tree_size_1+tree_size_2)/2.0 AS avg_pair_tree_size, avg(runtime) AS avg_runtime
   FROM tedk_touzetd NATURAL JOIN ted_experiment_params
   WHERE dataset_filename = 'sentiment_sorted.bracket'
-  AND algorithm_source_commit = 'e288c558d2b7af978d6d2239a31430bdba6b8d41'
   AND abs(tree_size_1-tree_size_2)<=10
   AND ted_threshold = 10
   GROUP BY avg_pair_tree_size
@@ -42,7 +39,6 @@ CREATE MATERIALIZED VIEW dblp_apted_x_avg_pair_tree_size_y_avg_runtime_k10 AS
   SELECT (tree_size_1+tree_size_2)/2.0 AS avg_pair_tree_size, avg(runtime) AS avg_runtime
   FROM ted_apted NATURAL JOIN ted_experiment_params
   WHERE dataset_filename = 'dblp_no_www_sorted.bracket'
-  AND algorithm_source_commit = 'e288c558d2b7af978d6d2239a31430bdba6b8d41'
   AND abs(tree_size_1-tree_size_2)<=10
   GROUP BY avg_pair_tree_size
   ORDER BY avg_pair_tree_size
@@ -54,7 +50,6 @@ CREATE MATERIALIZED VIEW dblp_labelguided_x_avg_pair_tree_size_y_avg_runtime_k10
   SELECT (tree_size_1+tree_size_2)/2.0 AS avg_pair_tree_size, avg(runtime) AS avg_runtime
   FROM tedk_labelguided NATURAL JOIN ted_experiment_params
   WHERE dataset_filename = 'dblp_no_www_sorted.bracket'
-  AND algorithm_source_commit = 'e288c558d2b7af978d6d2239a31430bdba6b8d41'
   AND abs(tree_size_1-tree_size_2)<=10
   AND ted_threshold = 10
   GROUP BY avg_pair_tree_size
@@ -67,7 +62,6 @@ CREATE MATERIALIZED VIEW dblp_touzetd_x_avg_pair_tree_size_y_avg_runtime_k10 AS
   SELECT (tree_size_1+tree_size_2)/2.0 AS avg_pair_tree_size, avg(runtime) AS avg_runtime
   FROM tedk_touzetd NATURAL JOIN ted_experiment_params
   WHERE dataset_filename = 'dblp_no_www_sorted.bracket'
-  AND algorithm_source_commit = 'e288c558d2b7af978d6d2239a31430bdba6b8d41'
   AND abs(tree_size_1-tree_size_2)<=10
   AND ted_threshold = 10
   GROUP BY avg_pair_tree_size
@@ -81,7 +75,6 @@ CREATE MATERIALIZED VIEW sentiment_labelguided_x_threshold_y_sum_runtime AS
   FROM tedk_labelguided NATURAL JOIN ted_experiment_params
   WHERE dataset_filename = 'sentiment_sorted.bracket'
   AND abs(tree_size_1-tree_size_2) <= ted_threshold
-  AND algorithm_source_commit = 'e288c558d2b7af978d6d2239a31430bdba6b8d41'
   GROUP BY ted_threshold
   ORDER BY ted_threshold
 WITH DATA;
@@ -93,7 +86,6 @@ CREATE MATERIALIZED VIEW sentiment_touzetd_x_threshold_y_sum_runtime AS
   FROM tedk_touzetd NATURAL JOIN ted_experiment_params
   WHERE dataset_filename = 'sentiment_sorted.bracket'
   AND abs(tree_size_1-tree_size_2) <= ted_threshold
-  AND algorithm_source_commit = 'e288c558d2b7af978d6d2239a31430bdba6b8d41'
   GROUP BY ted_threshold
   ORDER BY ted_threshold
 WITH DATA;
@@ -113,7 +105,6 @@ CREATE MATERIALIZED VIEW sentiment_apted_x_avg_pair_tree_size_y_avg_ted_k10 AS
   SELECT (tree_size_1+tree_size_2)/2.0 AS avg_pair_tree_size, avg(ted_value) AS avg_ted_value
   FROM ted_apted NATURAL JOIN ted_experiment_params
   WHERE dataset_filename = 'sentiment_sorted.bracket'
-  AND algorithm_source_commit = 'e288c558d2b7af978d6d2239a31430bdba6b8d41'
   AND abs(tree_size_1-tree_size_2)<=10
   GROUP BY avg_pair_tree_size
   ORDER BY avg_pair_tree_size
@@ -125,7 +116,6 @@ CREATE MATERIALIZED VIEW sentiment_labelguided_x_avg_pair_tree_size_y_avg_ted_k1
   SELECT (tree_size_1+tree_size_2)/2.0 AS avg_pair_tree_size, avg(ted_value) AS avg_ted_value
   FROM tedk_labelguided NATURAL JOIN ted_experiment_params
   WHERE dataset_filename = 'sentiment_sorted.bracket'
-  AND algorithm_source_commit = 'e288c558d2b7af978d6d2239a31430bdba6b8d41'
   AND abs(tree_size_1-tree_size_2)<=10
   AND ted_threshold = 10
   GROUP BY avg_pair_tree_size
@@ -147,7 +137,6 @@ CREATE MATERIALIZED VIEW dblp_apted_x_avg_pair_tree_size_y_avg_ted_k10 AS
   SELECT (tree_size_1+tree_size_2)/2.0 AS avg_pair_tree_size, avg(ted_value) AS avg_ted_value
   FROM ted_apted NATURAL JOIN ted_experiment_params
   WHERE dataset_filename = 'dblp_no_www_sorted.bracket'
-  AND algorithm_source_commit = 'e288c558d2b7af978d6d2239a31430bdba6b8d41'
   AND abs(tree_size_1-tree_size_2)<=10
   GROUP BY avg_pair_tree_size
   ORDER BY avg_pair_tree_size
@@ -159,7 +148,6 @@ CREATE MATERIALIZED VIEW dblp_labelguided_x_avg_pair_tree_size_y_avg_ted_k10 AS
   SELECT (tree_size_1+tree_size_2)/2.0 AS avg_pair_tree_size, avg(ted_value) AS avg_ted_value
   FROM tedk_labelguided NATURAL JOIN ted_experiment_params
   WHERE dataset_filename = 'dblp_no_www_sorted.bracket'
-  AND algorithm_source_commit = 'e288c558d2b7af978d6d2239a31430bdba6b8d41'
   AND abs(tree_size_1-tree_size_2)<=10
   AND ted_threshold = 10
   GROUP BY avg_pair_tree_size
