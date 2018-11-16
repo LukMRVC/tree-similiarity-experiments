@@ -22,10 +22,8 @@
 # SOFTWARE.
 
 '''
-    File name: plot_experiments.py
-    Author: Thomas Huetter
-    Program: Outputs a plot specified in a given config file.
-             The data is requested from the ted-join database.
+Program: Outputs a plot specified in a given config file.
+         The data is requested from the ted-join database.
 '''
 
 import argparse

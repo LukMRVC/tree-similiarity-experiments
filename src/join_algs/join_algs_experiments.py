@@ -22,9 +22,7 @@
 # SOFTWARE.
 
 '''
-    File name: experiments.py
-    Author: Thomas Huetter
-    Program: Wrapper script to call ./experiments.
+Program: Wrapper script to call ./experiments.
 '''
 
 import sys
