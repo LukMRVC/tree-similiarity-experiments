@@ -352,21 +352,12 @@ int main(int argc, char** argv) {
   // --apted APTED                                     apted_ted
   // --tz    Touzet - basic version                    touzet_ted
   // --tzd   Touzet - depth-based pruning              touzet_ted_depth_pruning
-  // --tzs   Touzet - keyroot nodes with set           touzet_ted_kr_loop
-  // --tzl   Touzet - keyroot nodes with loop          touzet_ted_kr_set
-  // --tzse  Touzet - keyroot nodes with set + e_max   touzet_ted_kr_loop
-  // --tzle  Touzet - keyroot nodes with loop + e_max  touzet_ted_kr_set
   // --lg    LabelGuided                               greedy_ub_ted
   bool alg_zs_is_set = false;
   bool alg_apted_is_set = false;
   bool alg_tz_is_set = false;
   bool alg_tzd_is_set = false;
-  bool alg_tzs_is_set = false;
-  bool alg_tzl_is_set = false;
-  bool alg_tzse_is_set = false;
-  bool alg_tzle_is_set = false;
   bool alg_lg_is_set = false;
-  bool alg_lg_depr_is_set = false;
   
   // Output format
   bool output_in_json = false;
@@ -405,23 +396,8 @@ int main(int argc, char** argv) {
     } else if (a == "--tzd") {
       alg_tzd_is_set = true;
       args_start_it += 1;
-    } else if (a == "--tzs") {
-      alg_tzs_is_set = true;
-      args_start_it += 1;
-    } else if (a == "--tzl") {
-      alg_tzl_is_set = true;
-      args_start_it += 1;
-    } else if (a == "--tzse") {
-      alg_tzse_is_set = true;
-      args_start_it += 1;
-    } else if (a == "--tzle") {
-      alg_tzle_is_set = true;
-      args_start_it += 1;
-    } else if (a == "--lg") {
+    }else if (a == "--lg") {
       alg_lg_is_set = true;
-      args_start_it += 1;
-    } else if (a == "--lgdepr") {
-      alg_lg_depr_is_set = true;
       args_start_it += 1;
     } else if (a == "--one-by-one") {
       // mechanism_to_execute = kOneByOne;
@@ -513,34 +489,9 @@ int main(int argc, char** argv) {
         execute_mechanism<Label, Touzet, &Touzet::touzet_ted_depth_pruning>(
             trees_collection, mp, similarity_threshold, lp));
   }
-  if (alg_tzs_is_set) {
-    experiment.algorithm_executions.emplace_back("TouzetKrLoop",
-        execute_mechanism<Label, Touzet, &Touzet::touzet_ted_kr_loop_no_e_max>(
-            trees_collection, mp, similarity_threshold, lp));
-  }
-  if (alg_tzl_is_set) {
-    experiment.algorithm_executions.emplace_back("TouzetKrSet",
-        execute_mechanism<Label, Touzet, &Touzet::touzet_ted_kr_set_no_e_max>(
-            trees_collection, mp, similarity_threshold, lp));
-  }
-  if (alg_tzse_is_set) {
-    experiment.algorithm_executions.emplace_back("TouzetKrLoopEmax",
-        execute_mechanism<Label, Touzet, &Touzet::touzet_ted_kr_loop_e_max>(
-            trees_collection, mp, similarity_threshold, lp));
-  }
-  if (alg_tzle_is_set) {
-    experiment.algorithm_executions.emplace_back("TouzetKrSetEmax",
-        execute_mechanism<Label, Touzet, &Touzet::touzet_ted_kr_set_e_max>(
-            trees_collection, mp, similarity_threshold, lp));
-  }
   if (alg_lg_is_set) {
     experiment.algorithm_executions.emplace_back("LabelGuided",
-        execute_mechanism<Label, LabelGuided, &LabelGuided::verify_bool>(
-            trees_collection, mp, similarity_threshold, lp));
-  }
-  if (alg_lg_depr_is_set) {
-    experiment.algorithm_executions.emplace_back("LabelGuidedDeprecated",
-        execute_mechanism<Label, LabelGuided, &LabelGuided::greedy_ub_ted_deprecated>(
+        execute_mechanism<Label, LabelGuided, &LabelGuided::greedy_ub_ted>(
             trees_collection, mp, similarity_threshold, lp));
   }
   

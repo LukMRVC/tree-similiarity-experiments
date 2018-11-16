@@ -22,7 +22,7 @@ from datetime import datetime
 # TODO: Fix the paths depending on where is the script executed from.
 # Everything is executed from the project's root.
 binary_name = "build/ted-algs-experiments"
-algorithms_repository_path = "external/tree-similarity-private/"
+algorithms_repository_path = "external/tree-similarity/"
 
 # execute a command and return stdout
 def get_stdout_cmd(callargs):
@@ -121,6 +121,11 @@ parser.add_argument(
 )
 parser.add_argument(
     type=str,
+    dest='dataset_path',
+    help="Path to the root directory of the datasets (with trailing slash)."
+)
+parser.add_argument(
+    type=str,
     dest='service_name',
     help="Service name to use from '~/.pg_service.conf' file."
 )
@@ -129,6 +134,12 @@ parser.add_argument(
     dest = 'store',
     action = 'store_true',
     help = 'Set to store results in the database (default: not set).'
+)
+parser.add_argument(
+    '--debug',
+    dest = 'debug',
+    action = 'store_true',
+    help = 'Set to print experiments commands that will be executed (default: not set).'
 )
 args = parser.parse_args()
 
@@ -161,14 +172,12 @@ for a in data['algorithms']:
                 "dataset_filename" : filename
             })
             print("EXECUTING: " + filename + ";" + a + ";" + str(t))
-            if args.store:
-                new_params_id = store_ted_experiment_params(args.service_name, ted_experiment_params)
             
             # build command that needs to be executed
             cmd = []
             cmd.extend([
                 binary_name,
-                '--input', str(d),
+                '--input', str(args.dataset_path + d),
                 '--output' , 'json',
                 '--threshold', str(t)
             ])
@@ -179,15 +188,22 @@ for a in data['algorithms']:
             # TODO: Verify if an experiment like that has been already executed
             #       and how many values it has.
             
-            cmd_output = get_stdout_cmd(cmd).strip()
-            result_data = json.loads(cmd_output.decode('utf-8'))
+            cmd_output = ""
+            result_data = []
             
-            if not args.store:
+            if args.debug:
+                print(cmd)
+            else:
+                cmd_output = get_stdout_cmd(cmd).strip()
+                result_data = json.loads(cmd_output.decode('utf-8'))
+            
+            if not args.store and not args.debug:
                 print("RESULTS:")
                 print(cmd_output)
             
-            if args.store:
+            if args.store and not args.debug:
                 print("STORING ...")
+                new_params_id = store_ted_experiment_params(args.service_name, ted_experiment_params)
                 store_multirow_results(
                     args.service_name,
                     table_names[a],
