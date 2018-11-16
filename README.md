@@ -58,7 +58,7 @@ the experiments. The service file holds the connection details to the database
 where the results will be stored. An example service file looks as follows.
 
 ```
-[ted-experiments]
+[ted-exp]
 host=mydb.sbg.ac.at
 port=5432
 user=ted
