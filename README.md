@@ -8,10 +8,12 @@ Follow the instructions below to reproduce the environment and the experiments.
 ## ICDE 2019 Reproducibility
 
 For reproducing the experiments of the ICDE 2019 submission, checkout the tag
-`icde2019` of this and Tree Similarity library repositories.
+`icde2019` of this and
+[Tree Similarity library](https://github.com/DatabaseGroup/tree-similarity/tree/develop)
+repositories.
 
 Obtain datasets from our
-[Datasets repository](https://frosch.cosy.sbg.ac.at/mpawlik/ted-datasets)
+[Datasets repository](https://frosch.cosy.sbg.ac.at/mpawlik/ted-datasets).
 
 Execute the experiments with all config files in `configs/icde2019` directory.
 
