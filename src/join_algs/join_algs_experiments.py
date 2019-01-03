@@ -128,7 +128,7 @@ def main():
                 # build command that needs to be executed
                 cmd = []
                 # call binary
-                if a['name'] == 't_join' or a['name'] == 'tang_join':
+                if a['name'] == 't_join' or a['name'] == 'tang_join' or a['name'] == 'leaf_distance_histogram_join' or a['name'] == 'label_histogram_join' or a['name'] == 'degree_histogram_join' or a['name'] == 'binary_branches_join':
                     algorithm_params = {
                         "verification_algorithm" : a['verification_algorithm'],
                         "upperbound" : a['upperbound']

@@ -110,6 +110,118 @@ CREATE TABLE tang_join (
   upperbound_pruned bigint -- Number of pairs in the result set by upperbound computation.
 );
 
+DROP TABLE IF EXISTS binary_branches_join;
+CREATE TABLE binary_branches_join (
+  -- Common attributes.
+  execution_id serial PRIMARY KEY,
+  experiments_version varchar(127),
+  experiments_timestamp timestamp,
+  hostname varchar(127),
+  dataset_filename varchar(127) REFERENCES dataset(filename),
+  dataset_parsing_time bigint,
+  algorithm_version varchar(127),
+  threshold decimal,
+  sum_subproblems bigint,
+  join_result_size bigint,
+  sum_subproblem_optimum bigint,
+  optimum_time bigint,
+  -- Algorithm-specific attributes.
+  verification_algorithm varchar(31),
+  tree_to_set_time bigint,
+  inv_list_lookups bigint, -- Pairs of trees that the index looks at.
+  index_verification_candidates bigint, -- Pairs of trees resulting from index only.
+  index_time bigint, -- Total time of the index and its verification step.
+  verification_candidates bigint, -- Pairs of trees resulting after verification step of the index.
+  verification_time bigint, -- TED verification time.
+  upperbound varchar(127), -- string that defines which upperbound is used
+  upperbound_time bigint, -- Time spent to compute upperbounds for verification candidates.
+  upperbound_pruned bigint -- Number of pairs in the result set by upperbound computation.
+);
+
+DROP TABLE IF EXISTS label_histogram_join;
+CREATE TABLE label_histogram_join (
+  -- Common attributes.
+  execution_id serial PRIMARY KEY,
+  experiments_version varchar(127),
+  experiments_timestamp timestamp,
+  hostname varchar(127),
+  dataset_filename varchar(127) REFERENCES dataset(filename),
+  dataset_parsing_time bigint,
+  algorithm_version varchar(127),
+  threshold decimal,
+  sum_subproblems bigint,
+  join_result_size bigint,
+  sum_subproblem_optimum bigint,
+  optimum_time bigint,
+  -- Algorithm-specific attributes.
+  verification_algorithm varchar(31),
+  tree_to_set_time bigint,
+  inv_list_lookups bigint, -- Pairs of trees that the index looks at.
+  index_verification_candidates bigint, -- Pairs of trees resulting from index only.
+  index_time bigint, -- Total time of the index and its verification step.
+  verification_candidates bigint, -- Pairs of trees resulting after verification step of the index.
+  verification_time bigint, -- TED verification time.
+  upperbound varchar(127), -- string that defines which upperbound is used
+  upperbound_time bigint, -- Time spent to compute upperbounds for verification candidates.
+  upperbound_pruned bigint -- Number of pairs in the result set by upperbound computation.
+);
+
+DROP TABLE IF EXISTS leaf_distance_histogram_join;
+CREATE TABLE leaf_distance_histogram_join (
+  -- Common attributes.
+  execution_id serial PRIMARY KEY,
+  experiments_version varchar(127),
+  experiments_timestamp timestamp,
+  hostname varchar(127),
+  dataset_filename varchar(127) REFERENCES dataset(filename),
+  dataset_parsing_time bigint,
+  algorithm_version varchar(127),
+  threshold decimal,
+  sum_subproblems bigint,
+  join_result_size bigint,
+  sum_subproblem_optimum bigint,
+  optimum_time bigint,
+  -- Algorithm-specific attributes.
+  verification_algorithm varchar(31),
+  tree_to_set_time bigint,
+  inv_list_lookups bigint, -- Pairs of trees that the index looks at.
+  index_verification_candidates bigint, -- Pairs of trees resulting from index only.
+  index_time bigint, -- Total time of the index and its verification step.
+  verification_candidates bigint, -- Pairs of trees resulting after verification step of the index.
+  verification_time bigint, -- TED verification time.
+  upperbound varchar(127), -- string that defines which upperbound is used
+  upperbound_time bigint, -- Time spent to compute upperbounds for verification candidates.
+  upperbound_pruned bigint -- Number of pairs in the result set by upperbound computation.
+);
+
+DROP TABLE IF EXISTS degree_histogram_join;
+CREATE TABLE degree_histogram_join (
+  -- Common attributes.
+  execution_id serial PRIMARY KEY,
+  experiments_version varchar(127),
+  experiments_timestamp timestamp,
+  hostname varchar(127),
+  dataset_filename varchar(127) REFERENCES dataset(filename),
+  dataset_parsing_time bigint,
+  algorithm_version varchar(127),
+  threshold decimal,
+  sum_subproblems bigint,
+  join_result_size bigint,
+  sum_subproblem_optimum bigint,
+  optimum_time bigint,
+  -- Algorithm-specific attributes.
+  verification_algorithm varchar(31),
+  tree_to_set_time bigint,
+  inv_list_lookups bigint, -- Pairs of trees that the index looks at.
+  index_verification_candidates bigint, -- Pairs of trees resulting from index only.
+  index_time bigint, -- Total time of the index and its verification step.
+  verification_candidates bigint, -- Pairs of trees resulting after verification step of the index.
+  verification_time bigint, -- TED verification time.
+  upperbound varchar(127), -- string that defines which upperbound is used
+  upperbound_time bigint, -- Time spent to compute upperbounds for verification candidates.
+  upperbound_pruned bigint -- Number of pairs in the result set by upperbound computation.
+);
+
 -- Parameters of a ted experiment (for normalization):
 
 -- ted_experiment_timestamp timestamp,
