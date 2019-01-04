@@ -1,6 +1,6 @@
 {
   "datasets": [
-    "python/python_sorted.bracket"
+    "python/python_10000_sorted.bracket"
   ],
   "thresholds": [
     1.0, 2.0, 5.0, 10.0, 15.0, 20.0
@@ -9,6 +9,26 @@
     { "name": "t_join",
       "verification_algorithm" : "Touzet",
       "upperbound": "greedy"
+    },
+    { "name": "tang_join",
+      "verification_algorithm" : "APTED",
+      "upperbound": "none"
+    },
+    { "name": "leaf_distance_histogram_join",
+      "verification_algorithm" : "APTED",
+      "upperbound": "none"
+    },
+    { "name": "label_histogram_join",
+      "verification_algorithm" : "APTED",
+      "upperbound": "none"
+    },
+    { "name": "degree_histogram_join",
+      "verification_algorithm" : "APTED",
+      "upperbound": "none"
+    },
+    { "name": "binary_branches_join",
+      "verification_algorithm" : "APTED",
+      "upperbound": "none"
     }
   ]
 }

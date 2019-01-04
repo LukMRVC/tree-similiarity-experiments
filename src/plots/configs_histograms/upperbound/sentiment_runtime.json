@@ -1,0 +1,52 @@
+{
+    "title": "Runtime",
+    "print_title": "no",
+    "legend": "upper left",
+    "legend_font_size": 18,
+    "grid": "on",
+    "dataset_name": "Sentiment",
+    "markers": ["+", "x", "."],
+    "colors": ["red", "blue", "green"],
+    "lines": [" ", " ", " "],
+    "tables": [
+        {
+            "table_name": "sentiment_apted_x_avg_pair_tree_size_y_avg_runtime_k10", 
+            "attributes": [
+                {
+                    "attr_name": "avg(avg_runtime)"
+                }
+            ],
+            "name": "APTED"
+        },
+        {
+            "table_name": "sentiment_touzetd_x_avg_pair_tree_size_y_avg_runtime_k10", 
+            "attributes": [
+                {
+                    "attr_name": "avg(avg_runtime)"
+                }
+            ],
+            "name": "BSM"
+        },
+        {
+            "table_name": "sentiment_labelguided_x_avg_pair_tree_size_y_avg_runtime_k10", 
+            "attributes": [
+                {
+                    "attr_name": "avg(avg_runtime)"
+                }
+            ],
+            "name": "LGM"
+        }
+    ],
+    "x_axis": {
+        "db_column": "avg_pair_tree_size",
+        "name": "Tree Size", 
+        "font_size": 20, 
+        "ticks_font_size": 20
+    },
+    "y_axis": {
+        "name": "Runtime [ms]",
+        "scale": "log", 
+        "font_size": 20, 
+        "ticks_font_size": 20
+    }
+}

@@ -12,23 +12,23 @@
       "upperbound": "greedy"
     },
     { "name": "tang_join",
-      "verification_algorithm" : "Touzet",
+      "verification_algorithm" : "APTED",
       "upperbound": "none"
     },
     { "name": "leaf_distance_histogram_join",
-      "verification_algorithm" : "Touzet",
+      "verification_algorithm" : "APTED",
       "upperbound": "none"
     },
     { "name": "label_histogram_join",
-      "verification_algorithm" : "Touzet",
+      "verification_algorithm" : "APTED",
       "upperbound": "none"
     },
     { "name": "degree_histogram_join",
-      "verification_algorithm" : "Touzet",
+      "verification_algorithm" : "APTED",
       "upperbound": "none"
     },
     { "name": "binary_branches_join",
-      "verification_algorithm" : "Touzet",
+      "verification_algorithm" : "APTED",
       "upperbound": "none"
     }
   ]
