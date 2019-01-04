@@ -86,11 +86,5 @@
         "ymax": 1, 
         "font_size": 20, 
         "ticks_font_size": 20
-    },
-    "textbox": {
-        "text": "Tang: timeout",
-        "x": 0.04,
-        "y": 0.95,
-        "font_size": 20
     }
 }

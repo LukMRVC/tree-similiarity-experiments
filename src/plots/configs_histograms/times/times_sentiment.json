@@ -100,7 +100,7 @@
     "y_axis": {
         "name": "Time [s]",
         "scale": "log",
-        "ymin": 0.01, 
+        "ymin": 0.1, 
         "font_size": 20, 
         "ticks_font_size": 20
     }

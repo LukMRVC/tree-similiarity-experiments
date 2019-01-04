@@ -86,11 +86,5 @@
         "ymax": 1, 
         "font_size": 20, 
         "ticks_font_size": 20
-    },
-    "textbox": {
-        "text": "$\\mathtt{Tang}$:\n$\\tau = 1$: FPR=100%\n$\\tau > 1$: timeout",
-        "x": 0.04,
-        "y": 0.95,
-        "font_size": 18
     }
 }

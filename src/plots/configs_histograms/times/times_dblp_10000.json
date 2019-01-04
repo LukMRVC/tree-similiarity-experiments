@@ -99,14 +99,7 @@
     "y_axis": {
         "name": "Time [s]",
         "scale": "log",
-        "ymin": 10, 
         "font_size": 20, 
         "ticks_font_size": 20
-    },
-    "textbox": {
-        "text": "$\\mathtt{Tang}$ ($\\tau = 1$)\nCand. time=38473s",
-        "x": 0.43,
-        "y": 0.20,
-        "font_size": 20
     }
 }
