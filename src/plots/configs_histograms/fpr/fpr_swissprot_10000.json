@@ -69,7 +69,7 @@
         }
     ],
     "constraints": {
-        "dataset_filename": "swissprot_10000_sorted.bracket",
+        "dataset_filename": "swissprot_10000_sorted.bracket"
     },
     "x_axis": {
         "db_column": "threshold",
