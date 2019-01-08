@@ -711,6 +711,137 @@ void execute_lh_join(std::vector<node::Node<Label>>& trees_collection, std::stri
 }
 
 template <typename Label, typename CostModel, typename VerificationAlgorithm>
+void execute_histogram_join(std::vector<node::Node<Label>>& trees_collection, std::string upperbound, 
+    double distance_threshold) {
+  // Initialize join algorithm
+  join::HJoin<Label, CostModel, VerificationAlgorithm> hj;
+  Timing timing;
+  std::vector<join::JoinResultElement> join_result;
+
+  // Add some scopes to ensure that the memory is deallocated
+  {
+    // Initialized Timing object
+    Timing::Interval * tree_to_set = timing.create_enroll("TreeToSet");
+    // Start timing
+    tree_to_set->start();
+
+    // Convert trees to histogram of label values.
+    std::vector<std::pair<unsigned int, std::unordered_map<unsigned int, unsigned int>>> label_histogram_collection;
+    std::vector<std::pair<unsigned int, std::unordered_map<unsigned int, unsigned int>>> degree_histogram_collection;
+    std::vector<std::pair<unsigned int, std::unordered_map<unsigned int, unsigned int>>> leaf_distance_histogram_collection;
+    hj.convert_trees_to_sets(trees_collection, label_histogram_collection, 
+        degree_histogram_collection, leaf_distance_histogram_collection);
+
+    // Stop timing
+    tree_to_set->stop();
+
+    // Write timing
+    std::cout << "\"tree_to_set_time\": " << tree_to_set->getfloat() << ", ";
+
+    {
+      // Initialized Timing object
+      Timing::Interval * retCand = timing.create_enroll("RetrieveCandidates");
+      // Start timing
+      retCand->start();
+
+      // Retrieve candidates for tjoin's candidate index
+      std::vector<std::pair<unsigned int, unsigned int>> join_candidates;
+      hj.retrieve_candidates(label_histogram_collection, degree_histogram_collection, 
+        leaf_distance_histogram_collection, join_candidates, distance_threshold);
+
+      // Stop timing
+      retCand->stop();
+
+      // Write timing
+      std::cout << "\"index_time\": " << retCand->getfloat() << ", ";
+      std::cout << "\"verification_candidates\": " << join_candidates.size() << ", ";
+
+      if(upperbound == "greedy") {
+        ted_ub::GreedyUB<Label, CostModel> gub;
+
+        // Initialized Timing object
+        Timing::Interval * greedyub = timing.create_enroll("GreedyUB");
+        // Start timing
+        greedyub->start();
+
+        std::vector<std::pair<unsigned int, unsigned int>>::iterator it = join_candidates.begin();
+        while(it != join_candidates.end()) {
+          double ub_value = gub.verify(trees_collection[it->first],
+                                        trees_collection[it->second],
+                                        distance_threshold);
+          if(ub_value <= distance_threshold) {
+            join_result.emplace_back(it->first, it->second, ub_value);
+            *it = join_candidates.back();
+            join_candidates.pop_back();
+          }
+          else {
+            ++it;
+          }
+        }
+
+        // Stop timing
+        greedyub->stop();
+
+        // Write timing
+        std::cout << "\"upperbound_time\": " << greedyub->getfloat() << ", ";
+        std::cout << "\"upperbound_pruned\": " << join_result.size() << ", ";
+      } else {
+        std::cout << "\"upperbound_time\": 0" << ", ";
+        std::cout << "\"upperbound_pruned\": 0" << ", ";
+      }
+
+      // Initialized Timing object
+      Timing::Interval * verify = timing.create_enroll("Verify");
+      // Start timing
+      verify->start();
+
+      // Verify all computed join candidates and return the join result
+      hj.verify_candidates(trees_collection, join_candidates,
+                             join_result, distance_threshold);
+
+      // Stop timing
+      verify->stop();
+
+      // Write timing
+      std::cout << "\"verification_time\": " << verify->getfloat() << ", ";
+    }
+    // Write number of candidates and number of result pairs
+    std::cout << "\"index_verification_candidates\": " << hj.get_number_of_pre_candidates() << ", ";
+    std::cout << "\"inv_list_lookups\": " << hj.get_number_of_il_lookups() << ", ";
+    std::cout << "\"sum_subproblems\": " << hj.get_subproblem_count() << ", ";
+    std::cout << "\"join_result_size\": " << join_result.size() << ", ";
+  }
+
+  // Calculate optimum by verify only the resultset
+  // Initialized Timing object
+  Timing::Interval * optimum = timing.create_enroll("Optimum");
+  // Start timing
+  optimum->start();
+
+  VerificationAlgorithm ted_algorithm;
+  std::vector<join::JoinResultElement> optimum_result;
+  unsigned long long int sum_subproblem_optimum = 0;
+
+  for(auto pair: join_result) {
+    double ted_value = ted_algorithm.verify(trees_collection[pair.tree_id_1],
+                                            trees_collection[pair.tree_id_2],
+                                            distance_threshold);
+    if(ted_value <= distance_threshold)
+      optimum_result.emplace_back(pair.tree_id_1, pair.tree_id_2, ted_value);
+
+    // Sum up all number of subproblems
+    sum_subproblem_optimum += ted_algorithm.get_subproblem_count();
+  }
+
+  // Stop timing
+  optimum->stop();
+
+  // Write timing
+  std::cout << "\"sum_subproblem_optimum\": " << sum_subproblem_optimum << ", ";
+  std::cout << "\"optimum_time\": " << optimum->getfloat() << "}" << std::endl;
+}
+
+template <typename Label, typename CostModel, typename VerificationAlgorithm>
 void execute_tang_join(std::vector<node::Node<Label>>& trees_collection, 
     std::string upperbound, double distance_threshold) {
   // Initialize join algorithm
@@ -939,6 +1070,14 @@ int main(int argc, char** argv) {
       execute_bb_join<Label, CostModel, Touzet>(trees_collection, upperbound, distance_threshold);
     } else if (argv[4] == std::string("APTED")) {
       execute_bb_join<Label, CostModel, APTED>(trees_collection, upperbound, distance_threshold);
+    }
+  } else if(argv[3] == std::string("histogram_join")) {
+    if (argv[4] == std::string("ZhangShasha")) {
+      execute_histogram_join<Label, CostModel, ZhangShasha>(trees_collection, upperbound, distance_threshold);
+    } else if (argv[4] == std::string("Touzet")) {
+      execute_histogram_join<Label, CostModel, Touzet>(trees_collection, upperbound, distance_threshold);
+    } else if (argv[4] == std::string("APTED")) {
+      execute_histogram_join<Label, CostModel, APTED>(trees_collection, upperbound, distance_threshold);
     }
   }
 

@@ -65,6 +65,7 @@ target_include_directories(
   external/tree-similarity/src/join/label_histogram
   external/tree-similarity/src/join/degree_histogram
   external/tree-similarity/src/join/leaf_dist_histogram
+  external/tree-similarity/src/join/histogram
   external/tree-similarity/src/label
   external/tree-similarity/src/node
   external/tree-similarity/src/parser

@@ -1,0 +1,80 @@
+{
+    "title": "False Positive Ratio",
+    "print_title": "no",
+    "legend": "upper left",
+    "legend_font_size": 18,
+    "grid": "on",
+    "dataset_name": "Python AST 10000",
+    "markers": ["s", "*", "o", "^", "p", "d", "P"],
+    "markersize": [15, 20, 15, 15, 15, 15, 15],
+    "markerfacecolor": "none",
+    "colors": ["red", "green", "blue", "cyan", "magenta", "orange", "greenyellow"],
+    "tables": [
+        {
+            "table_name": "tang_join", 
+            "attributes": [
+                {
+                    "attr_name": "avg(NULLIF(verification_candidates::decimal,0))"
+                }
+            ],
+            "name": "$\\mathtt{Tang}$"
+        },
+        {
+            "table_name": "t_join", 
+            "attributes": [
+                {
+                    "attr_name": "avg(NULLIF(verification_candidates::decimal,0))"
+                }
+            ],
+            "name": "$\\mathtt{TJoin}$",
+            "constraints": {
+                "upperbound": "greedy"
+            }
+        },
+        {
+            "table_name": "binary_branches_join", 
+            "attributes": [
+                {
+                    "attr_name": "avg(NULLIF(verification_candidates::decimal,0))"
+                }
+            ],
+            "name": "$\\mathtt{BinBranches}$"
+        },
+        {
+            "table_name": "histogram_join", 
+            "attributes": [
+                {
+                    "attr_name": "avg(NULLIF(verification_candidates::decimal,0))"
+                }
+            ],
+            "name": "$\\mathtt{Histogram}$"
+        },
+        {
+            "table_name": "t_join", 
+            "attributes": [
+                {
+                    "attr_name": "avg(NULLIF(join_result_size::decimal,0))"
+                }
+            ],
+            "name": "$\\mathtt{Result}$"
+        }
+    ],
+    "constraints": {
+        "dataset_filename": "python_10000_sorted.bracket"
+    },
+    "x_axis": {
+        "db_column": "threshold",
+        "name": "Threshold",
+        "xticks": 2,
+        "xmin": 1,
+        "xmax": 20.001, 
+        "font_size": 20, 
+        "ticks_font_size": 20
+    },
+    "y_axis": {
+        "name": "Candidates (Tree Pairs)",
+        "font_size": 20, 
+        "ticks_font_size": 20, 
+        "suffix": "yes"
+    }
+}

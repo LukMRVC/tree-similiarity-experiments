@@ -44,6 +44,7 @@
 #include "dh_join.h"
 #include "ldh_join.h"
 #include "bb_join.h"
+#include "histo_join.h"
 #include "unit_cost_model.h"
 #include "label_set_converter.h"
 #include "binary_tree_converter.h"
