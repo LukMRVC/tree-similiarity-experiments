@@ -968,6 +968,81 @@ void execute_tang_join(std::vector<node::Node<Label>>& trees_collection,
   std::cout << "\"optimum_time\": " << optimum->getfloat() << "}" << std::endl;
 }
 
+template <typename Label, typename CostModel, typename VerificationAlgorithm>
+void execute_guha_join(std::vector<node::Node<Label>>& trees_collection,
+    double distance_threshold, unsigned int reference_set_size) {
+  // Initialize join algorithm
+  join::Guha<Label, CostModel, VerificationAlgorithm> guha_join;
+  Timing timing;
+  std::vector<join::JoinResultElement> join_result;
+
+  // Add some scopes to ensure that the memory is deallocated
+  {
+    // Initialized Timing object
+    Timing::Interval * tree_to_set = timing.create_enroll("Vectors");
+    // Start timing
+    tree_to_set->start();
+
+    // Get a random reference set.
+    std::vector<unsigned int> reference_set = guha_join.get_random_reference_set(
+        trees_collection, reference_set_size
+    );
+    // Initialize vectors.
+    std::vector<std::vector<double>> ted_vectors(trees_collection.size(), std::vector<double>(reference_set.size()));
+    // Compute the vectors.
+    guha_join.compute_vectors(trees_collection, reference_set, ted_vectors);
+
+    // Stop timing
+    tree_to_set->stop();
+
+    // Write timing
+    std::cout << "\"vectors_time\": " << tree_to_set->getfloat() << ", ";
+
+    {
+      // Initialized Timing object
+      Timing::Interval * retCand = timing.create_enroll("RetrieveCandidates");
+      // Start timing
+      retCand->start();
+
+      // Retrieve candidates for tjoin's candidate index
+      std::vector<std::pair<unsigned int, unsigned int>> join_candidates;
+      guha_join.retrieve_candidates(trees_collection, join_candidates, join_result, distance_threshold, reference_set, ted_vectors);
+
+      // Stop timing
+      retCand->stop();
+
+      // Write timing
+      std::cout << "\"candidates_time\": " << retCand->getfloat() << ", ";
+      std::cout << "\"ted_verification_candidates\": " << join_candidates.size() << ", ";
+      std::cout << "\"l_t_candidates\": " << guha_join.get_l_t_candidates() << ", ";
+      std::cout << "\"sed_candidates\": " << guha_join.get_sed_candidates() << ", ";
+      std::cout << "\"u_t_result_pairs\": " << guha_join.get_u_t_result_pairs() << ", ";
+      std::cout << "\"cted_result_pairs\": " << guha_join.get_cted_result_pairs() << ", ";
+
+      // Initialized Timing object
+      Timing::Interval * verify = timing.create_enroll("Verify");
+      // Start timing
+      verify->start();
+
+      // Verify all computed join candidates and return the join result
+      guha_join.verify_candidates(trees_collection, join_candidates, join_result, distance_threshold, ted_vectors);
+
+      // Stop timing
+      verify->stop();
+
+      // Write timing
+      std::cout << "\"verification_time\": " << verify->getfloat() << ", ";
+    }
+    std::cout << "\"join_result_size\": " << join_result.size() << "}" << std::endl;
+  }
+
+  // Calculate optimum by verify only the resultset
+  // Initialized Timing object
+  Timing::Interval * optimum = timing.create_enroll("Optimum");
+  // Start timing
+  optimum->start();
+}
+
 int main(int argc, char** argv) {
   using Label = label::StringLabel;
   using CostModel = cost_model::UnitCostModel<Label>;
@@ -1078,6 +1153,15 @@ int main(int argc, char** argv) {
       execute_histogram_join<Label, CostModel, Touzet>(trees_collection, upperbound, distance_threshold);
     } else if (argv[4] == std::string("APTED")) {
       execute_histogram_join<Label, CostModel, APTED>(trees_collection, upperbound, distance_threshold);
+    }
+  } else if (argv[3] == std::string("guha_join")) {
+    unsigned int reference_set_size = std::stoi(argv[7]);
+    if (argv[4] == std::string("ZhangShasha")) {
+      execute_guha_join<Label, CostModel, ZhangShasha>(trees_collection, distance_threshold, reference_set_size);
+    } else if (argv[4] == std::string("Touzet")) {
+      execute_guha_join<Label, CostModel, Touzet>(trees_collection, distance_threshold, reference_set_size);
+    } else if (argv[4] == std::string("APTED")) {
+      execute_guha_join<Label, CostModel, APTED>(trees_collection, distance_threshold, reference_set_size);
     }
   }
 

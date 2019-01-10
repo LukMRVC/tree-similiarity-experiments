@@ -52,5 +52,6 @@
 #include "touzet.h"
 #include "greedy_ub.h"
 #include "apted.h"
+#include "guha.h"
 
 #endif // JOIN_ALGS_EXPERIMENTS_H
