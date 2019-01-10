@@ -3,7 +3,7 @@
     "print_title": "no",
     "legend_font_size": 18,
     "legend_frame_alpha": 0.8,
-    "legend": "upper left",
+    "legend": "lower right",
     "grid": "on",
     "dataset_name": "Swissprot",
     "markers": ["s", "*", "o", "^", "p", "d"],
