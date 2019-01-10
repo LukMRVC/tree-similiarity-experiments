@@ -1,34 +1,38 @@
 {
-    "title": "False Positive Ratio",
+    "title": "Times",
     "print_title": "no",
-    "legend": "lower right",
     "legend_font_size": 18,
     "legend_frame_alpha": 0.8,
+    "legend": "upper left",
     "grid": "on",
-    "dataset_name": "Sentiment",
+    "dataset_name": "Swissprot",
     "markers": ["s", "*", "o", "^", "p", "d"],
     "markersize": [15, 20, 15, 15, 15, 15],
     "markerfacecolor": "none",
     "colors": ["red", "green", "blue", "cyan", "magenta", "orange"],
-    "tables": [
+    "tables": [ 
         {
             "table_name": "tang_join", 
             "attributes": [
                 {
-                    "attr_name": "avg(1.0 - (join_result_size::decimal / NULLIF(verification_candidates::decimal,0)))"
+                    "attr_name": "avg(tree_to_binary_tree_time + index_time + verification_time)/1000"
                 }
             ],
-            "name": "$\\mathtt{Tang}$"
+            "name": "$\\mathtt{Tang}$",
+            "constraints": {
+                "verification_algorithm": "APTED"
+            }
         },
         {
             "table_name": "t_join", 
             "attributes": [
                 {
-                    "attr_name": "avg(1.0 - (join_result_size::decimal / NULLIF(verification_candidates::decimal,0)))"
+                    "attr_name": "avg(tree_to_set_time + index_time + upperbound_time + verification_time)/1000"
                 }
             ],
             "name": "$\\mathtt{TJoin}$",
             "constraints": {
+                "verification_algorithm": "Touzet",
                 "upperbound": "greedy"
             }
         },
@@ -36,38 +40,42 @@
             "table_name": "binary_branches_join", 
             "attributes": [
                 {
-                    "attr_name": "avg(1.0 - (join_result_size::decimal / NULLIF(verification_candidates::decimal,0)))"
+                    "attr_name": "avg(tree_to_set_time + index_time + upperbound_time + verification_time)/1000"
                 }
             ],
-            "name": "$\\mathtt{BinBranches}$"
+            "name": "$\\mathtt{BinBranches}$",
+            "constraints": {
+                "verification_algorithm": "APTED"
+            }
         },
         {
             "table_name": "histogram_join", 
             "attributes": [
                 {
-                    "attr_name": "avg(1.0 - (join_result_size::decimal / NULLIF(verification_candidates::decimal,0)))"
+                    "attr_name": "avg(tree_to_set_time + index_time + upperbound_time + verification_time)/1000"
                 }
             ],
-            "name": "$\\mathtt{Histogram}$"
+            "name": "$\\mathtt{Histogram}$",
+            "constraints": {
+                "verification_algorithm": "APTED"
+            }
         }
     ],
     "constraints": {
-        "dataset_filename": "sentiment_sorted.bracket",
-        "verification_algorithm": "Touzet"
+        "dataset_filename": "swissprot_sorted.bracket"
     },
     "x_axis": {
         "db_column": "threshold",
         "name": "Threshold",
-        "xticks": 2,
-        "xmin": 1,
-        "xmax": 15.001, 
+        "xticks": 10,
+        "xmin": 0,
+        "xmax": 60.001, 
         "font_size": 20, 
         "ticks_font_size": 20
     },
     "y_axis": {
-        "name": "False Positive Ratio",
-        "ymin": 0,
-        "ymax": 1, 
+        "name": "Time [s]",
+        "scale": "log",
         "font_size": 20, 
         "ticks_font_size": 20
     }
