@@ -273,7 +273,8 @@ CREATE TABLE guha_rsb_join (
   sed_candidates bigint,
   u_t_result_pairs bigint,
   cted_result_pairs bigint, 
-  reference_set_size int
+  reference_set_size int, 
+  reference_set_id int
 );
 
 DROP TABLE IF EXISTS guha_rsc_join;
@@ -299,7 +300,8 @@ CREATE TABLE guha_rsc_join (
   sed_candidates bigint,
   u_t_result_pairs bigint,
   cted_result_pairs bigint, 
-  reference_set_size int
+  reference_set_size int, 
+  reference_set_id int
 );
 
 -- Parameters of a ted experiment (for normalization):
