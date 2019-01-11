@@ -75,19 +75,6 @@
             }
         },
         {
-            "table_name": "guha_join", 
-            "attributes": [
-                {
-                    "attr_name": "avg(NULLIF(ted_verification_candidates::decimal,0))"
-                }
-            ],
-            "name": "$\\mathtt{Guha\\ K=2}$",
-            "constraints": {
-                "verification_algorithm": "APTED",
-                "reference_set_size": 2
-            }
-        },
-        {
             "table_name": "t_join", 
             "attributes": [
                 {
