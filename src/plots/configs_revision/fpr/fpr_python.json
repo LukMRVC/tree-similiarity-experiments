@@ -29,7 +29,7 @@
             ],
             "name": "$\\mathtt{TJoin}$",
             "constraints": {
-                "upperbound": "greedy"
+                "upperbound": ["greedy"]
             }
         },
         {
@@ -59,7 +59,7 @@
             ],
             "name": "$\\mathtt{Guha\\ K=2}$",
             "constraints": {
-                "reference_set_size": 2
+                "reference_set_size": [2]
             }
         },
         {
@@ -71,12 +71,12 @@
             ],
             "name": "$\\mathtt{Guha\\ K=4}$",
             "constraints": {
-                "reference_set_size": 4
+                "reference_set_size": [4]
             }
         }
     ],
     "constraints": {
-        "dataset_filename": "python_sorted.bracket"
+        "dataset_filename": ["python_sorted.bracket"]
     },
     "x_axis": {
         "db_column": "threshold",
