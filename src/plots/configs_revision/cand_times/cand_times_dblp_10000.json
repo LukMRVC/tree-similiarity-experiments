@@ -6,10 +6,10 @@
     "legend": "upper left",
     "grid": "on",
     "dataset_name": "DBLP 10000",
-    "markers": ["s", "*", "o", "^", "p", "d"],
-    "markersize": [15, 20, 15, 15, 15, 15],
+    "markers": ["s", "*", "o", "^", "p", "d", "P"],
+    "markersize": [15, 20, 15, 15, 15, 15, 15],
     "markerfacecolor": "none",
-    "colors": ["red", "green", "blue", "cyan", "magenta", "orange"],
+    "colors": ["red", "green", "blue", "cyan", "magenta", "orange", "greenyellow"],
     "tables": [ 
         {
             "table_name": "tang_join", 
@@ -27,7 +27,7 @@
             "table_name": "t_join", 
             "attributes": [
                 {
-                    "attr_name": "avg(tree_to_set_time + index_time)/1000"
+                    "attr_name": "avg(index_time)/1000"
                 }
             ],
             "name": "$\\mathtt{TJoin}$",
@@ -58,6 +58,30 @@
             "name": "$\\mathtt{Histogram}$",
             "constraints": {
                 "verification_algorithm": "APTED"
+            }
+        },
+        {
+            "table_name": "guha_join", 
+            "attributes": [
+                {
+                    "attr_name": "avg(NULLIF(candidates_time::decimal,0))"
+                }
+            ],
+            "name": "$\\mathtt{Guha\\ K=2}$",
+            "constraints": {
+                "reference_set_size": 2
+            }
+        },
+        {
+            "table_name": "guha_join", 
+            "attributes": [
+                {
+                    "attr_name": "avg(NULLIF(candidates_time::decimal,0))"
+                }
+            ],
+            "name": "$\\mathtt{Guha\\ K=4}$",
+            "constraints": {
+                "reference_set_size": 4
             }
         }
     ],

@@ -62,7 +62,7 @@
         }
     ],
     "constraints": {
-        "dataset_filename": "dblp_sorted.bracket"
+        "dataset_filename": "dblp_no_www_sorted.bracket"
     },
     "x_axis": {
         "db_column": "threshold",

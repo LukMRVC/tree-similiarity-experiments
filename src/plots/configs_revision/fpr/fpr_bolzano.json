@@ -6,10 +6,10 @@
     "legend_frame_alpha": 0.8,
     "grid": "on",
     "dataset_name": "Bolzano",
-    "markers": ["s", "*", "o", "^", "p", "d"],
-    "markersize": [15, 20, 15, 15, 15, 15],
+    "markers": ["s", "*", "o", "^", "p", "d", "P"],
+    "markersize": [15, 20, 15, 15, 15, 15, 15],
     "markerfacecolor": "none",
-    "colors": ["red", "green", "blue", "cyan", "magenta", "orange"],
+    "colors": ["red", "green", "blue", "cyan", "magenta", "orange", "greenyellow"],
     "tables": [
         {
             "table_name": "tang_join", 
@@ -49,6 +49,30 @@
                 }
             ],
             "name": "$\\mathtt{Histogram}$"
+        },
+        {
+            "table_name": "guha_join", 
+            "attributes": [
+                {
+                    "attr_name": "avg(1.0 - (join_result_size::decimal / NULLIF(candidates::decimal,0)))"
+                }
+            ],
+            "name": "$\\mathtt{Guha\\ K=2}$",
+            "constraints": {
+                "reference_set_size": 2
+            }
+        },
+        {
+            "table_name": "guha_join", 
+            "attributes": [
+                {
+                    "attr_name": "avg(1.0 - (join_result_size::decimal / NULLIF(candidates::decimal,0)))"
+                }
+            ],
+            "name": "$\\mathtt{Guha\\ K=4}$",
+            "constraints": {
+                "reference_set_size": 4
+            }
         }
     ],
     "constraints": {

@@ -1,8 +1,9 @@
 {
-    "title": "False Positive Ratio",
+    "title": "Candidates",
     "print_title": "no",
     "legend": "upper left",
     "legend_font_size": 18,
+    "legend_frame_alpha": 0.8,
     "grid": "on",
     "dataset_name": "Sentiment",
     "markers": ["s", "*", "o", "^", "p", "d", "P"],
@@ -50,6 +51,43 @@
             "name": "$\\mathtt{Histogram}$"
         },
         {
+            "table_name": "guha_join", 
+            "attributes": [
+                {
+                    "attr_name": "avg(NULLIF(ted_verification_candidates::decimal,0))"
+                }
+            ],
+            "name": "$\\mathtt{Guha\\ K=2}$",
+            "constraints": {
+                "reference_set_size": 2
+            }
+        },
+        {
+            "table_name": "guha_join", 
+            "attributes": [
+                {
+                    "attr_name": "avg(NULLIF(ted_verification_candidates::decimal,0))"
+                }
+            ],
+            "name": "$\\mathtt{Guha\\ K=4}$",
+            "constraints": {
+                "reference_set_size": 4
+            }
+        },
+        {
+            "table_name": "guha_join", 
+            "attributes": [
+                {
+                    "attr_name": "avg(NULLIF(ted_verification_candidates::decimal,0))"
+                }
+            ],
+            "name": "$\\mathtt{Guha\\ K=2}$",
+            "constraints": {
+                "verification_algorithm": "APTED",
+                "reference_set_size": 2
+            }
+        },
+        {
             "table_name": "t_join", 
             "attributes": [
                 {
@@ -60,8 +98,7 @@
         }
     ],
     "constraints": {
-        "dataset_filename": "sentiment_sorted.bracket",
-        "verification_algorithm": "Touzet"
+        "dataset_filename": "sentiment_sorted.bracket"
     },
     "x_axis": {
         "db_column": "threshold",
