@@ -969,8 +969,8 @@ void execute_tang_join(std::vector<node::Node<Label>>& trees_collection,
 }
 
 template <typename Label, typename CostModel, typename VerificationAlgorithm>
-void execute_guha_join(std::vector<node::Node<Label>>& trees_collection,
-    double distance_threshold, unsigned int reference_set_size) {
+void execute_guha_rsb_join(std::vector<node::Node<Label>>& trees_collection,
+    double distance_threshold, unsigned int reference_set_size, int reference_set_id) {
   // Initialize join algorithm
   join::Guha<Label, CostModel, VerificationAlgorithm> guha_join;
   Timing timing;
@@ -983,10 +983,16 @@ void execute_guha_join(std::vector<node::Node<Label>>& trees_collection,
     // Start timing
     tree_to_set->start();
 
-    // Get a random reference set.
-    std::vector<unsigned int> reference_set = guha_join.get_random_reference_set(
-        trees_collection, reference_set_size
-    );
+    // In case there is no reference set, get a random reference set.
+    std::vector<unsigned int> reference_set;
+    if (reference_set_id == -1) {
+      reference_set = guha_join.get_random_reference_set(trees_collection, reference_set_size);
+    } else {
+      auto first = reference_sets_[reference_set_id].begin();
+      auto last = reference_sets_[reference_set_id].begin() + reference_set_size;
+      reference_set = std::vector<unsigned int>(first, last);
+    }
+    
     // Initialize vectors.
     std::vector<std::vector<double>> ted_vectors(trees_collection.size(), std::vector<double>(reference_set.size()));
     // Compute the vectors.
@@ -999,20 +1005,20 @@ void execute_guha_join(std::vector<node::Node<Label>>& trees_collection,
     std::cout << "\"vectors_time\": " << tree_to_set->getfloat() << ", ";
 
     {
-      // Initialized Timing object
-      Timing::Interval * retCand = timing.create_enroll("RetrieveCandidates");
-      // Start timing
-      retCand->start();
-
-      // Retrieve candidates for tjoin's candidate index
+      Timing::Interval * retMetricCand = timing.create_enroll("RetrieveMetricCandidates");
+      retMetricCand->start();
       std::vector<std::pair<unsigned int, unsigned int>> join_candidates;
-      guha_join.retrieve_candidates(trees_collection, join_candidates, join_result, distance_threshold, reference_set, ted_vectors);
-
-      // Stop timing
-      retCand->stop();
+      guha_join.retrieve_metric_candidates(trees_collection, join_candidates, join_result, distance_threshold, ted_vectors);
+      retMetricCand->stop();
+      
+      Timing::Interval * retSCCand = timing.create_enroll("RetrieveSCCandidates");
+      retSCCand->start();
+      guha_join.retrieve_sc_candidates(trees_collection, join_candidates, join_result, distance_threshold);
+      retSCCand->stop();
 
       // Write timing
-      std::cout << "\"candidates_time\": " << retCand->getfloat() << ", ";
+      std::cout << "\"metric_candidates_time\": " << retMetricCand->getfloat() << ", ";
+      std::cout << "\"sc_candidates_time\": " << retSCCand->getfloat() << ", ";
       std::cout << "\"ted_verification_candidates\": " << join_candidates.size() << ", ";
       std::cout << "\"l_t_candidates\": " << guha_join.get_l_t_candidates() << ", ";
       std::cout << "\"sed_candidates\": " << guha_join.get_sed_candidates() << ", ";
@@ -1025,7 +1031,88 @@ void execute_guha_join(std::vector<node::Node<Label>>& trees_collection,
       verify->start();
 
       // Verify all computed join candidates and return the join result
-      guha_join.verify_candidates(trees_collection, join_candidates, join_result, distance_threshold, ted_vectors);
+      guha_join.verify_candidates(trees_collection, join_candidates, join_result, distance_threshold);
+
+      // Stop timing
+      verify->stop();
+
+      // Write timing
+      std::cout << "\"verification_time\": " << verify->getfloat() << ", ";
+    }
+    std::cout << "\"join_result_size\": " << join_result.size() << "}" << std::endl;
+  }
+
+  // Calculate optimum by verify only the resultset
+  // Initialized Timing object
+  Timing::Interval * optimum = timing.create_enroll("Optimum");
+  // Start timing
+  optimum->start();
+}
+
+template <typename Label, typename CostModel, typename VerificationAlgorithm>
+void execute_guha_rsc_join(std::vector<node::Node<Label>>& trees_collection,
+    double distance_threshold, unsigned int reference_set_size, int reference_set_id) {
+  // Initialize join algorithm
+  join::Guha<Label, CostModel, VerificationAlgorithm> guha_join;
+  Timing timing;
+  std::vector<join::JoinResultElement> join_result;
+
+  // Add some scopes to ensure that the memory is deallocated
+  {
+    // Initialized Timing object
+    Timing::Interval * tree_to_set = timing.create_enroll("Vectors");
+    // Start timing
+    tree_to_set->start();
+
+    // In case there is no reference set, get a random reference set.
+    std::vector<unsigned int> reference_set;
+    if (reference_set_id == -1) {
+      reference_set = guha_join.get_random_reference_set(trees_collection, reference_set_size);
+    } else {
+      auto first = reference_sets_[reference_set_id].begin();
+      auto last = reference_sets_[reference_set_id].begin() + reference_set_size;
+      reference_set = std::vector<unsigned int>(first, last);
+    }
+    
+    // Initialize vectors.
+    std::vector<std::vector<double>> lb_vectors(trees_collection.size(), std::vector<double>(reference_set.size()));
+    std::vector<std::vector<double>> ub_vectors(trees_collection.size(), std::vector<double>(reference_set.size()));
+    // Compute the vectors.
+    guha_join.compute_vectors(trees_collection, reference_set, lb_vectors, ub_vectors);
+    // Stop timing
+    tree_to_set->stop();
+
+    // Write timing
+    std::cout << "\"vectors_time\": " << tree_to_set->getfloat() << ", ";
+
+    {
+      Timing::Interval * retMetricCand = timing.create_enroll("RetrieveMetricCandidates");
+      retMetricCand->start();
+      std::vector<std::pair<unsigned int, unsigned int>> join_candidates;
+      guha_join.retrieve_metric_candidates(trees_collection, join_candidates, join_result, distance_threshold, lb_vectors, ub_vectors);
+      retMetricCand->stop();
+      
+      Timing::Interval * retSCCand = timing.create_enroll("RetrieveSCCandidates");
+      retSCCand->start();
+      guha_join.retrieve_sc_candidates(trees_collection, join_candidates, join_result, distance_threshold);
+      retSCCand->stop();
+
+      // Write timing
+      std::cout << "\"metric_candidates_time\": " << retMetricCand->getfloat() << ", ";
+      std::cout << "\"sc_candidates_time\": " << retSCCand->getfloat() << ", ";
+      std::cout << "\"ted_verification_candidates\": " << join_candidates.size() << ", ";
+      std::cout << "\"l_t_candidates\": " << guha_join.get_l_t_candidates() << ", ";
+      std::cout << "\"sed_candidates\": " << guha_join.get_sed_candidates() << ", ";
+      std::cout << "\"u_t_result_pairs\": " << guha_join.get_u_t_result_pairs() << ", ";
+      std::cout << "\"cted_result_pairs\": " << guha_join.get_cted_result_pairs() << ", ";
+
+      // Initialized Timing object
+      Timing::Interval * verify = timing.create_enroll("Verify");
+      // Start timing
+      verify->start();
+
+      // Verify all computed join candidates and return the join result
+      guha_join.verify_candidates(trees_collection, join_candidates, join_result, distance_threshold);
 
       // Stop timing
       verify->stop();
@@ -1049,6 +1136,22 @@ int main(int argc, char** argv) {
   using ZhangShasha = ted::ZhangShasha<Label, CostModel>;
   using Touzet = ted::Touzet<Label, CostModel>;
   using APTED = ted::APTED<Label, CostModel>;
+
+  // [0] Sentiment tau = 1:
+  reference_sets_.push_back({18,11,2,33,20,293,91,65,6426,5113,1338,1257,317,258,254,252,237,229,137,111,86,81,44,41,28,14});
+  // [1] Sentiment tau = 2:
+  reference_sets_.push_back({12,57,105,96,74,92,49,284,127,37,302,158,136,133,86,34,296,293,173,156,138,53,6426,5113,1338,1257,462,447,431,358,318,299,285,245,278,272,259,254,251,223,236,228,221,203,164,144,128,119,117,114,112,81,51});
+  // [2] Sentiment tau = 3:
+  reference_sets_.push_back({19,55,80,295,286,93,49,123,161,175,220,224,156,146,272,194,260,423,321,293,268,244,227,221,204,200,108,86,6426,5113,1338,1258,763,786,671,373,443,470,466,462,446,440,430,419,405,393,329,359,354,327,317,259,251,237,232,214,210,206,181,180,56});
+  // [3] Sentiment tau = 4:
+  reference_sets_.push_back({40,228,177,296,251,236,194,155,371,43,669,282,384,723,459,624,358,446,134,323,691,329,474,402,609,317,328,235,212,213,260,6426,5113,1338,1258,763,786,737,728,716,680,672,601,546,438,468,448,439,431,412,330,362,349,315,326,311,307,290,207,69,1232,722,599,511,475,461});
+  // [4] Sentiment tau = 5:
+  reference_sets_.push_back({40,144,290,354,346,377,565,362,458,438,467,225,723,452,550,457,398,695,672,329,602,510,426,390,393,311,163,871,739,769,730,686,615,359,324,416,406,410,402,330,340,535,6426,5113,1841,809,1337,1257,1163,763,722,940,842,786,479,724,705,598,620,569,546,537,464,421,322,412,401,369,364,1204,948,731,706,699,675,555,529,492,462});
+  // [5] Sentiment tau = 6:
+  reference_sets_.push_back({81,424,546,720,510,624,592,311,907,529,728,640,344,770,472,938,725,454,396,714,500,970,486,568,549,305,867,689,673,1258,871,974,943,810,480,693,667,427,575,453,648,483,6425,5113,1837,1458,1360,1337,1322,1227,1185,1046,1037,885,918,864,855,816,471,705,699,637,629,591,559,524,496,1510,1204,844,1099,710,948,917,784,764,704,675,603,585});
+  // [0] Sentiment tau = 7:
+  reference_sets_.push_back({81,462,677,348,622,659,733,801,520,911,483,478,649,772,616,504,820,487,1905,756,809,946,938,915,1511,502,932,866,707,607,1837,1111,1350,1227,952,1103,670,815,791,703,528,482,1187,641,6426,5113,1778,1458,1337,1054,1232,1176,1193,1191,1161,851,1030,763,1022,896,943,888,686,786,788,577,628,571,526,503,1621,1523,957,825,936,916,917,856,840,813,807,518,784,765,742,652,618,613,603,589});
+
 
   Timing timing;
 
@@ -1154,14 +1257,25 @@ int main(int argc, char** argv) {
     } else if (argv[4] == std::string("APTED")) {
       execute_histogram_join<Label, CostModel, APTED>(trees_collection, upperbound, distance_threshold);
     }
-  } else if (argv[3] == std::string("guha_join")) {
+  } else if (argv[3] == std::string("guha_rsb_join")) {
     unsigned int reference_set_size = std::stoi(argv[7]);
+    int reference_set_id = std::stoi(argv[8]);
     if (argv[4] == std::string("ZhangShasha")) {
-      execute_guha_join<Label, CostModel, ZhangShasha>(trees_collection, distance_threshold, reference_set_size);
+      execute_guha_rsb_join<Label, CostModel, ZhangShasha>(trees_collection, distance_threshold, reference_set_size, reference_set_id);
     } else if (argv[4] == std::string("Touzet")) {
-      execute_guha_join<Label, CostModel, Touzet>(trees_collection, distance_threshold, reference_set_size);
+      execute_guha_rsb_join<Label, CostModel, Touzet>(trees_collection, distance_threshold, reference_set_size, reference_set_id);
     } else if (argv[4] == std::string("APTED")) {
-      execute_guha_join<Label, CostModel, APTED>(trees_collection, distance_threshold, reference_set_size);
+      execute_guha_rsb_join<Label, CostModel, APTED>(trees_collection, distance_threshold, reference_set_size, reference_set_id);
+    }
+  } else if (argv[3] == std::string("guha_rsc_join")) {
+    unsigned int reference_set_size = std::stoi(argv[7]);
+    int reference_set_id = std::stoi(argv[8]);
+    if (argv[4] == std::string("ZhangShasha")) {
+      execute_guha_rsc_join<Label, CostModel, ZhangShasha>(trees_collection, distance_threshold, reference_set_size, reference_set_id);
+    } else if (argv[4] == std::string("Touzet")) {
+      execute_guha_rsc_join<Label, CostModel, Touzet>(trees_collection, distance_threshold, reference_set_size, reference_set_id);
+    } else if (argv[4] == std::string("APTED")) {
+      execute_guha_rsc_join<Label, CostModel, APTED>(trees_collection, distance_threshold, reference_set_size, reference_set_id);
     }
   }
 
