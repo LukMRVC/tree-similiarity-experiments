@@ -18,7 +18,10 @@
                     "attr_name": "avg(1.0 - (join_result_size::decimal / NULLIF(verification_candidates::decimal,0)))"
                 }
             ],
-            "name": "$\\mathtt{Tang}$"
+            "name": "$\\mathtt{Tang}$",
+            "constraints": {
+                "upperbound": ["APTED"]
+            }
         },
         {
             "table_name": "t_join", 
@@ -29,6 +32,7 @@
             ],
             "name": "$\\mathtt{TJoin}$",
             "constraints": {
+                "verification_algorithm": ["Touzet"],
                 "upperbound": ["greedy"]
             }
         },
@@ -39,7 +43,10 @@
                     "attr_name": "avg(1.0 - (join_result_size::decimal / NULLIF(verification_candidates::decimal,0)))"
                 }
             ],
-            "name": "$\\mathtt{BinBranches}$"
+            "name": "$\\mathtt{BinBranches}$",
+            "constraints": {
+                "upperbound": ["APTED"]
+            }
         },
         {
             "table_name": "histogram_join", 
@@ -48,7 +55,10 @@
                     "attr_name": "avg(1.0 - (join_result_size::decimal / NULLIF(verification_candidates::decimal,0)))"
                 }
             ],
-            "name": "$\\mathtt{Histogram}$"
+            "name": "$\\mathtt{Histogram}$",
+            "constraints": {
+                "upperbound": ["APTED"]
+            }
         },
         {
             "table_name": "guha_join", 
@@ -59,7 +69,8 @@
             ],
             "name": "$\\mathtt{Guha\\ K=2}$",
             "constraints": {
-                "reference_set_size": [2]
+                "reference_set_size": [2],
+                "upperbound": ["APTED"]
             }
         },
         {
@@ -71,7 +82,8 @@
             ],
             "name": "$\\mathtt{Guha\\ K=4}$",
             "constraints": {
-                "reference_set_size": [4]
+                "reference_set_size": [4],
+                "upperbound": ["APTED"]
             }
         }
     ],

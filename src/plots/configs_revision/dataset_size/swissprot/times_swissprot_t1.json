@@ -1,16 +1,16 @@
 {
-    "title": "Total Join Times",
+    "title": "Collection Size",
     "print_title": "no",
     "legend_font_size": 18,
     "legend_frame_alpha": 0.8,
-    "legend": "upper left",
+    "legend": "upper right",
     "grid": "on",
-    "dataset_name": "DBLP",
+    "dataset_name": "Swissprot",
     "markers": ["s", "*", "o", "^", "p", "d", "P"],
     "markersize": [15, 20, 15, 15, 15, 15, 15],
     "markerfacecolor": "none",
     "colors": ["red", "green", "blue", "cyan", "magenta", "orange", "greenyellow"],
-    "tables": [ 
+    "tables": [
         {
             "table_name": "tang_join", 
             "attributes": [
@@ -20,7 +20,8 @@
             ],
             "name": "$\\mathtt{Tang}$",
             "constraints": {
-                "verification_algorithm": ["APTED"]
+                "verification_algorithm": ["APTED"],
+                "dataset_filename": ["swissprot_1000_sorted.bracket", "swissprot_3000_sorted.bracket", "swissprot_5000_sorted.bracket"]
             }
         },
         {
@@ -33,7 +34,8 @@
             "name": "$\\mathtt{TJoin}$",
             "constraints": {
                 "verification_algorithm": ["Touzet"],
-                "upperbound": ["greedy"]
+                "upperbound": ["greedy"],
+                "dataset_filename": ["swissprot_1000_sorted.bracket", "swissprot_3000_sorted.bracket", "swissprot_5000_sorted.bracket"]
             }
         },
         {
@@ -45,7 +47,8 @@
             ],
             "name": "$\\mathtt{BinBranches}$",
             "constraints": {
-                "verification_algorithm": ["APTED"]
+                "verification_algorithm": ["APTED"],
+                "dataset_filename": ["swissprot_1000_sorted.bracket", "swissprot_3000_sorted.bracket", "swissprot_5000_sorted.bracket"]
             }
         },
         {
@@ -57,45 +60,46 @@
             ],
             "name": "$\\mathtt{Histogram}$",
             "constraints": {
-                "verification_algorithm": ["APTED"]
+                "verification_algorithm": ["APTED"],
+                "dataset_filename": ["swissprot_1000_sorted.bracket", "swissprot_3000_sorted.bracket", "swissprot_5000_sorted.bracket"]
             }
         },
         {
-            "table_name": "guha_join", 
+            "table_name": "guha_rsb_join", 
             "attributes": [
                 {
-                    "attr_name": "avg(vectors_time + candidates_time + verification_time)/1000"
+                    "attr_name": "avg(vectors_time + metric_candidates_time + sc_candidates_time + verification_time)/1000"
                 }
             ],
-            "name": "$\\mathtt{Guha\\ K=2}$",
+            "name": "$\\mathtt{Guha RSB\\ K=2}$",
             "constraints": {
                 "verification_algorithm": ["APTED"],
-                "reference_set_size": [2]
+                "reference_set_size": [2],
+                "dataset_filename": ["swissprot_1000_sorted.bracket", "swissprot_3000_sorted.bracket", "swissprot_5000_sorted.bracket"]
             }
         },
         {
-            "table_name": "guha_join", 
+            "table_name": "guha_rsc_join", 
             "attributes": [
                 {
-                    "attr_name": "avg(vectors_time + candidates_time + verification_time)/1000"
+                    "attr_name": "avg(vectors_time + metric_candidates_time + sc_candidates_time + verification_time)/1000"
                 }
             ],
-            "name": "$\\mathtt{Guha\\ K=4}$",
+            "name": "$\\mathtt{Guha RSC\\ K=2}$",
             "constraints": {
                 "verification_algorithm": ["APTED"],
-                "reference_set_size": [4]
+                "reference_set_size": [2],
+                "dataset_filename": ["swissprot_1000_sorted.bracket", "swissprot_3000_sorted.bracket", "swissprot_5000_sorted.bracket"]
             }
         }
     ],
     "constraints": {
-        "dataset_filename": ["dblp_no_www_sorted.bracket"]
+        "threshold": [1]
     },
     "x_axis": {
-        "db_column": "threshold",
-        "name": "Threshold",
-        "xticks": 1,
-        "xmin": 1,
-        "xmax": 8.001, 
+        "db_column": "dataset_filename",
+        "size_plot": 1,
+        "name": "Dataset Size",
         "font_size": 20, 
         "ticks_font_size": 20
     },

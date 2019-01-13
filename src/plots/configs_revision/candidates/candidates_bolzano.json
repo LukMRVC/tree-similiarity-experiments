@@ -1,5 +1,5 @@
 {
-    "title": "Candidates",
+    "title": "Verification Candidates",
     "print_title": "no",
     "legend": "upper left",
     "legend_font_size": 18,
@@ -15,77 +15,89 @@
             "table_name": "tang_join", 
             "attributes": [
                 {
-                    "attr_name": "avg(NULLIF(verification_candidates::decimal,0))"
+                    "attr_name": "avg(verification_candidates)"
                 }
             ],
-            "name": "$\\mathtt{Tang}$"
+            "name": "$\\mathtt{Tang}$",
+            "constraints": {
+                "upperbound": ["APTED"]
+            }
         },
         {
             "table_name": "t_join", 
             "attributes": [
                 {
-                    "attr_name": "avg(NULLIF(verification_candidates::decimal,0))"
+                    "attr_name": "avg(verification_candidates - upperbound_pruned)"
                 }
             ],
             "name": "$\\mathtt{TJoin}$",
             "constraints": {
-                "upperbound": "greedy"
+                "verification_algorithm": ["Touzet"],
+                "upperbound": ["greedy"]
             }
         },
         {
             "table_name": "binary_branches_join", 
             "attributes": [
                 {
-                    "attr_name": "avg(NULLIF(verification_candidates::decimal,0))"
+                    "attr_name": "avg(verification_candidates)"
                 }
             ],
-            "name": "$\\mathtt{BinBranches}$"
+            "name": "$\\mathtt{BinBranches}$",
+            "constraints": {
+                "upperbound": ["APTED"]
+            }
         },
         {
             "table_name": "histogram_join", 
             "attributes": [
                 {
-                    "attr_name": "avg(NULLIF(verification_candidates::decimal,0))"
+                    "attr_name": "avg(verification_candidates)"
                 }
             ],
-            "name": "$\\mathtt{Histogram}$"
-        },
-        {
-            "table_name": "guha_join", 
-            "attributes": [
-                {
-                    "attr_name": "avg(NULLIF(ted_verification_candidates::decimal,0))"
-                }
-            ],
-            "name": "$\\mathtt{Guha\\ K=2}$",
+            "name": "$\\mathtt{Histogram}$",
             "constraints": {
-                "reference_set_size": 2
+                "upperbound": ["APTED"]
             }
         },
         {
             "table_name": "guha_join", 
             "attributes": [
                 {
-                    "attr_name": "avg(NULLIF(ted_verification_candidates::decimal,0))"
+                    "attr_name": "avg(ted_verification_candidates)"
+                }
+            ],
+            "name": "$\\mathtt{Guha\\ K=2}$",
+            "constraints": {
+                "reference_set_size": [2],
+                "upperbound": ["APTED"]
+            }
+        },
+        {
+            "table_name": "guha_join", 
+            "attributes": [
+                {
+                    "attr_name": "avg(ted_verification_candidates)"
                 }
             ],
             "name": "$\\mathtt{Guha\\ K=4}$",
             "constraints": {
-                "reference_set_size": 4
+                "reference_set_size": [4],
+                "upperbound": ["APTED"]
             }
         },
         {
             "table_name": "t_join", 
             "attributes": [
                 {
-                    "attr_name": "avg(NULLIF(join_result_size::decimal,0))"
+                    "attr_name": "avg(join_result_size)"
                 }
             ],
             "name": "$\\mathtt{Result}$"
         }
     ],
     "constraints": {
-        "dataset_filename": "bolzano_sorted.bracket"
+        "dataset_filename": ["bolzano_sorted.bracket"]
     },
     "x_axis": {
         "db_column": "threshold",
@@ -98,6 +110,7 @@
     },
     "y_axis": {
         "name": "Candidates (Tree Pairs)",
+        "scale": "log",
         "font_size": 20, 
         "ticks_font_size": 20, 
         "suffix": "yes"

@@ -1,30 +1,18 @@
 {
     "title": "Verification Candidates",
     "print_title": "no",
-    "legend": "upper left",
     "legend_font_size": 18,
     "legend_frame_alpha": 0.8,
+    "legend": "lower right",
     "grid": "on",
     "dataset_name": "Sentiment",
     "markers": ["s", "*", "o", "^", "p", "d", "P"],
-    "markersize": [15, 20, 15, 15, 15, 15, 15],
+    "markersize": [20, 15, 15, 15, 15, 15, 15],
     "markerfacecolor": "none",
-    "colors": ["red", "green", "blue", "cyan", "magenta", "orange", "greenyellow"],
+    "colors": ["green", "red", "blue", "cyan", "magenta", "orange", "greenyellow"],
     "tables": [
         {
-            "table_name": "tang_join", 
-            "attributes": [
-                {
-                    "attr_name": "avg(verification_candidates)"
-                }
-            ],
-            "name": "$\\mathtt{Tang}$",
-            "constraints": {
-                "upperbound": ["APTED"]
-            }
-        },
-        {
-            "table_name": "t_join", 
+            "table_name": "t_join",
             "attributes": [
                 {
                     "attr_name": "avg(verification_candidates - upperbound_pruned)"
@@ -37,63 +25,69 @@
             }
         },
         {
-            "table_name": "binary_branches_join", 
-            "attributes": [
-                {
-                    "attr_name": "avg(verification_candidates)"
-                }
-            ],
-            "name": "$\\mathtt{BinBranches}$",
-            "constraints": {
-                "upperbound": ["APTED"]
-            }
-        },
-        {
-            "table_name": "histogram_join", 
-            "attributes": [
-                {
-                    "attr_name": "avg(verification_candidates)"
-                }
-            ],
-            "name": "$\\mathtt{Histogram}$",
-            "constraints": {
-                "upperbound": ["APTED"]
-            }
-        },
-        {
-            "table_name": "guha_join", 
+            "table_name": "guha_rsb_join",
             "attributes": [
                 {
                     "attr_name": "avg(ted_verification_candidates)"
                 }
             ],
-            "name": "$\\mathtt{Guha\\ K=2}$",
+            "name": "$\\mathtt{Guha RSB\\ K=2}$",
             "constraints": {
-                "reference_set_size": [2],
-                "upperbound": ["APTED"]
+                "verification_algorithm": ["APTED"],
+                "reference_set_size": [2]
             }
         },
         {
-            "table_name": "guha_join", 
+            "table_name": "guha_rsb_join",
             "attributes": [
                 {
                     "attr_name": "avg(ted_verification_candidates)"
                 }
             ],
-            "name": "$\\mathtt{Guha\\ K=4}$",
+            "name": "$\\mathtt{Guha RSB\\ K=4}$",
             "constraints": {
-                "reference_set_size": [4],
-                "upperbound": ["APTED"]
+                "verification_algorithm": ["APTED"],
+                "reference_set_size": [4]
             }
         },
         {
-            "table_name": "t_join", 
+            "table_name": "guha_rsb_join",
             "attributes": [
                 {
-                    "attr_name": "avg(join_result_size)"
+                    "attr_name": "avg(ted_verification_candidates)"
                 }
             ],
-            "name": "$\\mathtt{Result}$"
+            "name": "$\\mathtt{Guha RSB\\ K=8}$",
+            "constraints": {
+                "verification_algorithm": ["APTED"],
+                "reference_set_size": [8]
+            }
+        },
+        {
+            "table_name": "guha_rsb_join",
+            "attributes": [
+                {
+                    "attr_name": "avg(ted_verification_candidates)"
+                }
+            ],
+            "name": "$\\mathtt{Guha RSB\\ K=16}$",
+            "constraints": {
+                "verification_algorithm": ["APTED"],
+                "reference_set_size": [16]
+            }
+        },
+        {
+            "table_name": "guha_rsb_join",
+            "attributes": [
+                {
+                    "attr_name": "avg(ted_verification_candidates)"
+                }
+            ],
+            "name": "$\\mathtt{Guha RSB\\ K=32}$",
+            "constraints": {
+                "verification_algorithm": ["APTED"],
+                "reference_set_size": [32]
+            }
         }
     ],
     "constraints": {

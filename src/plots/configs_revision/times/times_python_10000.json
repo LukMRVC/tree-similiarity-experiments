@@ -1,11 +1,11 @@
 {
-    "title": "Times",
+    "title": "Total Join Times",
     "print_title": "no",
     "legend_font_size": 18,
     "legend_frame_alpha": 0.8,
     "legend": "lower right",
     "grid": "on",
-    "dataset_name": "Python AST 10000",
+    "dataset_name": "Python 10000",
     "markers": ["s", "*", "o", "^", "p", "d", "P"],
     "markersize": [15, 20, 15, 15, 15, 15, 15],
     "markerfacecolor": "none",
@@ -20,7 +20,7 @@
             ],
             "name": "$\\mathtt{Tang}$",
             "constraints": {
-                "verification_algorithm": "APTED"
+                "verification_algorithm": ["APTED"]
             }
         },
         {
@@ -32,8 +32,8 @@
             ],
             "name": "$\\mathtt{TJoin}$",
             "constraints": {
-                "verification_algorithm": "Touzet",
-                "upperbound": "greedy"
+                "verification_algorithm": ["Touzet"],
+                "upperbound": ["greedy"]
             }
         },
         {
@@ -45,7 +45,7 @@
             ],
             "name": "$\\mathtt{BinBranches}$",
             "constraints": {
-                "verification_algorithm": "APTED"
+                "verification_algorithm": ["APTED"]
             }
         },
         {
@@ -57,7 +57,7 @@
             ],
             "name": "$\\mathtt{Histogram}$",
             "constraints": {
-                "verification_algorithm": "APTED"
+                "verification_algorithm": ["APTED"]
             }
         },
         {
@@ -69,8 +69,8 @@
             ],
             "name": "$\\mathtt{Guha\\ K=2}$",
             "constraints": {
-                "verification_algorithm": "APTED",
-                "reference_set_size": 2
+                "verification_algorithm": ["APTED"],
+                "reference_set_size": [2]
             }
         },
         {
@@ -82,13 +82,13 @@
             ],
             "name": "$\\mathtt{Guha\\ K=4}$",
             "constraints": {
-                "verification_algorithm": "APTED",
-                "reference_set_size": 4
+                "verification_algorithm": ["APTED"],
+                "reference_set_size": [4]
             }
         }
     ],
     "constraints": {
-        "dataset_filename": "python_10000_sorted.bracket"
+        "dataset_filename": ["python_10000_sorted.bracket"]
     },
     "x_axis": {
         "db_column": "threshold",
