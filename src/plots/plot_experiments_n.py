@@ -127,8 +127,7 @@ for table in data['tables']:
         order_args = ' ORDER BY ' + " split_part(" + data['x_axis']['db_column'] + ", '_', 2)::int"
       else:
         order_args = ' ORDER BY ' + data['x_axis']['db_column']
-    print(" --- " + "SELECT " + select_args + " FROM " + table_args + where_args + group_args + order_args)
-    # result = db_request(args.service, select_args, table_args, where_args, group_args, order_args)
+    result = db_request(args.service, select_args, table_args, where_args, group_args, order_args)
 
     label = ""
     if 'name' in table:
