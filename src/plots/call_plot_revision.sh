@@ -1,3 +1,4 @@
+rm -rf plots
 mkdir plots
 cd plots
 mkdir fpr

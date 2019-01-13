@@ -100,11 +100,12 @@
         "db_column": "dataset_filename",
         "size_plot": 1,
         "name": "Dataset Size",
+        "xticks": 1000, 
         "font_size": 20, 
         "ticks_font_size": 20
     },
     "y_axis": {
-        "name": "Time [s]",
+        "name": "Candidates (Tree Pairs)",
         "scale": "log",
         "font_size": 20, 
         "ticks_font_size": 20
