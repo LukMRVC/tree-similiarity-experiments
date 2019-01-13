@@ -111,7 +111,7 @@
         }
     ],
     "constraints": {
-        "threshold": [3]
+        "threshold": [10]
     },
     "x_axis": {
         "db_column": "dataset_filename",
