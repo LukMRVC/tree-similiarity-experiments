@@ -20,7 +20,7 @@
             ],
             "name": "$\\mathtt{Tang}$",
             "constraints": {
-                "upperbound": ["APTED"]
+                "verification_algorithm": ["APTED"]
             }
         },
         {
@@ -45,7 +45,7 @@
             ],
             "name": "$\\mathtt{BinBranches}$",
             "constraints": {
-                "upperbound": ["APTED"]
+                "verification_algorithm": ["APTED"]
             }
         },
         {
@@ -57,7 +57,7 @@
             ],
             "name": "$\\mathtt{Histogram}$",
             "constraints": {
-                "upperbound": ["APTED"]
+                "verification_algorithm": ["APTED"]
             }
         },
         {
@@ -70,7 +70,7 @@
             "name": "$\\mathtt{Guha\\ K=2}$",
             "constraints": {
                 "reference_set_size": [2],
-                "upperbound": ["APTED"]
+                "verification_algorithm": ["APTED"]
             }
         },
         {
@@ -83,7 +83,7 @@
             "name": "$\\mathtt{Guha\\ K=4}$",
             "constraints": {
                 "reference_set_size": [4],
-                "upperbound": ["APTED"]
+                "verification_algorithm": ["APTED"]
             }
         }
     ],
