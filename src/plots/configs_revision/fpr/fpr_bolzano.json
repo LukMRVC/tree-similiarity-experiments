@@ -6,7 +6,7 @@
     "legend_frame_alpha": 0.8,
     "grid": "on",
     "dataset_name": "Bolzano",
-    "markers": ["s", "*", "o", "^", "p", "d", "P"],
+    "markers": ["s", "*", "o", "^", "p", "d", "8"],
     "markersize": [15, 20, 15, 15, 15, 15, 15],
     "markerfacecolor": "none",
     "colors": ["red", "green", "blue", "cyan", "magenta", "orange", "greenyellow"],
