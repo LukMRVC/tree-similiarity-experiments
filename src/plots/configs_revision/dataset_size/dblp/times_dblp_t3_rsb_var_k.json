@@ -117,7 +117,6 @@
         "db_column": "dataset_filename",
         "size_plot": 1,
         "name": "Dataset Size",
-        "xticks": 2000, 
         "font_size": 20, 
         "ticks_font_size": 20
     },

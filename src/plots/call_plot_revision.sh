@@ -80,6 +80,8 @@ python3 plot_experiments_n.py --service ted-exp --config configs_revision/rsb_rs
 python3 plot_experiments_n.py --service ted-exp --config configs_revision/rsb_rsc/candidates_sentiment_rsc.json --storeplot "./plots/rsb_rsc/candidates_sentiment_rsc.pdf"
 python3 plot_experiments_n.py --service ted-exp --config configs_revision/rsb_rsc/metric_cand_sentiment_rsb.json --storeplot "./plots/rsb_rsc/metric_cand_sentiment_rsb.pdf"
 python3 plot_experiments_n.py --service ted-exp --config configs_revision/rsb_rsc/metric_cand_sentiment_rsc.json --storeplot "./plots/rsb_rsc/metric_cand_sentiment_rsc.pdf"
+python3 plot_experiments_n.py --service ted-exp --config configs_revision/rsb_rsc/times_nomet_sentiment_rsb.json --storeplot "./plots/rsb_rsc/times_nomet_sentiment_rsb.pdf"
+python3 plot_experiments_n.py --service ted-exp --config configs_revision/rsb_rsc/times_nomet_sentiment_rsc.json --storeplot "./plots/rsb_rsc/times_nomet_sentiment_rsc.pdf"
 python3 plot_experiments_n.py --service ted-exp --config configs_revision/rsb_rsc/times_sentiment_rsb.json --storeplot "./plots/rsb_rsc/times_sentiment_rsb.pdf"
 python3 plot_experiments_n.py --service ted-exp --config configs_revision/rsb_rsc/times_sentiment_rsc.json --storeplot "./plots/rsb_rsc/times_sentiment_rsc.pdf"
 echo " --- Done RSB vs RSC Sentiment --- "
