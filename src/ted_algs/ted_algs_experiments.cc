@@ -320,6 +320,8 @@ int main(int argc, char** argv) {
   // TED algorithms.
   using ZhangShasha = ted::ZhangShasha<Label, CostModel>;
   using APTED = ted::APTED<Label, CostModel>;
+  using SED = ted_lb::StringEditDistanceLB<Label, CostModel>;
+  using CTED = ted_ub::ConstrainedUB<Label, CostModel>;
   
   // TED-k algorithms.
   using Touzet = ted::Touzet<Label, CostModel>;
@@ -355,6 +357,8 @@ int main(int argc, char** argv) {
   // --lg    LabelGuided                               greedy_ub_ted
   bool alg_zs_is_set = false;
   bool alg_apted_is_set = false;
+  bool alg_sed_is_set = false;
+  bool alg_cted_is_set = false;
   bool alg_tz_is_set = false;
   bool alg_tzd_is_set = false;
   bool alg_lg_is_set = false;
@@ -386,6 +390,12 @@ int main(int argc, char** argv) {
       args_start_it += 2;
     } else if (a == "--zs") {
       alg_zs_is_set = true;
+      args_start_it += 1;
+    } else if (a == "--sed") {
+      alg_sed_is_set = true;
+      args_start_it += 1;
+    } else if (a == "--cted") {
+      alg_cted_is_set = true;
       args_start_it += 1;
     } else if (a == "--apted") {
       alg_apted_is_set = true;
@@ -477,6 +487,16 @@ int main(int argc, char** argv) {
   if (alg_apted_is_set) {
     experiment.algorithm_executions.emplace_back("APTED",
         execute_mechanism<Label, APTED, &APTED::apted_ted_k>(
+            trees_collection, mp, similarity_threshold, lp));
+  }
+  if (alg_sed_is_set) {
+    experiment.algorithm_executions.emplace_back("StringEditDistanceLB",
+        execute_mechanism<Label, SED, &SED::sed_lb_ted_k>(
+            trees_collection, mp, similarity_threshold, lp));
+  }
+  if (alg_cted_is_set) {
+    experiment.algorithm_executions.emplace_back("ConstrainedUB",
+        execute_mechanism<Label, CTED, &CTED::cted_ub_ted_k>(
             trees_collection, mp, similarity_threshold, lp));
   }
   if (alg_tz_is_set) {

@@ -172,13 +172,15 @@ ted_experiment_params = {
     "hostname" : get_hostname()
 }
 
-ted_algs = ["--apted", "--zs"]
+ted_algs = ["--apted", "--zs", "--sed", "--cted"]
 tedk_algs = ["--tz", "--tzd"]
 tedub_algs = ["--lg",]
 
 table_names = {
     '--apted' : 'ted_apted',
     '--zs' : 'ted_zhangshasha',
+    '--sed' : 'ted_sed',
+    '--cted' : 'ted_cted',
     '--tz' : 'tedk_touzet',
     '--tzd' : 'tedk_touzetd',
     '--lg' : 'tedk_labelguided'

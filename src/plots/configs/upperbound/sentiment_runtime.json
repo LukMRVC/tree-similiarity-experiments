@@ -19,6 +19,24 @@
             "name": "APTED"
         },
         {
+            "table_name": "sentiment_sed_x_avg_pair_tree_size_y_avg_runtime_k10", 
+            "attributes": [
+                {
+                    "attr_name": "avg(avg_runtime)"
+                }
+            ],
+            "name": "SED"
+        },
+        {
+            "table_name": "sentiment_cted_x_avg_pair_tree_size_y_avg_runtime_k10", 
+            "attributes": [
+                {
+                    "attr_name": "avg(avg_runtime)"
+                }
+            ],
+            "name": "CTED"
+        },
+        {
             "table_name": "sentiment_touzetd_x_avg_pair_tree_size_y_avg_runtime_k10", 
             "attributes": [
                 {
