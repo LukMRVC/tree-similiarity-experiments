@@ -1,5 +1,5 @@
 {
-    "title": "Verification Candidates",
+    "title": "Total Join Times",
     "print_title": "no",
     "legend_font_size": 18,
     "legend_frame_alpha": 0.8,
@@ -15,7 +15,7 @@
             "table_name": "t_join",
             "attributes": [
                 {
-                    "attr_name": "avg(verification_candidates - upperbound_pruned)"
+                    "attr_name": "avg(tree_to_set_time + index_time + upperbound_time + verification_time)/1000"
                 }
             ],
             "name": "$\\mathtt{TJoin}$",
@@ -25,65 +25,65 @@
             }
         },
         {
-            "table_name": "guha_rsb_join",
+            "table_name": "guha_rsc_join",
             "attributes": [
                 {
-                    "attr_name": "avg(l_t_candidates - u_t_result_pairs)"
+                    "attr_name": "avg(vectors_time + sc_candidates_time + verification_time)/1000"
                 }
             ],
-            "name": "$\\mathtt{Guha RSB\\ K=2}$",
+            "name": "$\\mathtt{Guha RSC\\ K=2}$",
             "constraints": {
                 "verification_algorithm": ["APTED"],
                 "reference_set_size": [2]
             }
         },
         {
-            "table_name": "guha_rsb_join",
+            "table_name": "guha_rsc_join",
             "attributes": [
                 {
-                    "attr_name": "avg(l_t_candidates - u_t_result_pairs)"
+                    "attr_name": "avg(vectors_time + sc_candidates_time + verification_time)/1000"
                 }
             ],
-            "name": "$\\mathtt{Guha RSB\\ K=4}$",
+            "name": "$\\mathtt{Guha RSC\\ K=4}$",
             "constraints": {
                 "verification_algorithm": ["APTED"],
                 "reference_set_size": [4]
             }
         },
         {
-            "table_name": "guha_rsb_join",
+            "table_name": "guha_rsc_join",
             "attributes": [
                 {
-                    "attr_name": "avg(l_t_candidates - u_t_result_pairs)"
+                    "attr_name": "avg(vectors_time + sc_candidates_time + verification_time)/1000"
                 }
             ],
-            "name": "$\\mathtt{Guha RSB\\ K=8}$",
+            "name": "$\\mathtt{Guha RSC\\ K=8}$",
             "constraints": {
                 "verification_algorithm": ["APTED"],
                 "reference_set_size": [8]
             }
         },
         {
-            "table_name": "guha_rsb_join",
+            "table_name": "guha_rsc_join",
             "attributes": [
                 {
-                    "attr_name": "avg(l_t_candidates - u_t_result_pairs)"
+                    "attr_name": "avg(vectors_time + sc_candidates_time + verification_time)/1000"
                 }
             ],
-            "name": "$\\mathtt{Guha RSB\\ K=16}$",
+            "name": "$\\mathtt{Guha RSC\\ K=16}$",
             "constraints": {
                 "verification_algorithm": ["APTED"],
                 "reference_set_size": [16]
             }
         },
         {
-            "table_name": "guha_rsb_join",
+            "table_name": "guha_rsc_join",
             "attributes": [
                 {
-                    "attr_name": "avg(l_t_candidates - u_t_result_pairs)"
+                    "attr_name": "avg(vectors_time + sc_candidates_time + verification_time)/1000"
                 }
             ],
-            "name": "$\\mathtt{Guha RSB\\ K=32}$",
+            "name": "$\\mathtt{Guha RSC\\ K=32}$",
             "constraints": {
                 "verification_algorithm": ["APTED"],
                 "reference_set_size": [32]
@@ -98,15 +98,15 @@
         "name": "Threshold",
         "xticks": 2,
         "xmin": 1,
-        "xmax": 15.001, 
-        "font_size": 20, 
+        "xmax": 15.001,
+        "font_size": 20,
         "ticks_font_size": 20
     },
     "y_axis": {
-        "name": "Candidates (Tree Pairs)",
+        "name": "Time [s]",
         "scale": "log",
-        "font_size": 20, 
-        "ticks_font_size": 20, 
-        "suffix": "yes"
+        "ymin": 0.1,
+        "font_size": 20,
+        "ticks_font_size": 20
     }
 }

@@ -28,7 +28,7 @@
             "table_name": "guha_rsc_join",
             "attributes": [
                 {
-                    "attr_name": "avg(sed_candidates - cted_result_pairs)"
+                    "attr_name": "avg(l_t_candidates - u_t_result_pairs)"
                 }
             ],
             "name": "$\\mathtt{Guha RSC\\ K=2}$",
@@ -41,7 +41,7 @@
             "table_name": "guha_rsc_join",
             "attributes": [
                 {
-                    "attr_name": "avg(sed_candidates - cted_result_pairs)"
+                    "attr_name": "avg(l_t_candidates - u_t_result_pairs)"
                 }
             ],
             "name": "$\\mathtt{Guha RSC\\ K=4}$",
@@ -54,7 +54,7 @@
             "table_name": "guha_rsc_join",
             "attributes": [
                 {
-                    "attr_name": "avg(sed_candidates - cted_result_pairs)"
+                    "attr_name": "avg(l_t_candidates - u_t_result_pairs)"
                 }
             ],
             "name": "$\\mathtt{Guha RSC\\ K=8}$",
@@ -67,7 +67,7 @@
             "table_name": "guha_rsc_join",
             "attributes": [
                 {
-                    "attr_name": "avg(sed_candidates - cted_result_pairs)"
+                    "attr_name": "avg(l_t_candidates - u_t_result_pairs)"
                 }
             ],
             "name": "$\\mathtt{Guha RSC\\ K=16}$",
@@ -80,7 +80,7 @@
             "table_name": "guha_rsc_join",
             "attributes": [
                 {
-                    "attr_name": "avg(sed_candidates - cted_result_pairs)"
+                    "attr_name": "avg(l_t_candidates - u_t_result_pairs)"
                 }
             ],
             "name": "$\\mathtt{Guha RSC\\ K=32}$",
