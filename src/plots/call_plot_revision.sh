@@ -70,6 +70,7 @@ python3 plot_experiments_n.py --service ted-exp --config configs_revision/candid
 python3 plot_experiments_n.py --service ted-exp --config configs_revision/candidates/candidates_python.json --storeplot "./plots/candidates/python_candidates.pdf"
 python3 plot_experiments_n.py --service ted-exp --config configs_revision/candidates/candidates_python_10000.json --storeplot "./plots/candidates/python_candidates_10000.pdf"
 python3 plot_experiments_n.py --service ted-exp --config configs_revision/candidates/candidates_sentiment.json --storeplot "./plots/candidates/sentiment_candidates.pdf"
+python3 plot_experiments_n.py --service ted-exp --config configs_revision/candidates/candidates_metric_sentiment.json --storeplot "./plots/candidates/sentiment_metric_candidates.pdf"
 python3 plot_experiments_n.py --service ted-exp --config configs_revision/candidates/candidates_swissprot.json --storeplot "./plots/candidates/swissprot_candidates.pdf"
 python3 plot_experiments_n.py --service ted-exp --config configs_revision/candidates/candidates_swissprot_10000.json --storeplot "./plots/candidates/swissprot_candidates_10000.pdf"
 echo " --- Done Candidates --- "
