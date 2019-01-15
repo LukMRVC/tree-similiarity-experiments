@@ -368,6 +368,32 @@ CREATE TABLE ted_apted (
   runtime double precision
 );
 
+DROP TABLE IF EXISTS ted_sed;
+CREATE TABLE ted_sed (
+  execution_id bigserial PRIMARY KEY,
+  ted_experiment_params_id integer NOT NULL REFERENCES ted_experiment_params(ted_experiment_params_id),
+  tree_id_1 integer,
+  tree_id_2 integer,
+  tree_size_1 integer,
+  tree_size_2 integer,
+  ted_value decimal,
+  subproblems bigint,
+  runtime double precision
+);
+
+DROP TABLE IF EXISTS ted_cted;
+CREATE TABLE ted_cted (
+  execution_id bigserial PRIMARY KEY,
+  ted_experiment_params_id integer NOT NULL REFERENCES ted_experiment_params(ted_experiment_params_id),
+  tree_id_1 integer,
+  tree_id_2 integer,
+  tree_size_1 integer,
+  tree_size_2 integer,
+  ted_value decimal,
+  subproblems bigint,
+  runtime double precision
+);
+
 -- Touzet's algorithm - baseline version without the depth-based pruning
 DROP TABLE IF EXISTS tedk_touzet;
 CREATE TABLE tedk_touzet (

@@ -9,6 +9,28 @@ CREATE MATERIALIZED VIEW sentiment_apted_x_avg_pair_tree_size_y_avg_runtime_k10 
   ORDER BY avg_pair_tree_size
 WITH DATA;
 
+-- Sentiment ted_sed average runtime per average size in tree pair k10.
+DROP MATERIALIZED VIEW IF EXISTS sentiment_sed_x_avg_pair_tree_size_y_avg_runtime_k10;
+CREATE MATERIALIZED VIEW sentiment_sed_x_avg_pair_tree_size_y_avg_runtime_k10 AS
+  SELECT (tree_size_1+tree_size_2)/2.0 AS avg_pair_tree_size, avg(runtime) AS avg_runtime
+  FROM ted_sed NATURAL JOIN ted_experiment_params
+  WHERE dataset_filename = 'sentiment_sorted.bracket'
+  AND abs(tree_size_1-tree_size_2)<=10
+  GROUP BY avg_pair_tree_size
+  ORDER BY avg_pair_tree_size
+WITH DATA;
+
+-- Sentiment ted_cted average runtime per average size in tree pair k10.
+DROP MATERIALIZED VIEW IF EXISTS sentiment_cted_x_avg_pair_tree_size_y_avg_runtime_k10;
+CREATE MATERIALIZED VIEW sentiment_cted_x_avg_pair_tree_size_y_avg_runtime_k10 AS
+  SELECT (tree_size_1+tree_size_2)/2.0 AS avg_pair_tree_size, avg(runtime) AS avg_runtime
+  FROM ted_cted NATURAL JOIN ted_experiment_params
+  WHERE dataset_filename = 'sentiment_sorted.bracket'
+  AND abs(tree_size_1-tree_size_2)<=10
+  GROUP BY avg_pair_tree_size
+  ORDER BY avg_pair_tree_size
+WITH DATA;
+
 -- Sentiment tedk_labelguided average runtime per average size in tree pair k10.
 DROP MATERIALIZED VIEW IF EXISTS sentiment_labelguided_x_avg_pair_tree_size_y_avg_runtime_k10;
 CREATE MATERIALIZED VIEW sentiment_labelguided_x_avg_pair_tree_size_y_avg_runtime_k10 AS
@@ -38,6 +60,28 @@ DROP MATERIALIZED VIEW IF EXISTS dblp_apted_x_avg_pair_tree_size_y_avg_runtime_k
 CREATE MATERIALIZED VIEW dblp_apted_x_avg_pair_tree_size_y_avg_runtime_k10 AS
   SELECT (tree_size_1+tree_size_2)/2.0 AS avg_pair_tree_size, avg(runtime) AS avg_runtime
   FROM ted_apted NATURAL JOIN ted_experiment_params
+  WHERE dataset_filename = 'dblp_no_www_sorted.bracket'
+  AND abs(tree_size_1-tree_size_2)<=10
+  GROUP BY avg_pair_tree_size
+  ORDER BY avg_pair_tree_size
+WITH DATA;
+
+-- DBLP ted_sed average runtime per average size in tree pair k10.
+DROP MATERIALIZED VIEW IF EXISTS dblp_sed_x_avg_pair_tree_size_y_avg_runtime_k10;
+CREATE MATERIALIZED VIEW dblp_sed_x_avg_pair_tree_size_y_avg_runtime_k10 AS
+  SELECT (tree_size_1+tree_size_2)/2.0 AS avg_pair_tree_size, avg(runtime) AS avg_runtime
+  FROM ted_sed NATURAL JOIN ted_experiment_params
+  WHERE dataset_filename = 'dblp_no_www_sorted.bracket'
+  AND abs(tree_size_1-tree_size_2)<=10
+  GROUP BY avg_pair_tree_size
+  ORDER BY avg_pair_tree_size
+WITH DATA;
+
+-- DBLP ted_cted average runtime per average size in tree pair k10.
+DROP MATERIALIZED VIEW IF EXISTS dblp_cted_x_avg_pair_tree_size_y_avg_runtime_k10;
+CREATE MATERIALIZED VIEW dblp_cted_x_avg_pair_tree_size_y_avg_runtime_k10 AS
+  SELECT (tree_size_1+tree_size_2)/2.0 AS avg_pair_tree_size, avg(runtime) AS avg_runtime
+  FROM ted_cted NATURAL JOIN ted_experiment_params
   WHERE dataset_filename = 'dblp_no_www_sorted.bracket'
   AND abs(tree_size_1-tree_size_2)<=10
   GROUP BY avg_pair_tree_size
