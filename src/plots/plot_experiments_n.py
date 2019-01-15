@@ -103,10 +103,12 @@ for table in data['tables']:
     if 'constraints' in data:
       where_args = ' WHERE '
       for (key,val) in data['constraints'].items():
+        where_args += '('
         for or_val in val:
           where_args += "{!s}={!r}".format(key,or_val)
           where_args += ' OR '
         where_args = where_args[:-3] # remove last OR
+        where_args += ')'
         where_args += ' AND '
     where_args = where_args[:-4] # remove last AND
     if 'constraints' in table:
@@ -115,10 +117,12 @@ for table in data['tables']:
       else:
         where_args += ' AND '
       for (key,val) in table['constraints'].items():
+        where_args += '('
         for or_val in val:
           where_args += "{!s}={!r}".format(key,or_val)
           where_args += ' OR '
         where_args = where_args[:-3] # remove last OR
+        where_args += ')'
         where_args += ' AND '
       where_args = where_args[:-4] # remove last AND
     if 'db_column' in data['x_axis']:
