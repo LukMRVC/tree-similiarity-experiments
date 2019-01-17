@@ -94,7 +94,8 @@
                 "verification_algorithm": ["Touzet"],
                 "upperbound": ["greedy"],
                 "dataset_filename": ["dblp_10000_sorted.bracket", "dblp_50000_sorted.bracket", "dblp_100000_sorted.bracket"],
-                "((tree_to_set_time + index_time + upperbound_time + verification_time)/1000) <": [36000]
+                "((tree_to_set_time + index_time + upperbound_time + verification_time)/1000) <": [36000],
+                "threshold": [0]
             }
         },
         {

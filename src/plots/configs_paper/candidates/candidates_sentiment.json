@@ -83,7 +83,8 @@
             "name": "$\\mathtt{TJoin\\ VC}$",
             "constraints": {
                 "verification_algorithm": ["Touzet"],
-                "upperbound": ["greedy"]
+                "upperbound": ["greedy"],
+                "threshold": [0]
             }
         },
         {
