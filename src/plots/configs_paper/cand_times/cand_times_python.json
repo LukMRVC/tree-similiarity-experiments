@@ -90,7 +90,7 @@
         "name": "Time [s]",
         "scale": "log",
         "ymin": 10,
-        "ymax": 2000,
+        "ymax": 1000,
         "font_size": 20, 
         "ticks_font_size": 20
     }
