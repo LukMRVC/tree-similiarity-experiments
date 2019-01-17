@@ -1,0 +1,51 @@
+{
+    "title": "Error",
+    "print_title": "no",
+    "legend": "best",
+    "legend_font_size": 18,
+    "grid": "on",
+    "dataset_name": "DBLP",
+    "markers": [".", ".", "."],
+    "colors": ["darkblue", "darkgreen", "orange"],
+    "lines": [" ", " ", " "],
+    "tables": [
+        {
+            "table_name": "dblp_labelguided_x_avg_pair_tree_size_y_ted_error_k10", 
+            "attributes": [
+                {
+                    "attr_name": "avg(dis)"
+                }
+            ],
+            "name": "TED (size normalized)"
+        },
+        {
+            "table_name": "dblp_labelguided_x_avg_pair_tree_size_y_ted_error_k10", 
+            "attributes": [
+                {
+                    "attr_name": "avg(error)"
+                }
+            ],
+            "name": "LGM relative error"
+        },
+        {
+            "table_name": "dblp_cted_x_avg_pair_tree_size_y_ted_error_k10", 
+            "attributes": [
+                {
+                    "attr_name": "avg(error)"
+                }
+            ],
+            "name": "CTED relative error"
+        }
+    ],
+    "x_axis": {
+        "db_column": "avg_pair_tree_size",
+        "name": "Tree Size", 
+        "font_size": 20, 
+        "ticks_font_size": 20
+    },
+    "y_axis": {
+        "name": "", 
+        "font_size": 20, 
+        "ticks_font_size": 20
+    }
+}
