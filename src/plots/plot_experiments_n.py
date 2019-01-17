@@ -204,7 +204,7 @@ if 'legend_fancy_box' in data:
 
 # plot the legend
 if 'legend' in data:
-  plt.legend(loc=data['legend'], **legend_parameters)
+  plt.legend(loc=data['legend'], **legend_parameters) # , bbox_to_anchor=(0.95, 0.995) for dblp_size
 else:
   plt.legend(prop=legend_parameters)
 
