@@ -61,7 +61,7 @@
             }
         },
         {
-            "table_name": "guha_join", 
+            "table_name": "guha_rsb_join", 
             "attributes": [
                 {
                     "attr_name": "avg(l_t_candidates - u_t_result_pairs)"
