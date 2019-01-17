@@ -112,7 +112,6 @@
         "name": "Candidates (Tree Pairs)",
         "scale": "log",
         "font_size": 20, 
-        "ticks_font_size": 20, 
-        "suffix": "yes"
+        "ticks_font_size": 20
     }
 }

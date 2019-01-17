@@ -3,7 +3,7 @@
     "print_title": "no",
     "legend_font_size": 18,
     "legend_frame_alpha": 0.8,
-    "legend": "center left",
+    "legend": "lower right",
     "grid": "on",
     "dataset_name": "DBLP",
     "markers": ["s", "*", "o", "^", "p", "d", "8"],
@@ -20,7 +20,8 @@
             ],
             "name": "$\\mathtt{Tang}$",
             "constraints": {
-                "verification_algorithm": ["APTED"]
+                "verification_algorithm": ["APTED"],
+                "((tree_to_binary_tree_time + index_time + verification_time)/1000) <": [36000]
             }
         },
         {
@@ -45,7 +46,8 @@
             ],
             "name": "$\\mathtt{Binary}$",
             "constraints": {
-                "verification_algorithm": ["APTED"]
+                "verification_algorithm": ["APTED"],
+                "((tree_to_set_time + index_time + upperbound_time + verification_time)/1000) <": [36000]
             }
         },
         {
