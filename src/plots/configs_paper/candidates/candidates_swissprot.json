@@ -80,10 +80,10 @@
             "table_name": "t_join", 
             "attributes": [
                 {
-                    "attr_name": "avg(verification_candidates - upperbound_pruned)"
+                    "attr_name": "avg(upperbound_pruned)"
                 }
             ],
-            "name": "$\\mathtt{TJoin\\ VC}$",
+            "name": "$\\mathtt{LGM}$",
             "constraints": {
                 "verification_algorithm": ["Touzet"],
                 "upperbound": ["greedy"],

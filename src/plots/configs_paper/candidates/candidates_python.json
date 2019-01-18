@@ -77,13 +77,14 @@
             "table_name": "t_join", 
             "attributes": [
                 {
-                    "attr_name": "avg(verification_candidates - upperbound_pruned)"
+                    "attr_name": "avg(upperbound_pruned)"
                 }
             ],
-            "name": "$\\mathtt{TJoin\\ VC}$",
+            "name": "$\\mathtt{LGM}$",
             "constraints": {
                 "verification_algorithm": ["Touzet"],
-                "upperbound": ["greedy"]
+                "upperbound": ["greedy"],
+                "((tree_to_set_time + index_time + upperbound_time + verification_time)/1000) <": [36000]
             }
         },
         {
