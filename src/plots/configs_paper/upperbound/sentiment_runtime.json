@@ -6,7 +6,7 @@
     "grid": "on",
     "dataset_name": "Sentiment",
     "markers": ["+", ".", "*", "p"],
-    "colors": ["red", "green", "orange", "purple"],
+    "colors": ["red", "orange", "purple", "green"],
     "lines": [" ", " ", " ", " ", " "],
     "tables": [
         {
