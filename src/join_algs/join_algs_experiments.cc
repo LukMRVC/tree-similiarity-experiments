@@ -213,19 +213,19 @@ void execute_bb_join(std::vector<node::Node<Label>>& trees_collection, std::stri
   // Add some scopes to ensure that the memory is deallocated
   {
     // Initialized Timing object
-    Timing::Interval * tree_to_set = timing.create_enroll("TreeToSet");
+    Timing::Interval * tree_to_histogram = timing.create_enroll("TreeToHistogram");
     // Start timing
-    tree_to_set->start();
+    tree_to_histogram->start();
 
     // Convert trees to histogram of binary branches.
     std::vector<std::pair<unsigned int, std::unordered_map<unsigned int, unsigned int>>> histogram_collection;
-    bbj.convert_trees_to_sets(trees_collection, histogram_collection);
+    bbj.convert_trees_to_histograms(trees_collection, histogram_collection);
 
     // Stop timing
-    tree_to_set->stop();
+    tree_to_histogram->stop();
 
     // Write timing
-    std::cout << "\"tree_to_set_time\": " << tree_to_set->getfloat() << ", ";
+    std::cout << "\"tree_to_set_time\": " << tree_to_histogram->getfloat() << ", ";
 
     {
       // Initialized Timing object
@@ -340,19 +340,19 @@ void execute_dh_join(std::vector<node::Node<Label>>& trees_collection, std::stri
   // Add some scopes to ensure that the memory is deallocated
   {
     // Initialized Timing object
-    Timing::Interval * tree_to_set = timing.create_enroll("TreeToSet");
+    Timing::Interval * tree_to_histogram = timing.create_enroll("TreeToHistogram");
     // Start timing
-    tree_to_set->start();
+    tree_to_histogram->start();
 
     // Convert trees to histograms of degree values.
     std::vector<std::pair<unsigned int, std::unordered_map<unsigned int, unsigned int>>> histogram_collection;
-    dh.convert_trees_to_sets(trees_collection, histogram_collection);
+    dh.convert_trees_to_histograms(trees_collection, histogram_collection);
 
     // Stop timing
-    tree_to_set->stop();
+    tree_to_histogram->stop();
 
     // Write timing
-    std::cout << "\"tree_to_set_time\": " << tree_to_set->getfloat() << ", ";
+    std::cout << "\"tree_to_set_time\": " << tree_to_histogram->getfloat() << ", ";
 
     {
       // Initialized Timing object
@@ -467,19 +467,19 @@ void execute_ldh_join(std::vector<node::Node<Label>>& trees_collection, std::str
   // Add some scopes to ensure that the memory is deallocated
   {
     // Initialized Timing object
-    Timing::Interval * tree_to_set = timing.create_enroll("TreeToSet");
+    Timing::Interval * tree_to_histogram = timing.create_enroll("TreeToHistogram");
     // Start timing
-    tree_to_set->start();
+    tree_to_histogram->start();
 
     // Convert trees to histograms of leaf distance values.
     std::vector<std::pair<unsigned int, std::unordered_map<unsigned int, unsigned int>>> histogram_collection;
-    ldh.convert_trees_to_sets(trees_collection, histogram_collection);
+    ldh.convert_trees_to_histograms(trees_collection, histogram_collection);
 
     // Stop timing
-    tree_to_set->stop();
+    tree_to_histogram->stop();
 
     // Write timing
-    std::cout << "\"tree_to_set_time\": " << tree_to_set->getfloat() << ", ";
+    std::cout << "\"tree_to_set_time\": " << tree_to_histogram->getfloat() << ", ";
 
     {
       // Initialized Timing object
@@ -594,19 +594,19 @@ void execute_lh_join(std::vector<node::Node<Label>>& trees_collection, std::stri
   // Add some scopes to ensure that the memory is deallocated
   {
     // Initialized Timing object
-    Timing::Interval * tree_to_set = timing.create_enroll("TreeToSet");
+    Timing::Interval * tree_to_histogram = timing.create_enroll("TreeToHistogram");
     // Start timing
-    tree_to_set->start();
+    tree_to_histogram->start();
 
     // Convert trees to histogram of label values.
     std::vector<std::pair<unsigned int, std::unordered_map<unsigned int, unsigned int>>> histogram_collection;
-    lh.convert_trees_to_sets(trees_collection, histogram_collection);
+    lh.convert_trees_to_histograms(trees_collection, histogram_collection);
 
     // Stop timing
-    tree_to_set->stop();
+    tree_to_histogram->stop();
 
     // Write timing
-    std::cout << "\"tree_to_set_time\": " << tree_to_set->getfloat() << ", ";
+    std::cout << "\"tree_to_set_time\": " << tree_to_histogram->getfloat() << ", ";
 
     {
       // Initialized Timing object
@@ -721,22 +721,22 @@ void execute_histogram_join(std::vector<node::Node<Label>>& trees_collection, st
   // Add some scopes to ensure that the memory is deallocated
   {
     // Initialized Timing object
-    Timing::Interval * tree_to_set = timing.create_enroll("TreeToSet");
+    Timing::Interval * tree_to_histogram = timing.create_enroll("TreeToHistogram");
     // Start timing
-    tree_to_set->start();
+    tree_to_histogram->start();
 
     // Convert trees to histogram of label values.
     std::vector<std::pair<unsigned int, std::unordered_map<unsigned int, unsigned int>>> label_histogram_collection;
     std::vector<std::pair<unsigned int, std::unordered_map<unsigned int, unsigned int>>> degree_histogram_collection;
     std::vector<std::pair<unsigned int, std::unordered_map<unsigned int, unsigned int>>> leaf_distance_histogram_collection;
-    hj.convert_trees_to_sets(trees_collection, label_histogram_collection, 
+    hj.convert_trees_to_histograms(trees_collection, label_histogram_collection, 
         degree_histogram_collection, leaf_distance_histogram_collection);
 
     // Stop timing
-    tree_to_set->stop();
+    tree_to_histogram->stop();
 
     // Write timing
-    std::cout << "\"tree_to_set_time\": " << tree_to_set->getfloat() << ", ";
+    std::cout << "\"tree_to_set_time\": " << tree_to_histogram->getfloat() << ", ";
 
     {
       // Initialized Timing object
