@@ -64,7 +64,7 @@
             "table_name": "guha_join", 
             "attributes": [
                 {
-                    "attr_name": "avg(vectors_time + candidates_time + verification_time)/1000"
+                    "attr_name": "avg(vectors_time + metric_candidates_time + candidates_time + verification_time)/1000"
                 }
             ],
             "name": "$\\mathtt{Guha}$",

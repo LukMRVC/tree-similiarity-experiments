@@ -64,7 +64,7 @@
             "table_name": "guha_rsb_join", 
             "attributes": [
                 {
-                    "attr_name": "avg(vectors_time + sc_candidates_time + verification_time)/1000"
+                    "attr_name": "avg(vectors_time + metric_candidates_time + sc_candidates_time + verification_time)/1000"
                 }
             ],
             "name": "$\\mathtt{Guha}$",
