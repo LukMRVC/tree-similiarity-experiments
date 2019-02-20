@@ -34,7 +34,7 @@
             "constraints": {
                 "verification_algorithm": ["Touzet"],
                 "upperbound": ["greedy"],
-                "((tree_to_set_time + index_time + upperbound_time + verification_time)/1000) <": [36000]
+                "((tree_to_set_time + index_time)/1000) <": [36000]
             }
         },
         {
@@ -87,7 +87,7 @@
             "constraints": {
                 "verification_algorithm": ["Touzet"],
                 "upperbound": ["greedy"],
-                "((tree_to_set_time + index_time + upperbound_time + verification_time)/1000) <": [36000]
+                "((tree_to_set_time + index_time)/1000) <": [36000]
             }
         },
         {
@@ -99,7 +99,7 @@
             ],
             "name": "$\\mathtt{Result}$",
             "constraints": {
-                "((tree_to_set_time + index_time + upperbound_time + verification_time)/1000) <": [36000]
+                "((tree_to_set_time + index_time)/1000) <": [36000]
             }
         }
     ],
