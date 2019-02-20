@@ -47,7 +47,7 @@
             "name": "$\\mathtt{Binary}$",
             "constraints": {
                 "verification_algorithm": ["APTED"],
-                "((tree_to_set_time + index_time + upperbound_time + verification_time)/1000) <": [36000]
+                "((tree_to_set_time + index_time)/1000) <": [36000]
             }
         },
         {
@@ -60,7 +60,7 @@
             "name": "$\\mathtt{Histo}$",
             "constraints": {
                 "verification_algorithm": ["APTED"],
-                "((tree_to_set_time + index_time + upperbound_time + verification_time)/1000) <": [36000]
+                "((tree_to_set_time + index_time)/1000) <": [36000]
             }
         },
         {

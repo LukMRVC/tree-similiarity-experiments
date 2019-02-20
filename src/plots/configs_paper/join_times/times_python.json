@@ -45,7 +45,8 @@
             ],
             "name": "$\\mathtt{Binary}$",
             "constraints": {
-                "verification_algorithm": ["APTED"]
+                "verification_algorithm": ["APTED"],
+                "verification_time": [-1]
             }
         },
         {
@@ -57,14 +58,15 @@
             ],
             "name": "$\\mathtt{Histo}$",
             "constraints": {
-                "verification_algorithm": ["APTED"]
+                "verification_algorithm": ["APTED"],
+                "verification_time": [-1]
             }
         },
         {
-            "table_name": "guha_join", 
+            "table_name": "guha_rsb_join", 
             "attributes": [
                 {
-                    "attr_name": "avg(vectors_time + metric_candidates_time + candidates_time + verification_time)/1000"
+                    "attr_name": "avg(vectors_time + metric_candidates_time + sc_candidates_time + verification_time)/1000"
                 }
             ],
             "name": "$\\mathtt{Guha}$",
