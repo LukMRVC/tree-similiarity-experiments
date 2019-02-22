@@ -3,7 +3,7 @@
     "print_title": "no",
     "legend_font_size": 18,
     "legend_frame_alpha": 0.8,
-    "legend": "lower right",
+    "legend": "upper right",
     "grid": "on",
     "dataset_name": "DBLP",
     "markers": ["s", "*", "o", "^", "p", "d", "8"],
@@ -94,6 +94,8 @@
         "name": "Time [s]",
         "scale": "log",
         "font_size": 20, 
+        "ymin": 10,
+        "ymax": 100000,
         "ticks_font_size": 20
     }
 }

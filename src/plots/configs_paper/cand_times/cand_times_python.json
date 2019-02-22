@@ -3,7 +3,7 @@
     "print_title": "no",
     "legend_font_size": 18,
     "legend_frame_alpha": 0.8,
-    "legend": "lower right",
+    "legend": "upper right",
     "grid": "on",
     "dataset_name": "Python",
     "markers": ["s", "*", "o", "^", "p", "d", "8"],
@@ -45,7 +45,8 @@
             ],
             "name": "$\\mathtt{Binary}$",
             "constraints": {
-                "verification_algorithm": ["APTED"]
+                "verification_algorithm": ["APTED"],
+                "verification_time": [-1]
             }
         },
         {
@@ -57,7 +58,8 @@
             ],
             "name": "$\\mathtt{Histo}$",
             "constraints": {
-                "verification_algorithm": ["APTED"]
+                "verification_algorithm": ["APTED"],
+                "verification_time": [-1]
             }
         },
         {
@@ -90,7 +92,7 @@
         "name": "Time [s]",
         "scale": "log",
         "ymin": 10,
-        "ymax": 1000,
+        "ymax": 100000,
         "font_size": 20, 
         "ticks_font_size": 20
     }

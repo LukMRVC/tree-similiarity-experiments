@@ -45,7 +45,8 @@
             ],
             "name": "$\\mathtt{Binary}$",
             "constraints": {
-                "verification_algorithm": ["APTED"]
+                "verification_algorithm": ["APTED"],
+                "verification_time": [-1]
             }
         },
         {
@@ -57,7 +58,8 @@
             ],
             "name": "$\\mathtt{Histo}$",
             "constraints": {
-                "verification_algorithm": ["APTED"]
+                "verification_algorithm": ["APTED"],
+                "verification_time": [-1]
             }
         },
         {
@@ -113,6 +115,8 @@
         "name": "Candidates (Tree Pairs)",
         "scale": "log",
         "font_size": 20, 
+        "ymin": 10,
+        "ymax": 100000000000,
         "ticks_font_size": 20
     }
 }

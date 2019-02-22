@@ -92,6 +92,8 @@
         "name": "Time [s]",
         "scale": "log",
         "font_size": 20, 
+        "ymin": 10,
+        "ymax": 100000,
         "ticks_font_size": 20
     }
 }

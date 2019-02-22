@@ -1,7 +1,7 @@
 {
     "title": "Verification Candidates",
     "print_title": "no",
-    "legend": "lower right",
+    "legend": "upper left",
     "legend_font_size": 18,
     "legend_frame_alpha": 0.8,
     "grid": "on",
@@ -34,7 +34,7 @@
             "constraints": {
                 "verification_algorithm": ["Touzet"],
                 "upperbound": ["greedy"],
-                "((tree_to_set_time + index_time)/1000) <": [36000]
+                "((tree_to_set_time + index_time + upperbound_time + verification_time)/1000) <": [36000]
             }
         },
         {
@@ -47,7 +47,8 @@
             "name": "$\\mathtt{Binary}$",
             "constraints": {
                 "verification_algorithm": ["APTED"],
-                "((tree_to_set_time + index_time)/1000) <": [36000]
+                "((tree_to_set_time + index_time + upperbound_time + verification_time)/1000) <": [36000],
+                "experiments_version!": ["ef3c285715a8b2e07cf6121e2fa2bd88238c0cee"]
             }
         },
         {
@@ -60,7 +61,8 @@
             "name": "$\\mathtt{Histo}$",
             "constraints": {
                 "verification_algorithm": ["APTED"],
-                "((tree_to_set_time + index_time)/1000) <": [36000]
+                "((tree_to_set_time + index_time + upperbound_time + verification_time)/1000) <": [36000],
+                "experiments_version!": ["ef3c285715a8b2e07cf6121e2fa2bd88238c0cee"]
             }
         },
         {
@@ -87,7 +89,7 @@
             "constraints": {
                 "verification_algorithm": ["Touzet"],
                 "upperbound": ["greedy"],
-                "((tree_to_set_time + index_time)/1000) <": [36000]
+                "((tree_to_set_time + index_time + upperbound_time + verification_time)/1000) <": [36000]
             }
         },
         {
@@ -99,7 +101,7 @@
             ],
             "name": "$\\mathtt{Result}$",
             "constraints": {
-                "((tree_to_set_time + index_time)/1000) <": [36000]
+                "((tree_to_set_time + index_time + upperbound_time + verification_time)/1000) <": [36000]
             }
         }
     ],
@@ -111,7 +113,7 @@
         "name": "Threshold",
         "xticks": 10,
         "xmin": 0,
-        "xmax": 60.001, 
+        "xmax": 55.001, 
         "font_size": 20, 
         "ticks_font_size": 20
     },
@@ -119,6 +121,8 @@
         "name": "Candidates (Tree Pairs)",
         "scale": "log",
         "font_size": 20, 
+        "ymin": 10,
+        "ymax": 100000000000,
         "ticks_font_size": 20
     }
 }
