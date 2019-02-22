@@ -56,6 +56,8 @@
         "name": "Runtime [ms]",
         "scale": "log", 
         "font_size": 20, 
+        "ymin": 0.006,
+        "ymax": 20,
         "ticks_font_size": 20
     }
 }

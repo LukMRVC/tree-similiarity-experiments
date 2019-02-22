@@ -46,6 +46,7 @@
     "y_axis": {
         "name": "", 
         "font_size": 20, 
+        "ymax": 1.4,
         "ticks_font_size": 20
     }
 }
