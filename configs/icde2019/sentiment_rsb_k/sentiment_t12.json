@@ -3,33 +3,33 @@
     "sentiment/sentiment_sorted.bracket"
   ],
   "thresholds": [
-    14.0
+    12.0, 13.0
   ],
   "algorithms": [
-    { "name": "guha_rsc_join",
+    { "name": "guha_rsb_join",
       "verification_algorithm" : "APTED",
       "reference_set_size": "2",
-      "reference_set_id": "6"
+      "reference_set_id": "5"
     },
-    { "name": "guha_rsc_join",
+    { "name": "guha_rsb_join",
       "verification_algorithm" : "APTED",
       "reference_set_size": "4",
-      "reference_set_id": "6"
+      "reference_set_id": "5"
     },
-    { "name": "guha_rsc_join",
+    { "name": "guha_rsb_join",
       "verification_algorithm" : "APTED",
       "reference_set_size": "8",
-      "reference_set_id": "6"
+      "reference_set_id": "5"
     },
-    { "name": "guha_rsc_join",
+    { "name": "guha_rsb_join",
       "verification_algorithm" : "APTED",
       "reference_set_size": "16",
-      "reference_set_id": "6"
+      "reference_set_id": "5"
     },
-    { "name": "guha_rsc_join",
+    { "name": "guha_rsb_join",
       "verification_algorithm" : "APTED",
       "reference_set_size": "32",
-      "reference_set_id": "6"
+      "reference_set_id": "5"
     }
   ]
 }

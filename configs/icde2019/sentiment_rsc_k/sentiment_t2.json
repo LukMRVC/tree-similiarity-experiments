@@ -1,45 +1,35 @@
 {
   "datasets": [
-    "dblp/dblp_10000_sorted.bracket"
+    "sentiment/sentiment_sorted.bracket"
   ],
   "thresholds": [
-    2.0
+    1.0, 2.0, 3.0
   ],
   "algorithms": [
     { "name": "guha_rsc_join",
       "verification_algorithm" : "APTED",
       "reference_set_size": "2",
-      "reference_set_id": "-1"
+      "reference_set_id": "0"
     },
     { "name": "guha_rsc_join",
       "verification_algorithm" : "APTED",
       "reference_set_size": "4",
-      "reference_set_id": "-1"
+      "reference_set_id": "0"
     },
     { "name": "guha_rsc_join",
       "verification_algorithm" : "APTED",
       "reference_set_size": "8",
-      "reference_set_id": "-1"
+      "reference_set_id": "0"
     },
     { "name": "guha_rsc_join",
       "verification_algorithm" : "APTED",
       "reference_set_size": "16",
-      "reference_set_id": "-1"
+      "reference_set_id": "0"
     },
     { "name": "guha_rsc_join",
       "verification_algorithm" : "APTED",
       "reference_set_size": "32",
-      "reference_set_id": "-1"
-    },
-    { "name": "guha_rsc_join",
-      "verification_algorithm" : "APTED",
-      "reference_set_size": "64",
-      "reference_set_id": "-1"
-    },
-    { "name": "guha_rsc_join",
-      "verification_algorithm" : "APTED",
-      "reference_set_size": "128",
-      "reference_set_id": "-1"
+      "reference_set_id": "0"
     }
   ]
 }
