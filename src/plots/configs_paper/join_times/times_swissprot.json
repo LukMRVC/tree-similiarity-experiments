@@ -20,7 +20,8 @@
             ],
             "name": "$\\mathtt{Tang}$",
             "constraints": {
-                "verification_algorithm": ["APTED"]
+                "verification_algorithm": ["APTED"],
+                "((tree_to_binary_tree_time + index_time + verification_time)/1000) <": [36000]
             }
         },
         {
@@ -47,8 +48,8 @@
             "name": "$\\mathtt{Binary}$",
             "constraints": {
                 "verification_algorithm": ["APTED"],
-                "((tree_to_set_time + index_time + upperbound_time + verification_time)/1000) <": [36000],
-                "experiments_version!": ["ef3c285715a8b2e07cf6121e2fa2bd88238c0cee"]
+                "threshold<": [20],
+                "((tree_to_set_time + index_time + upperbound_time + verification_time)/1000) <": [36000]
             }
         },
         {
@@ -61,8 +62,8 @@
             "name": "$\\mathtt{Histo}$",
             "constraints": {
                 "verification_algorithm": ["APTED"],
-                "((tree_to_set_time + index_time + upperbound_time + verification_time)/1000) <": [36000],
-                "experiments_version!": ["ef3c285715a8b2e07cf6121e2fa2bd88238c0cee"]
+                "threshold<": [20],
+                "((tree_to_set_time + index_time + upperbound_time + verification_time)/1000) <": [36000]
             }
         },
         {

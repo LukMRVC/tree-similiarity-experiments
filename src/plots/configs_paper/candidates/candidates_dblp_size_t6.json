@@ -22,7 +22,7 @@
             "constraints": {
                 "verification_algorithm": ["APTED"],
                 "dataset_filename": ["dblp_10000_sorted.bracket", "dblp_50000_sorted.bracket", "dblp_100000_sorted.bracket"],
-                "((tree_to_binary_tree_time + index_time + verification_time)/1000) <": [36000]
+                "((tree_to_binary_tree_time + index_time + upperbound_time + verification_time)/1000) <": [36000]
             }
         },
         {

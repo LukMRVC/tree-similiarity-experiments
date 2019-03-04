@@ -20,7 +20,8 @@
             ],
             "name": "$\\mathtt{Tang}$",
             "constraints": {
-                "verification_algorithm": ["APTED"]
+                "verification_algorithm": ["APTED"],
+                "((tree_to_binary_tree_time + index_time + verification_time)/1000) <": [36000]
             }
         },
         {
@@ -33,7 +34,8 @@
             "name": "$\\mathtt{TJoin}$",
             "constraints": {
                 "verification_algorithm": ["Touzet"],
-                "upperbound": ["greedy"]
+                "upperbound": ["greedy"],
+                "((tree_to_set_time + index_time + upperbound_time + verification_time)/1000) <": [36000]
             }
         },
         {
@@ -46,7 +48,8 @@
             "name": "$\\mathtt{Binary}$",
             "constraints": {
                 "verification_algorithm": ["APTED"],
-                "verification_time": [-1]
+                "verification_time>": [100],
+                "((tree_to_set_time + index_time + upperbound_time + verification_time)/1000) <": [36000]
             }
         },
         {
@@ -59,7 +62,8 @@
             "name": "$\\mathtt{Histo}$",
             "constraints": {
                 "verification_algorithm": ["APTED"],
-                "verification_time": [-1]
+                "verification_time>": [100],
+                "((tree_to_set_time + index_time + upperbound_time + verification_time)/1000) <": [36000]
             }
         },
         {
@@ -71,8 +75,7 @@
             ],
             "name": "$\\mathtt{Guha}$",
             "constraints": {
-                "verification_algorithm": ["APTED"],
-                "reference_set_size": [8]
+                "verification_algorithm": ["APTED"]
             }
         }
     ],

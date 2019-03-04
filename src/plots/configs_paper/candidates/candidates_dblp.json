@@ -21,7 +21,7 @@
             "name": "$\\mathtt{Tang}$",
             "constraints": {
                 "verification_algorithm": ["APTED"],
-                "((tree_to_binary_tree_time + index_time + verification_time)/1000) <": [36000]
+                "((tree_to_binary_tree_time + index_time + upperbound_time + verification_time)/1000) <": [36000]
             }
         },
         {
@@ -65,7 +65,7 @@
             }
         },
         {
-            "table_name": "guha_join", 
+            "table_name": "guha_rsb_join", 
             "attributes": [
                 {
                     "attr_name": "avg(l_t_candidates - u_t_result_pairs)"

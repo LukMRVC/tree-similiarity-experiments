@@ -86,26 +86,51 @@ plot_parameters = {}
 # execute the query
 for table in data['tables']:
   for attr in table['attributes']:
-    if 'aggregate' in data['y_axis']:
-      select_args = data['x_axis']['db_column'] + ", " + data['y_axis']['aggregate'] + "(" + attr['attr_name'] + ")"
+    if 'size_plot' in data['x_axis']:
+      if 'aggregate' in data['y_axis']:
+        select_args = "split_part(" + data['x_axis']['db_column'] + ", '_', 2), " + data['y_axis']['aggregate'] + "(" + attr['attr_name'] + ")"
+      else:
+        select_args = "split_part(" + data['x_axis']['db_column'] + ", '_', 2), " + attr['attr_name']
     else:
-      select_args = data['x_axis']['db_column'] + ", " + attr['attr_name']
+      if 'aggregate' in data['y_axis']:
+        select_args = data['x_axis']['db_column'] + ", " + data['y_axis']['aggregate'] + "(" + attr['attr_name'] + ")"
+      else:
+        select_args = data['x_axis']['db_column'] + ", " + attr['attr_name']
     if 'factor' in attr:
       select_args += attr['factor']
     table_args = table['table_name']
     where_args = ''
     if 'constraints' in data:
       where_args = ' WHERE '
-      where_args += ' AND '.join("{!s}={!r}".format(key,val) for (key,val) in data['constraints'].items())
+      for (key,val) in data['constraints'].items():
+        where_args += '('
+        for or_val in val:
+          where_args += "{!s}={!r}".format(key,or_val)
+          where_args += ' OR '
+        where_args = where_args[:-3] # remove last OR
+        where_args += ')'
+        where_args += ' AND '
+    where_args = where_args[:-4] # remove last AND
     if 'constraints' in table:
       if where_args == '': 
         where_args += ' WHERE '
       else:
         where_args += ' AND '
-      where_args += ' AND '.join("{!s}={!r}".format(key,val) for (key,val) in table['constraints'].items())
+      for (key,val) in table['constraints'].items():
+        where_args += '('
+        for or_val in val:
+          where_args += "{!s}={!r}".format(key,or_val)
+          where_args += ' OR '
+        where_args = where_args[:-3] # remove last OR
+        where_args += ')'
+        where_args += ' AND '
+      where_args = where_args[:-4] # remove last AND
     if 'db_column' in data['x_axis']:
       group_args = ' GROUP BY ' + data['x_axis']['db_column']
-      order_args = ' ORDER BY ' + data['x_axis']['db_column']
+      if 'size_plot' in data['x_axis']:
+        order_args = ' ORDER BY ' + " split_part(" + data['x_axis']['db_column'] + ", '_', 2)::int"
+      else:
+        order_args = ' ORDER BY ' + data['x_axis']['db_column']
     result = db_request(args.service, select_args, table_args, where_args, group_args, order_args)
 
     label = ""
@@ -179,7 +204,7 @@ if 'legend_fancy_box' in data:
 
 # plot the legend
 if 'legend' in data:
-  plt.legend(loc=data['legend'], **legend_parameters)
+  plt.legend(loc=data['legend'], **legend_parameters) # , bbox_to_anchor=(0.95, 0.995) for dblp_size
 else:
   plt.legend(prop=legend_parameters)
 
