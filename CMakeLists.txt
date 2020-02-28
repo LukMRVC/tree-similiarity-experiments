@@ -71,6 +71,8 @@ target_include_directories(
   external/tree-similarity/src/parser
   external/tree-similarity/src/ted
   external/tree-similarity/src/ted_ub
+  external/tree-similarity/src/ted_lb
+  external/tree-similarity/src/join/guha
 )
 
 # Let the compiler know to find the header files in TreeSimilarity library.

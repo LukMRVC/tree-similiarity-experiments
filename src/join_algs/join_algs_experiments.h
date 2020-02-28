@@ -52,5 +52,8 @@
 #include "touzet.h"
 #include "greedy_ub.h"
 #include "apted.h"
+#include "guha.h"
+
+std::vector<std::vector<unsigned int>> reference_sets_;
 
 #endif // JOIN_ALGS_EXPERIMENTS_H

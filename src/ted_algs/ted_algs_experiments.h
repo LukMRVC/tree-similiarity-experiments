@@ -44,6 +44,8 @@
 #include "touzet.h"
 #include "greedy_ub.h"
 #include "apted.h"
+#include "sed_lb.h"
+#include "cted_ub.h"
 #include "bracket_notation_parser.h"
 
 #endif // TED_ALGS_EXPERIMENTS_H

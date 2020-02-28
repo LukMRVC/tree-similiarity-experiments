@@ -139,6 +139,20 @@ def main():
                         "verification_algorithm" : a['verification_algorithm']
                     }
                     cmd.extend((binary_name, d, str(t), a['name'], a['verification_algorithm'], "", a['upperbound']))
+                elif a['name'] == 'guha_rsb_join':
+                    algorithm_params = {
+                        "verification_algorithm" : a['verification_algorithm'],
+                        "reference_set_size" : a['reference_set_size'],
+                        "reference_set_id" : a['reference_set_id']
+                    }
+                    cmd.extend((binary_name, d, str(t), a['name'], a['verification_algorithm'], "", "", a['reference_set_size'], a['reference_set_id']))
+                elif a['name'] == 'guha_rsc_join':
+                    algorithm_params = {
+                        "verification_algorithm" : a['verification_algorithm'],
+                        "reference_set_size" : a['reference_set_size'],
+                        "reference_set_id" : a['reference_set_id']
+                    }
+                    cmd.extend((binary_name, d, str(t), a['name'], a['verification_algorithm'], "", "", a['reference_set_size'], a['reference_set_id']))
                 cmd_output = get_stdout_cmd(cmd).strip()
                 result_data = json.loads(cmd_output.decode('utf-8'))
                 result_data.update(fixed_values)

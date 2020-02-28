@@ -250,6 +250,60 @@ CREATE TABLE histogram_join (
   upperbound_pruned bigint -- Number of pairs in the result set by upperbound computation.
 );
 
+DROP TABLE IF EXISTS guha_rsb_join;
+CREATE TABLE guha_rsb_join (
+  -- Common attributes.
+  execution_id serial PRIMARY KEY,
+  experiments_version varchar(127),
+  experiments_timestamp timestamp,
+  hostname varchar(127),
+  dataset_filename varchar(127) REFERENCES dataset(filename),
+  dataset_parsing_time bigint,
+  algorithm_version varchar(127),
+  threshold decimal,
+  join_result_size bigint,
+  -- Algorithm-specific attributes.
+  verification_algorithm varchar(31),
+  vectors_time bigint,
+  metric_candidates_time bigint,
+  sc_candidates_time bigint,
+  ted_verification_candidates bigint,
+  verification_time bigint, -- TED verification time.
+  l_t_candidates bigint,
+  sed_candidates bigint,
+  u_t_result_pairs bigint,
+  cted_result_pairs bigint, 
+  reference_set_size int, 
+  reference_set_id int
+);
+
+DROP TABLE IF EXISTS guha_rsc_join;
+CREATE TABLE guha_rsc_join (
+  -- Common attributes.
+  execution_id serial PRIMARY KEY,
+  experiments_version varchar(127),
+  experiments_timestamp timestamp,
+  hostname varchar(127),
+  dataset_filename varchar(127) REFERENCES dataset(filename),
+  dataset_parsing_time bigint,
+  algorithm_version varchar(127),
+  threshold decimal,
+  join_result_size bigint,
+  -- Algorithm-specific attributes.
+  verification_algorithm varchar(31),
+  vectors_time bigint,
+  metric_candidates_time bigint,
+  sc_candidates_time bigint,
+  ted_verification_candidates bigint,
+  verification_time bigint, -- TED verification time.
+  l_t_candidates bigint,
+  sed_candidates bigint,
+  u_t_result_pairs bigint,
+  cted_result_pairs bigint, 
+  reference_set_size int, 
+  reference_set_id int
+);
+
 -- Parameters of a ted experiment (for normalization):
 
 -- ted_experiment_timestamp timestamp,
@@ -303,6 +357,32 @@ CREATE TABLE ted_zhangshasha (
 
 DROP TABLE IF EXISTS ted_apted;
 CREATE TABLE ted_apted (
+  execution_id bigserial PRIMARY KEY,
+  ted_experiment_params_id integer NOT NULL REFERENCES ted_experiment_params(ted_experiment_params_id),
+  tree_id_1 integer,
+  tree_id_2 integer,
+  tree_size_1 integer,
+  tree_size_2 integer,
+  ted_value decimal,
+  subproblems bigint,
+  runtime double precision
+);
+
+DROP TABLE IF EXISTS ted_sed;
+CREATE TABLE ted_sed (
+  execution_id bigserial PRIMARY KEY,
+  ted_experiment_params_id integer NOT NULL REFERENCES ted_experiment_params(ted_experiment_params_id),
+  tree_id_1 integer,
+  tree_id_2 integer,
+  tree_size_1 integer,
+  tree_size_2 integer,
+  ted_value decimal,
+  subproblems bigint,
+  runtime double precision
+);
+
+DROP TABLE IF EXISTS ted_cted;
+CREATE TABLE ted_cted (
   execution_id bigserial PRIMARY KEY,
   ted_experiment_params_id integer NOT NULL REFERENCES ted_experiment_params(ted_experiment_params_id),
   tree_id_1 integer,

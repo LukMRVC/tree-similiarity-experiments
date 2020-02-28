@@ -7,7 +7,10 @@ Follow the instructions below to reproduce the environment and the experiments.
 
 ## ICDE 2019 Reproducibility
 
-For reproducing the experiments of the ICDE 2019 submission, checkout the tag
+This repository contains experiments of our ICDE 2019 paper
+[Effective Filters and Linear Time Verification for Tree Similarity Joins](http://eplus.uni-salzburg.at/obvusboa/download/pdf/4486886).
+
+To reproduce the experiments of the ICDE 2019 paper, checkout the tag
 `icde2019` of this and
 [Tree Similarity library](https://github.com/DatabaseGroup/tree-similarity/tree/develop)
 repositories.
@@ -16,8 +19,15 @@ Obtain datasets from our
 [Datasets repository](https://frosch.cosy.sbg.ac.at/mpawlik/ted-datasets).
 
 Execute the experiments with all config files in `configs/icde2019` directory.
+See execution details below. You may need to modify `--dataset_path` parameter
+value when executing the experiments.
 
-Plot the results using `src/plots/call_plot.sh` file.
+For LGM Upper Bound and BSM verification experiment, certain views must present
+in the databse. After executing all experiments, execute `src/ted_algs/view_queries.sql`
+on the database holding the experiment results.
+
+Plot the results using `src/plots/create_all_plots.sh` file from `src/plots/`
+directory.
 
 ## Build the project
 

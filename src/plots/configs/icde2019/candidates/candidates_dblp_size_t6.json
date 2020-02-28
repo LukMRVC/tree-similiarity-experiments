@@ -1,0 +1,134 @@
+{
+    "title": "Verification Candidates",
+    "print_title": "no",
+    "legend_font_size": 18,
+    "legend_frame_alpha": 0.8,
+    "legend": "upper right",
+    "grid": "on",
+    "dataset_name": "DBLP",
+    "markers": ["s", "*", "o", "^", "p", "d", "8"],
+    "markersize": [15, 20, 15, 15, 15, 15, 15],
+    "markerfacecolor": "none",
+    "colors": ["red", "green", "blue", "cyan", "magenta", "orange", "greenyellow"],
+    "tables": [
+        {
+            "table_name": "tang_join", 
+            "attributes": [
+                {
+                    "attr_name": "avg(verification_candidates)"
+                }
+            ],
+            "name": "$\\mathtt{Tang}$",
+            "constraints": {
+                "verification_algorithm": ["APTED"],
+                "dataset_filename": ["dblp_10000_sorted.bracket", "dblp_50000_sorted.bracket", "dblp_100000_sorted.bracket"],
+                "((tree_to_binary_tree_time + index_time + upperbound_time + verification_time)/1000) <": [36000]
+            }
+        },
+        {
+            "table_name": "t_join", 
+            "attributes": [
+                {
+                    "attr_name": "avg(verification_candidates)"
+                }
+            ],
+            "name": "$\\mathtt{TJoin}$",
+            "constraints": {
+                "verification_algorithm": ["Touzet"],
+                "upperbound": ["greedy"],
+                "dataset_filename": ["dblp_10000_sorted.bracket", "dblp_50000_sorted.bracket", "dblp_100000_sorted.bracket"],
+                "((tree_to_set_time + index_time + upperbound_time + verification_time)/1000) <": [36000]
+            }
+        },
+        {
+            "table_name": "binary_branches_join", 
+            "attributes": [
+                {
+                    "attr_name": "avg(verification_candidates)"
+                }
+            ],
+            "name": "$\\mathtt{Binary}$",
+            "constraints": {
+                "verification_algorithm": ["APTED"],
+                "dataset_filename": ["dblp_10000_sorted.bracket", "dblp_50000_sorted.bracket", "dblp_100000_sorted.bracket"],
+                "((tree_to_set_time + index_time + upperbound_time + verification_time)/1000) <": [36000]
+            }
+        },
+        {
+            "table_name": "histogram_join", 
+            "attributes": [
+                {
+                    "attr_name": "avg(verification_candidates)"
+                }
+            ],
+            "name": "$\\mathtt{Histo}$",
+            "constraints": {
+                "verification_algorithm": ["APTED"],
+                "dataset_filename": ["dblp_10000_sorted.bracket", "dblp_50000_sorted.bracket", "dblp_100000_sorted.bracket"],
+                "((tree_to_set_time + index_time + upperbound_time + verification_time)/1000) <": [36000]
+            }
+        },
+        {
+            "table_name": "guha_rsb_join", 
+            "attributes": [
+                {
+                    "attr_name": "avg(l_t_candidates - u_t_result_pairs)"
+                }
+            ],
+            "name": "$\\mathtt{Guha}$",
+            "constraints": {
+                "verification_algorithm": ["APTED"],
+                "reference_set_size": [8],
+                "dataset_filename": ["dblp_10000_sorted.bracket", "dblp_50000_sorted.bracket", "dblp_100000_sorted.bracket"]
+            }
+        },
+        {
+            "table_name": "t_join", 
+            "attributes": [
+                {
+                    "attr_name": "avg(verification_candidates - upperbound_pruned)"
+                }
+            ],
+            "name": "$\\mathtt{TJoin\\ VC}$",
+            "constraints": {
+                "verification_algorithm": ["Touzet"],
+                "upperbound": ["greedy"],
+                "dataset_filename": ["dblp_10000_sorted.bracket", "dblp_50000_sorted.bracket", "dblp_100000_sorted.bracket"],
+                "((tree_to_set_time + index_time + upperbound_time + verification_time)/1000) <": [36000],
+                "threshold": [0]
+            }
+        },
+        {
+            "table_name": "t_join", 
+            "attributes": [
+                {
+                    "attr_name": "avg(join_result_size)"
+                }
+            ],
+            "name": "$\\mathtt{Result}$",
+            "constraints": {
+                "verification_algorithm": ["Touzet"],
+                "upperbound": ["greedy"],
+                "dataset_filename": ["dblp_10000_sorted.bracket", "dblp_50000_sorted.bracket", "dblp_100000_sorted.bracket"]
+            }
+        }
+    ],
+    "constraints": {
+        "threshold": [6]
+    },
+    "x_axis": {
+        "db_column": "dataset_filename",
+        "size_plot": 1,
+        "name": "Dataset Size",
+        "font_size": 20, 
+        "ticks_font_size": 20
+    },
+    "y_axis": {
+        "name": "Candidates (Tree Pairs)",
+        "scale": "log",
+        "font_size": 20, 
+        "ymin": 10,
+        "ymax": 100000000000,
+        "ticks_font_size": 20
+    }
+}

@@ -1,0 +1,11 @@
+{
+  "datasets": [
+    "sentiment/sentiment_sorted.bracket"
+  ],
+  "thresholds": [
+    10.0
+  ],
+  "algorithms": [
+    "--sed", "--cted"
+  ]
+}
