@@ -1,0 +1,35 @@
+{
+  "datasets": [
+    "sentiment/sentiment_sorted.bracket"
+  ],
+  "thresholds": [
+    1.0, 2.0, 3.0
+  ],
+  "algorithms": [
+    { "name": "guha_rsb_join",
+      "verification_algorithm" : "APTED",
+      "reference_set_size": "2",
+      "reference_set_id": "0"
+    },
+    { "name": "guha_rsb_join",
+      "verification_algorithm" : "APTED",
+      "reference_set_size": "4",
+      "reference_set_id": "0"
+    },
+    { "name": "guha_rsb_join",
+      "verification_algorithm" : "APTED",
+      "reference_set_size": "8",
+      "reference_set_id": "0"
+    },
+    { "name": "guha_rsb_join",
+      "verification_algorithm" : "APTED",
+      "reference_set_size": "16",
+      "reference_set_id": "0"
+    },
+    { "name": "guha_rsb_join",
+      "verification_algorithm" : "APTED",
+      "reference_set_size": "32",
+      "reference_set_id": "0"
+    }
+  ]
+}

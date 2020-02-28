@@ -1,0 +1,102 @@
+{
+    "title": "Total Join Times",
+    "print_title": "no",
+    "legend_font_size": 18,
+    "legend_frame_alpha": 0.8,
+    "legend": "lower right",
+    "grid": "on",
+    "dataset_name": "Python",
+    "markers": ["s", "*", "o", "^", "p", "d", "8"],
+    "markersize": [15, 20, 15, 15, 15, 15, 15],
+    "markerfacecolor": "none",
+    "colors": ["red", "green", "blue", "cyan", "magenta", "orange", "greenyellow"],
+    "tables": [ 
+        {
+            "table_name": "tang_join", 
+            "attributes": [
+                {
+                    "attr_name": "avg(tree_to_binary_tree_time + index_time + verification_time)/1000"
+                }
+            ],
+            "name": "$\\mathtt{Tang}$",
+            "constraints": {
+                "verification_algorithm": ["APTED"],
+                "((tree_to_binary_tree_time + index_time + verification_time)/1000) <": [36000]
+            }
+        },
+        {
+            "table_name": "t_join", 
+            "attributes": [
+                {
+                    "attr_name": "avg(tree_to_set_time + index_time + upperbound_time + verification_time)/1000"
+                }
+            ],
+            "name": "$\\mathtt{TJoin}$",
+            "constraints": {
+                "verification_algorithm": ["Touzet"],
+                "upperbound": ["greedy"],
+                "((tree_to_set_time + index_time + upperbound_time + verification_time)/1000) <": [36000]
+            }
+        },
+        {
+            "table_name": "binary_branches_join", 
+            "attributes": [
+                {
+                    "attr_name": "avg(tree_to_set_time + index_time + upperbound_time + verification_time)/1000"
+                }
+            ],
+            "name": "$\\mathtt{Binary}$",
+            "constraints": {
+                "verification_algorithm": ["APTED"],
+                "verification_time>": [100],
+                "((tree_to_set_time + index_time + upperbound_time + verification_time)/1000) <": [36000]
+            }
+        },
+        {
+            "table_name": "histogram_join", 
+            "attributes": [
+                {
+                    "attr_name": "avg(tree_to_set_time + index_time + upperbound_time + verification_time)/1000"
+                }
+            ],
+            "name": "$\\mathtt{Histo}$",
+            "constraints": {
+                "verification_algorithm": ["APTED"],
+                "verification_time>": [100],
+                "((tree_to_set_time + index_time + upperbound_time + verification_time)/1000) <": [36000]
+            }
+        },
+        {
+            "table_name": "guha_rsb_join", 
+            "attributes": [
+                {
+                    "attr_name": "avg(vectors_time + metric_candidates_time + sc_candidates_time + verification_time)/1000"
+                }
+            ],
+            "name": "$\\mathtt{Guha}$",
+            "constraints": {
+                "verification_algorithm": ["APTED"]
+            }
+        }
+    ],
+    "constraints": {
+        "dataset_filename": ["python_sorted.bracket"]
+    },
+    "x_axis": {
+        "db_column": "threshold",
+        "name": "Threshold",
+        "xticks": 2,
+        "xmin": 1,
+        "xmax": 20.001, 
+        "font_size": 20, 
+        "ticks_font_size": 20
+    },
+    "y_axis": {
+        "name": "Time [s]",
+        "scale": "log",
+        "font_size": 20, 
+        "ymin": 10,
+        "ymax": 100000,
+        "ticks_font_size": 20
+    }
+}

@@ -1,0 +1,11 @@
+{
+  "datasets": [
+    "dblp/dblp_no_www_sorted.bracket"
+  ],
+  "thresholds": [
+    10.0
+  ],
+  "algorithms": [
+    "--apted", "--tzd", "--lg"
+  ]
+}

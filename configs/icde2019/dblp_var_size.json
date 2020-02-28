@@ -1,0 +1,33 @@
+{
+  "datasets": [
+    "dblp/dblp_10000_sorted.bracket",
+    "dblp/dblp_50000_sorted.bracket",
+    "dblp/dblp_100000_sorted.bracket"
+  ],
+  "thresholds": [
+    6.0
+  ],
+  "algorithms": [
+    { "name": "t_join",
+      "verification_algorithm" : "Touzet",
+      "upperbound": "greedy"
+    },
+    { "name": "histogram_join",
+      "verification_algorithm" : "APTED",
+      "upperbound": "none"
+    },
+    { "name": "binary_branches_join",
+      "verification_algorithm" : "APTED",
+      "upperbound": "none"
+    },
+    { "name": "guha_rsb_join",
+      "verification_algorithm" : "APTED",
+      "reference_set_size": "8",
+      "reference_set_id": "-1"
+    },
+    { "name": "tang_join",
+      "verification_algorithm" : "APTED",
+      "upperbound": "none"
+    }
+  ]
+}
