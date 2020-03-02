@@ -77,7 +77,7 @@ if data['print_title'] != 'no' and 'title' in data:
   ax.title(data['title'] + " - " + data['dataset_name'])
 # set grid
 if 'grid' in data:
-  ax.grid(data['grid'])
+  ax.grid(data['grid'] == 'on')
 
 marker_cnt = 0
 y = []
@@ -170,13 +170,13 @@ if 'ticks_font_size' in data['y_axis']:
 if 'scale' in data['y_axis']:
   ax.set_yscale(data['y_axis']['scale'], nonposy='clip')
 if 'ymin' in data['y_axis']:
-  ax.set_ylim(ymin=data['y_axis']['ymin'])
+  ax.set_ylim(bottom=data['y_axis']['ymin'])
 if 'ymax' in data['y_axis']:
-  ax.set_ylim(ymax=data['y_axis']['ymax'])
+  ax.set_ylim(top=data['y_axis']['ymax'])
 if 'xmin' in data['x_axis']:
-  ax.set_xlim(xmin=data['x_axis']['xmin'])
+  ax.set_xlim(left=data['x_axis']['xmin'])
 if 'xmax' in data['x_axis']:
-  ax.set_xlim(xmax=data['x_axis']['xmax'])
+  ax.set_xlim(right=data['x_axis']['xmax'])
 if 'xticks' in data['x_axis']:
   x1,x2,y1,y2 = plt.axis()
   plt.xticks(np.arange(x1, x2, step=data['x_axis']['xticks']))
