@@ -27,7 +27,7 @@ in the databse. After executing all experiments, execute `src/ted_algs/view_quer
 on the database holding the experiment results.
 
 Plot the results using `src/plots/create_all_plots.sh` file from `src/plots/`
-directory.
+directory. Plotting uses Python3 and Matplotlib.
 
 ## Build the project
 
@@ -84,6 +84,16 @@ table. Visit our
 to learn how we obtain datasets. Use the `--service service` option of the
 `statistics/statistics.py` script to register a dataset in the `dataset` table.
 
+The following dataset files have to registered in the database to execute all
+experiments. They correspond to datasets listed under `"datasets"` key in the
+config files.
+- `dblp_no_www_sorted.bracket`
+- `dblp_10000_sorted.bracket`
+- `dblp_50000_sorted.bracket`
+- `dblp_100000_sorted.bracket`
+- `python_sorted.bracket`
+- `sentiment_sorted.bracket`
+- `swissprot_sorted.bracket`
 
 ## Executing
 
@@ -114,5 +124,5 @@ files can be found in `configs/icde2019/upperbound` directory.
 Example experiment execution can be performed as follows.
 
 ```bash
-python3 src/join_algs/ted_algs_experiments.py --config configs/icde2019/upperbound/sentiment.json --dataset_path /path_to/ted-datasets/ --service service
+python3 src/ted_algs/ted_algs_experiments.py configs/icde2019/upperbound/sentiment.json /path_to/ted-datasets/ service
 ```
