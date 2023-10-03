@@ -5,8 +5,11 @@ project(ted-experiments)
 
 # Compiler flags.
 # MUST be declared after project().
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall -O3")
-
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall -O0 -g")
+else ()
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall -O3")
+endif ()
 # Verify which timing implementation to use.
 # NOTE: Comes from common-code.
 include(CheckSymbolExists)
@@ -41,6 +44,22 @@ target_link_libraries(
 target_include_directories(
   ted-algs-experiments                # TARGET EXECUTABLE NAME
   PUBLIC external/common-code/timings # HEADER FILE
+)
+
+# Moravec LN experiments
+add_executable(ted-lb-experiments
+    src/lb/ted_lb_experiments.cpp
+    src/lb/ted_lb_experiments.h
+)
+
+target_link_libraries(
+    ted-lb-experiments
+    TimingLibrary
+)
+
+target_include_directories(
+      ted-lb-experiments
+      PUBLIC external/common-code/timings
 )
 
 # Create the timing library.
@@ -85,4 +104,10 @@ target_link_libraries(
 target_link_libraries(
   ted-algs-experiments # EXECUTABLE NAME
   TreeSimilarity       # LIBRARY NAME
+)
+
+# Link LB experiments to TreeSim library
+target_link_libraries(
+        ted-lb-experiments
+        TreeSimilarity
 )
