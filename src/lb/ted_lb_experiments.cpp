@@ -93,7 +93,7 @@ int main(int argc, char *argv[])
     std::vector<std::string> args(argv, argv + argc);
     if (args.size() < 3)
     {
-        std::cerr << "Missing arguments for datasets base path and datasets";
+        std::cerr << "Missing arguments for datasets base path and datasets\n";
         exit(1);
     }
 

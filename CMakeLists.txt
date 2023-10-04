@@ -106,8 +106,11 @@ target_link_libraries(
   TreeSimilarity       # LIBRARY NAME
 )
 
+find_package(Threads REQUIRED)
+
 # Link LB experiments to TreeSim library
 target_link_libraries(
         ted-lb-experiments
         TreeSimilarity
+        Threads::Threads
 )
