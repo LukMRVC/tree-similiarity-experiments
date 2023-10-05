@@ -34,7 +34,7 @@ result_t execute_dataset_apted(const std::string & dataset_path) {
     // The input is parsed once for the entire experiment.
     std::vector<node::Node<Label>> trees_collection;
     parser::BracketNotationParser bnp;
-    std::cout << "Parsing tree collection" << std::endl;
+    std::cout << "Parsing tree collection for " << dataset_path << std::endl;
     bnp.parse_collection(trees_collection, dataset_path);
     std::cout << "Parsing done" << std::endl;
 
@@ -54,9 +54,15 @@ result_t execute_dataset_apted(const std::string & dataset_path) {
                              {
                                  APTED alg;
                                  result_t results;
-                                 for (size_t j = i * chunk_size; j < chunk_size && j < trees_collection.size(); j++)
+                                 auto percent_done = 0;
+                                 auto stop = std::min((i + 1) * chunk_size, trees_collection.size());
+                                 auto start = i * chunk_size;
+                                 auto max_perc = (double)(stop - start);
+                                 auto percent_written = false;
+
+                                 for (size_t j = i * chunk_size; j < stop; j++)
                                  {
-                                     for (size_t k = 0; k < trees_collection.size(); k++)
+                                     for (size_t k = j + 1; k < trees_collection.size(); k++)
                                      {
                                          auto ted = alg.apted_ted(
                                                  trees_collection[i],
@@ -65,7 +71,15 @@ result_t execute_dataset_apted(const std::string & dataset_path) {
                                          results.emplace_back(j, k, ted);
                                      }
 
+                                     percent_done = ((double)(j - start) / max_perc) * 100;
+                                     if (percent_done % 10 == 0 && percent_done > 0) {
+                                         std::cout << "Thread " << i << " done: " << percent_done << "%\n";
+                                         percent_written = true;
+                                     } else {
+                                         percent_written = false;
+                                     }
                                  }
+
                                  p.set_value(results); },
                              std::move(promise));
         std::cout << "Created thread " << i << std::endl;
@@ -134,7 +148,7 @@ int main(int argc, char *argv[])
             auto t1 = std::get<0>(result);
             auto t2 = std::get<1>(result);
             auto ted = std::get<2>(result);
-            output << "TED between T" << t1 << " and T" << t2 << " is " << ted << "\n";
+            output << t1 << "," << t2 << "," << ted << "\n";
         }
     }
 
