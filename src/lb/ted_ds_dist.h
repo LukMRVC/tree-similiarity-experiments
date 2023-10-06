@@ -1,9 +1,9 @@
 //
-// Created by lukas on 10/6/23.
+// Created by lukas on 10/3/23.
 //
 
-#ifndef TED_EXPERIMENTS_TED_LB_EXPERIMENTS_H
-#define TED_EXPERIMENTS_TED_LB_EXPERIMENTS_H
+#ifndef TED_EXPERIMENTS_TED_DS_DIST_H
+#define TED_EXPERIMENTS_TED_DS_DIST_H
 
 #include <iostream>
 #include <unistd.h>
@@ -25,4 +25,5 @@
 #include "cted_ub.h"
 #include "bracket_notation_parser.h"
 
-#endif //TED_EXPERIMENTS_TED_LB_EXPERIMENTS_H
+
+#endif //TED_EXPERIMENTS_TED_DS_DIST_H

@@ -46,20 +46,36 @@ target_include_directories(
   PUBLIC external/common-code/timings # HEADER FILE
 )
 
+# Moravec APTED distance dataset calculator
+add_executable(ted-ds-dist
+        src/lb/ted_ds_dist.cpp
+        src/lb/ted_ds_dist.h
+)
+
 # Moravec LN experiments
 add_executable(ted-lb-experiments
-    src/lb/ted_lb_experiments.cpp
-    src/lb/ted_lb_experiments.h
+        src/lb/ted_lb_experiments.cpp
+        src/lb/ted_lb_experiments.h
 )
 
 target_link_libraries(
-    ted-lb-experiments
+    ted-ds-dist
     TimingLibrary
 )
 
+target_link_libraries(
+        ted-lb-experiments
+        TimingLibrary
+)
+
 target_include_directories(
-      ted-lb-experiments
+      ted-ds-dist
       PUBLIC external/common-code/timings
+)
+
+target_include_directories(
+        ted-lb-experiments
+        PUBLIC external/common-code/timings
 )
 
 # Create the timing library.
@@ -109,6 +125,12 @@ target_link_libraries(
 find_package(Threads REQUIRED)
 
 # Link LB experiments to TreeSim library
+target_link_libraries(
+        ted-ds-dist
+        TreeSimilarity
+        Threads::Threads
+)
+
 target_link_libraries(
         ted-lb-experiments
         TreeSimilarity
