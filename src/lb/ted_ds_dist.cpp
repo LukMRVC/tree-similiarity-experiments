@@ -4,10 +4,12 @@
 
 #include "ted_ds_dist.h"
 #include <thread>
-#include <future>
 #include <fstream>
+#include <mutex>
 
 rlim_t increase_stack_size(rlim_t &);
+
+std::mutex file_lock;
 
 std::vector<std::string> split (const std::string &s, char delim) {
     std::vector<std::string> result;
@@ -23,7 +25,19 @@ std::vector<std::string> split (const std::string &s, char delim) {
 
 using result_t = std::vector<std::tuple<size_t, size_t, double>>;
 
-result_t execute_dataset_apted(const std::string & dataset_path) {
+void write_to_output(result_t & results, const std::string & output_file_path) {
+    std::ofstream output(output_file_path);
+    for (auto &result : results)
+    {
+        auto t1 = std::get<0>(result);
+        auto t2 = std::get<1>(result);
+        auto ted = std::get<2>(result);
+        output << t1 << "," << t2 << "," << ted << "\n";
+    }
+    output.close();
+}
+
+void execute_dataset_apted(const std::string & dataset_path, const std::string & output_file_path) {
     using Label = label::StringLabel;
     using CostModel = cost_model::UnitCostModel<Label>;
     //  Use APTED to compute actual tree distances at least once between all trees <- this is going to take a lot of time
@@ -43,25 +57,32 @@ result_t execute_dataset_apted(const std::string & dataset_path) {
     auto max_threads = std::thread::hardware_concurrency();
 
     std::vector<std::thread> threads;
-    std::vector<std::future<result_t>> future_results;
     auto chunk_size = (trees_collection.size() + max_threads - 1) / max_threads;
+
+/*    std::ofstream output(output_file_path);
+    for (auto &result : all_ted_results)
+    {
+        auto t1 = std::get<0>(result);
+        auto t2 = std::get<1>(result);
+        auto ted = std::get<2>(result);
+        output << t1 << "," << t2 << "," << ted << "\n";
+    }*/
+
 
     for (size_t i = 0; i < max_threads; i++)
     {
-        std::promise<result_t> promise;
-        future_results.push_back(promise.get_future());
-        threads.emplace_back([chunk_size, i, &trees_collection](std::promise<result_t> &&p)
+        threads.emplace_back([chunk_size, i, &trees_collection, & output_file_path]
                              {
                                  APTED alg;
                                  result_t results;
-                                 auto percent_done = 0;
                                  auto stop = std::min((i + 1) * chunk_size, trees_collection.size());
-                                 auto start = i * chunk_size;
-                                 auto max_perc = (double)(stop - start);
-                                 auto percent_written = false;
+                                 auto actual_chunk_size = stop - (i * chunk_size);
+
+                                 auto progress_ten = (actual_chunk_size + 10 - 1) / 10;
 
                                  for (size_t j = i * chunk_size; j < stop; j++)
                                  {
+
                                      for (size_t k = j + 1; k < trees_collection.size(); k++)
                                      {
                                          auto ted = alg.apted_ted(
@@ -71,25 +92,30 @@ result_t execute_dataset_apted(const std::string & dataset_path) {
                                          results.emplace_back(j, k, ted);
                                      }
 
-                                     percent_done = ((double)(j - start) / max_perc) * 100;
-                                     if (percent_done % 10 == 0 && percent_done > 0) {
-                                         std::cout << "Thread " << i << " done: " << percent_done << "%\n";
-                                         percent_written = true;
-                                     } else {
-                                         percent_written = false;
+                                     if (j % progress_ten == 0) {
+                                         std::cout << "Thread " << i << " done: " << 10 * ((j - i * chunk_size) / progress_ten) << "%\n";
+                                         if (!results.empty()) {
+                                             file_lock.lock();
+                                             std::cout << "Thread " << i << " locking output file\n";
+                                             write_to_output(results, output_file_path);
+                                             std::cout << "Thread " << i << " un-locking output\n";
+                                             file_lock.unlock();
+                                             results.clear();
+                                         }
                                      }
                                  }
 
-                                 p.set_value(results); },
-                             std::move(promise));
+                                 if (!results.empty()) {
+                                     file_lock.lock();
+                                     std::cout << "Thread " << i << " done: 100%\n";
+                                     std::cout << "Thread " << i << " locking output file\n";
+                                     write_to_output(results, output_file_path);
+                                     std::cout << "Thread " << i << " un-locking output\n";
+                                     file_lock.unlock();
+                                     results.clear();
+                                 }
+                             });
         std::cout << "Created thread " << i << std::endl;
-    }
-
-    std::vector<std::tuple<size_t, size_t, double>> all_ted_results;
-    for (auto &future : future_results)
-    {
-        auto return_val = future.get();
-        all_ted_results.insert(all_ted_results.end(), return_val.begin(), return_val.end());
     }
 
     std::cout << "Joining " << threads.size() << " running threads" << std::endl;
@@ -97,8 +123,6 @@ result_t execute_dataset_apted(const std::string & dataset_path) {
     {
         t.join();
     }
-
-    return all_ted_results;
 }
 
 
@@ -139,20 +163,9 @@ int main(int argc, char *argv[])
         output_file_path.erase(output_file_path.begin() + pos, output_file_path.end());
         output_file_path.insert(pos, "/distances.csv");
 
-        auto all_ted_results = execute_dataset_apted(dataset_path);
-        std::cout << "Totally got " << all_ted_results.size() << " results, writing to file\n";
-
-        std::ofstream output(output_file_path);
-        for (auto &result : all_ted_results)
-        {
-            auto t1 = std::get<0>(result);
-            auto t2 = std::get<1>(result);
-            auto ted = std::get<2>(result);
-            output << t1 << "," << t2 << "," << ted << "\n";
-        }
+        execute_dataset_apted(dataset_path, output_file_path);
+        std::cout << "All results written into file\n";
     }
-
-
 
     return 0;
 }
