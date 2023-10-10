@@ -26,7 +26,7 @@ std::vector<std::string> split (const std::string &s, char delim) {
 using result_t = std::vector<std::tuple<size_t, size_t, double>>;
 
 void write_to_output(result_t & results, const std::string & output_file_path) {
-    std::ofstream output(output_file_path);
+    std::ofstream output(output_file_path, std::ios_base::app);
     for (auto &result : results)
     {
         auto t1 = std::get<0>(result);
