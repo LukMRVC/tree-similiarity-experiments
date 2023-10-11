@@ -18,6 +18,16 @@ if(NOT HAVE_CLOCK_GETTIME)
   add_definitions(-DGETRUSAGE)
 endif()
 
+set(Boost_NO_WARN_NEW_VERSIONS 1)
+SET(CMAKE_INCLUDE_PATH ${CMAKE_INCLUDE_PATH} "/home/lukas/school/boost_1_83_0")
+SET(CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH} "/home/lukas/school/boost_1_83_0/stage/lib")
+set(Boost_USE_STATIC_LIBS OFF)
+set(Boost_USE_MULTITHREADED ON)
+set(Boost_USE_STATIC_RUNTIME OFF)
+find_package(Boost 1.83.0 REQUIRED COMPONENTS system iostreams)
+if (Boost_FOUND)
+  include_directories( ${Boost_INCLUDE_DIRS} )
+endif ()
 # Build executable with the experiments.
 add_executable(
   ted-join-experiments                   # EXECUTABLE NAME
@@ -61,6 +71,7 @@ add_executable(ted-lb-experiments
 target_link_libraries(
     ted-ds-dist
     TimingLibrary
+    Boost::iostreams
 )
 
 target_link_libraries(

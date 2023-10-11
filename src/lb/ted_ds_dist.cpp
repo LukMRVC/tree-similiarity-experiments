@@ -6,6 +6,9 @@
 #include <thread>
 #include <fstream>
 #include <mutex>
+#include <boost/iostreams/filtering_streambuf.hpp>
+#include <boost/iostreams/filter/lzma.hpp>
+#include <boost/iostreams/copy.hpp>
 
 rlim_t increase_stack_size(rlim_t &);
 
@@ -25,8 +28,7 @@ std::vector<std::string> split (const std::string &s, char delim) {
 
 using result_t = std::vector<std::tuple<size_t, size_t, double>>;
 
-void write_to_output(result_t & results, const std::string & output_file_path) {
-    std::ofstream output(output_file_path, std::ios_base::app);
+void write_to_output(result_t & results, std::ostream & output) {
     for (auto &result : results)
     {
         auto t1 = std::get<0>(result);
@@ -34,7 +36,6 @@ void write_to_output(result_t & results, const std::string & output_file_path) {
         auto ted = std::get<2>(result);
         output << t1 << "," << t2 << "," << ted << "\n";
     }
-    output.close();
 }
 
 void execute_dataset_apted(const std::string & dataset_path, const std::string & output_file_path) {
@@ -54,6 +55,13 @@ void execute_dataset_apted(const std::string & dataset_path, const std::string &
 
     APTED apted_alg;
 
+    std::ofstream output_file(output_file_path, std::ios_base::out | std::ios_base::binary);
+    boost::iostreams::filtering_streambuf<boost::iostreams::output> outbuf;
+    outbuf.push(boost::iostreams::lzma_compressor());
+    outbuf.push(output_file);
+    std::ostream out(&outbuf);
+
+
     auto max_threads = std::thread::hardware_concurrency();
 
     std::vector<std::thread> threads;
@@ -71,7 +79,7 @@ void execute_dataset_apted(const std::string & dataset_path, const std::string &
 
     for (size_t i = 0; i < max_threads; i++)
     {
-        threads.emplace_back([chunk_size, i, &trees_collection, & output_file_path]
+        threads.emplace_back([chunk_size, i, &trees_collection, & out]
                              {
                                  APTED alg;
                                  result_t results;
@@ -97,7 +105,7 @@ void execute_dataset_apted(const std::string & dataset_path, const std::string &
                                          if (!results.empty()) {
                                              file_lock.lock();
                                              std::cout << "Thread " << i << " locking output file\n";
-                                             write_to_output(results, output_file_path);
+                                             write_to_output(results, out);
                                              std::cout << "Thread " << i << " un-locking output\n";
                                              file_lock.unlock();
                                              results.clear();
@@ -109,7 +117,7 @@ void execute_dataset_apted(const std::string & dataset_path, const std::string &
                                      file_lock.lock();
                                      std::cout << "Thread " << i << " done: 100%\n";
                                      std::cout << "Thread " << i << " locking output file\n";
-                                     write_to_output(results, output_file_path);
+                                     write_to_output(results, out);
                                      std::cout << "Thread " << i << " un-locking output\n";
                                      file_lock.unlock();
                                      results.clear();
@@ -123,6 +131,9 @@ void execute_dataset_apted(const std::string & dataset_path, const std::string &
     {
         t.join();
     }
+
+    boost::iostreams::close(outbuf);
+    output_file.close();
 }
 
 
@@ -161,7 +172,7 @@ int main(int argc, char *argv[])
         std::string output_file_path(dataset_path);
         auto pos = output_file_path.rfind('/');
         output_file_path.erase(output_file_path.begin() + pos, output_file_path.end());
-        output_file_path.insert(pos, "/distances.csv");
+        output_file_path.insert(pos, "/distances.csv.lzma");
 
         execute_dataset_apted(dataset_path, output_file_path);
         std::cout << "All results written into file\n";
