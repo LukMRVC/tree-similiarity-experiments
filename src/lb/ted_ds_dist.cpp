@@ -14,13 +14,15 @@ rlim_t increase_stack_size(rlim_t &);
 
 std::mutex file_lock;
 
-std::vector<std::string> split (const std::string &s, char delim) {
+std::vector<std::string> split(const std::string &s, char delim)
+{
     std::vector<std::string> result;
-    std::stringstream ss (s);
+    std::stringstream ss(s);
     std::string item;
 
-    while (getline (ss, item, delim)) {
-        result.push_back (item);
+    while (getline(ss, item, delim))
+    {
+        result.push_back(item);
     }
 
     return result;
@@ -28,7 +30,8 @@ std::vector<std::string> split (const std::string &s, char delim) {
 
 using result_t = std::vector<std::tuple<size_t, size_t, double>>;
 
-void write_to_output(result_t & results, std::ostream & output) {
+void write_to_output(result_t &results, std::ostream &output)
+{
     for (auto &result : results)
     {
         auto t1 = std::get<0>(result);
@@ -38,7 +41,8 @@ void write_to_output(result_t & results, std::ostream & output) {
     }
 }
 
-void execute_dataset_apted(const std::string & dataset_path, const std::string & output_file_path) {
+void execute_dataset_apted(const std::string &dataset_path, const std::string &output_file_path)
+{
     using Label = label::StringLabel;
     using CostModel = cost_model::UnitCostModel<Label>;
     //  Use APTED to compute actual tree distances at least once between all trees <- this is going to take a lot of time
@@ -61,25 +65,23 @@ void execute_dataset_apted(const std::string & dataset_path, const std::string &
     outbuf.push(output_file);
     std::ostream out(&outbuf);
 
-
     auto max_threads = std::thread::hardware_concurrency();
 
     std::vector<std::thread> threads;
     auto chunk_size = (trees_collection.size() + max_threads - 1) / max_threads;
 
-/*    std::ofstream output(output_file_path);
-    for (auto &result : all_ted_results)
-    {
-        auto t1 = std::get<0>(result);
-        auto t2 = std::get<1>(result);
-        auto ted = std::get<2>(result);
-        output << t1 << "," << t2 << "," << ted << "\n";
-    }*/
-
+    /*    std::ofstream output(output_file_path);
+        for (auto &result : all_ted_results)
+        {
+            auto t1 = std::get<0>(result);
+            auto t2 = std::get<1>(result);
+            auto ted = std::get<2>(result);
+            output << t1 << "," << t2 << "," << ted << "\n";
+        }*/
 
     for (size_t i = 0; i < max_threads; i++)
     {
-        threads.emplace_back([chunk_size, i, &trees_collection, & out]
+        threads.emplace_back([chunk_size, i, &trees_collection, &out]
                              {
                                  APTED alg;
                                  result_t results;
@@ -101,12 +103,10 @@ void execute_dataset_apted(const std::string & dataset_path, const std::string &
                                      }
 
                                      if (j % progress_ten == 0) {
-                                         std::cout << "Thread " << i << " done: " << 10 * ((j - i * chunk_size) / progress_ten) << "%\n";
+                                         std::cout << "Thread " << i << " done: " << 10 * ((j - i * chunk_size) / progress_ten) << "%" << std::endl;
                                          if (!results.empty()) {
                                              file_lock.lock();
-                                             std::cout << "Thread " << i << " locking output file\n";
                                              write_to_output(results, out);
-                                             std::cout << "Thread " << i << " un-locking output\n";
                                              file_lock.unlock();
                                              results.clear();
                                          }
@@ -115,14 +115,11 @@ void execute_dataset_apted(const std::string & dataset_path, const std::string &
 
                                  if (!results.empty()) {
                                      file_lock.lock();
-                                     std::cout << "Thread " << i << " done: 100%\n";
-                                     std::cout << "Thread " << i << " locking output file\n";
+                                     std::cout << "Thread " << i << " done: 100%" << std::endl;
                                      write_to_output(results, out);
-                                     std::cout << "Thread " << i << " un-locking output\n";
                                      file_lock.unlock();
                                      results.clear();
-                                 }
-                             });
+                                 } });
         std::cout << "Created thread " << i << std::endl;
     }
 
@@ -136,27 +133,27 @@ void execute_dataset_apted(const std::string & dataset_path, const std::string &
     output_file.close();
 }
 
-
 int main(int argc, char *argv[])
 {
-    std::vector<std::string> args(argv, argv + argc);
-    if (args.size() < 3)
+    if (argc < 3)
     {
-        std::cerr << "Missing arguments for datasets base path and datasets\n";
+        std::cerr << "Missing arguments for datasets base path and datasets" << std::endl;
         exit(1);
     }
-
+    std::vector<std::string> args(argv, argv + argc);
 
     // path to dataset file containing trees in BN (Bracket notation)
     std::string datasets_base_path = args.at(1);
-    if  (*datasets_base_path.end() != '/') {
+    if (*datasets_base_path.end() != '/')
+    {
         datasets_base_path.append("/");
     }
 
     std::string datasets = args.at(2);
 
     std::vector<std::string> datasets_paths = split(datasets, ',');
-    for (auto & dataset : datasets_paths) {
+    for (auto &dataset : datasets_paths)
+    {
         dataset.insert(0, datasets_base_path);
     }
 
@@ -168,7 +165,8 @@ int main(int argc, char *argv[])
         exit(1);
     }
 
-    for (const auto & dataset_path: datasets_paths) {
+    for (const auto &dataset_path : datasets_paths)
+    {
         std::string output_file_path(dataset_path);
         auto pos = output_file_path.rfind('/');
         output_file_path.erase(output_file_path.begin() + pos, output_file_path.end());
