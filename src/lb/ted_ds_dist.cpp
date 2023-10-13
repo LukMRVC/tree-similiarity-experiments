@@ -30,15 +30,21 @@ std::vector<std::string> split(const std::string &s, char delim)
 
 using result_t = std::vector<std::tuple<size_t, size_t, double>>;
 
-void write_to_output(result_t &results, std::ostream &output)
+void write_to_output(result_t &results, std::ostream &output, size_t collection_size)
 {
-    for (auto &result : results)
-    {
-        auto t1 = std::get<0>(result);
-        auto t2 = std::get<1>(result);
-        auto ted = std::get<2>(result);
-        output << t1 << "," << t2 << "," << ted << "\n";
-    }
+    auto current_tree = std::get<0>(results[0]);
+    size_t i = 0;
+    do {
+        output << "T:" << current_tree << "\n";
+        auto output_size = (collection_size - current_tree);
+        for (int j = 0; j < output_size; ++j) {
+            auto result = results[j + i];
+            auto ted = std::get<2>(result);
+            output << ted << "\n";
+        }
+        i += output_size;
+        current_tree = std::get<0>(results[output_size]);
+    } while ((i < results.size()));
 }
 
 void execute_dataset_apted(const std::string &dataset_path, const std::string &output_file_path)
@@ -59,17 +65,17 @@ void execute_dataset_apted(const std::string &dataset_path, const std::string &o
 
     APTED apted_alg;
 
-    std::ofstream output_file(output_file_path, std::ios_base::out | std::ios_base::binary);
-    boost::iostreams::filtering_streambuf<boost::iostreams::output> outbuf;
-    outbuf.push(boost::iostreams::lzma_compressor());
-    outbuf.push(output_file);
-    std::ostream out(&outbuf);
+    std::ofstream output_file(output_file_path);
+//    boost::iostreams::filtering_streambuf<boost::iostreams::output> outbuf;
+//    outbuf.push(boost::iostreams::lzma_compressor());
+//    outbuf.push(output_file);
+//    std::ostream out(&outbuf);
 
     auto max_threads = std::thread::hardware_concurrency();
 
     std::vector<std::thread> threads;
     auto chunk_size = (trees_collection.size() + max_threads - 1) / max_threads;
-
+    std::cout << trees_collection.size() << std::endl;
     /*    std::ofstream output(output_file_path);
         for (auto &result : all_ted_results)
         {
@@ -81,7 +87,7 @@ void execute_dataset_apted(const std::string &dataset_path, const std::string &o
 
     for (size_t i = 0; i < max_threads; i++)
     {
-        threads.emplace_back([chunk_size, i, &trees_collection, &out]
+        threads.emplace_back([chunk_size, i, &trees_collection, &output_file]
                              {
                                  APTED alg;
                                  result_t results;
@@ -96,8 +102,8 @@ void execute_dataset_apted(const std::string &dataset_path, const std::string &o
                                      for (size_t k = j + 1; k < trees_collection.size(); k++)
                                      {
                                          auto ted = alg.apted_ted(
-                                                 trees_collection[i],
-                                                 trees_collection[j]
+                                                 trees_collection[j],
+                                                 trees_collection[k]
                                          );
                                          results.emplace_back(j, k, ted);
                                      }
@@ -106,17 +112,17 @@ void execute_dataset_apted(const std::string &dataset_path, const std::string &o
                                          std::cout << "Thread " << i << " done: " << 10 * ((j - i * chunk_size) / progress_ten) << "%" << std::endl;
                                          if (!results.empty()) {
                                              file_lock.lock();
-                                             write_to_output(results, out);
+                                             write_to_output(results, output_file, trees_collection.size());
                                              file_lock.unlock();
                                              results.clear();
                                          }
                                      }
                                  }
 
+                                 std::cout << "Thread " << i << " done: 100%" << std::endl;
                                  if (!results.empty()) {
                                      file_lock.lock();
-                                     std::cout << "Thread " << i << " done: 100%" << std::endl;
-                                     write_to_output(results, out);
+                                     write_to_output(results, output_file, trees_collection.size());
                                      file_lock.unlock();
                                      results.clear();
                                  } });
@@ -129,7 +135,7 @@ void execute_dataset_apted(const std::string &dataset_path, const std::string &o
         t.join();
     }
 
-    boost::iostreams::close(outbuf);
+//    boost::iostreams::close(outbuf);
     output_file.close();
 }
 
