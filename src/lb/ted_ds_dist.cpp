@@ -6,9 +6,6 @@
 #include <thread>
 #include <fstream>
 #include <mutex>
-#include <boost/iostreams/filtering_streambuf.hpp>
-#include <boost/iostreams/filter/lzma.hpp>
-#include <boost/iostreams/copy.hpp>
 
 rlim_t increase_stack_size(rlim_t &);
 
@@ -36,7 +33,7 @@ void write_to_output(result_t &results, std::ostream &output, size_t collection_
     size_t i = 0;
     do {
         output << "T:" << current_tree << "\n";
-        auto output_size = (collection_size - current_tree);
+        auto output_size = (collection_size - current_tree) - 1;
         for (int j = 0; j < output_size; ++j) {
             auto result = results[j + i];
             auto ted = std::get<2>(result);
@@ -47,23 +44,23 @@ void write_to_output(result_t &results, std::ostream &output, size_t collection_
     } while ((i < results.size()));
 }
 
-void execute_dataset_apted(const std::string &dataset_path, const std::string &output_file_path)
+void execute_dataset_touzet_ted(const std::string &dataset_path, const std::string &output_file_path)
 {
     using Label = label::StringLabel;
-    using CostModel = cost_model::UnitCostModel<Label>;
+    using CostModelLD = cost_model::UnitCostModelLD<Label>;
+    using LabelDictionary = label::LabelDictionary<Label>;
     //  Use APTED to compute actual tree distances at least once between all trees <- this is going to take a lot of time
     //  Computing all these distances is necessary, so we can determine the success rate of the filter
     //  The computation is going to take a lot of time, might as well run it in parallel :]
-    using APTED = ted::APTED<Label, CostModel>;
+    using TedTouzet = ted::TouzetKRSetTreeIndex<CostModelLD , node::TreeIndexTouzetKRSet>;
     // PARSE INPUT
     // The input is parsed once for the entire experiment.
     std::vector<node::Node<Label>> trees_collection;
-    parser::BracketNotationParser bnp;
+    parser::BracketNotationParser<Label> bnp;
     std::cout << "Parsing tree collection for " << dataset_path << std::endl;
+
     bnp.parse_collection(trees_collection, dataset_path);
     std::cout << "Parsing done" << std::endl;
-
-    APTED apted_alg;
 
     std::ofstream output_file(output_file_path);
 //    boost::iostreams::filtering_streambuf<boost::iostreams::output> outbuf;
@@ -89,21 +86,31 @@ void execute_dataset_apted(const std::string &dataset_path, const std::string &o
     {
         threads.emplace_back([chunk_size, i, &trees_collection, &output_file]
                              {
-                                 APTED alg;
+                                 LabelDictionary ld;
+                                 CostModelLD ucm(ld);
+                                 TedTouzet top_diff(ucm);
                                  result_t results;
                                  auto stop = std::min((i + 1) * chunk_size, trees_collection.size());
                                  auto actual_chunk_size = stop - (i * chunk_size);
-
+                                 auto start = i * chunk_size;
                                  auto progress_ten = (actual_chunk_size + 10 - 1) / 10;
+                                 // first create all necessary tree indexes
+                                 std::vector<node::TreeIndexTouzetKRSet> tree_indexes;
+                                 std::cout << "Thread " << i << " creating tree indexes " << std::endl;
+                                 for (size_t j = start; j < trees_collection.size(); ++j) {
+                                     node::TreeIndexTouzetKRSet ti;
+                                     node::index_tree(ti, trees_collection[j], ld, ucm);
+                                     tree_indexes.emplace_back(ti);
+                                 }
+                                 std::cout << "Thread " << i << " calculating distances" << std::endl;
 
-                                 for (size_t j = i * chunk_size; j < stop; j++)
+                                 for (size_t j = start; j < stop; j++)
                                  {
-
                                      for (size_t k = j + 1; k < trees_collection.size(); k++)
                                      {
-                                         auto ted = alg.apted_ted(
-                                                 trees_collection[j],
-                                                 trees_collection[k]
+                                         auto ted = top_diff.ted(
+                                                 tree_indexes[j - start],
+                                                 tree_indexes[k - start]
                                          );
                                          results.emplace_back(j, k, ted);
                                      }
@@ -176,9 +183,9 @@ int main(int argc, char *argv[])
         std::string output_file_path(dataset_path);
         auto pos = output_file_path.rfind('/');
         output_file_path.erase(output_file_path.begin() + pos, output_file_path.end());
-        output_file_path.insert(pos, "/distances.csv.lzma");
+        output_file_path.insert(pos, "/distances-tz.txt");
 
-        execute_dataset_apted(dataset_path, output_file_path);
+        execute_dataset_touzet_ted(dataset_path, output_file_path);
         std::cout << "All results written into file\n";
     }
 

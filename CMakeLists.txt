@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.7)
 
 # Create the project.
 project(ted-experiments)
@@ -28,33 +28,7 @@ find_package(Boost 1.83.0 REQUIRED COMPONENTS system iostreams)
 if (Boost_FOUND)
   include_directories( ${Boost_INCLUDE_DIRS} )
 endif ()
-# Build executable with the experiments.
-add_executable(
-  ted-join-experiments                   # EXECUTABLE NAME
-  src/join_algs/join_algs_experiments.cc # EXECUTABLE SOURCE
-)
-target_link_libraries(
-  ted-join-experiments # TARGET EXECUTABLE NAME
-  TimingLibrary        # LIBRARY NAME
-)
-target_include_directories(
-  ted-join-experiments                # TARGET EXECUTABLE NAME
-  PUBLIC external/common-code/timings # HEADER FILE
-)
 
-# Build executable with the experiments.
-add_executable(
-  ted-algs-experiments                   # EXECUTABLE NAME
-  src/ted_algs/ted_algs_experiments.cc   # EXECUTABLE SOURCE
-)
-target_link_libraries(
-  ted-algs-experiments # TARGET EXECUTABLE NAME
-  TimingLibrary        # LIBRARY NAME
-)
-target_include_directories(
-  ted-algs-experiments                # TARGET EXECUTABLE NAME
-  PUBLIC external/common-code/timings # HEADER FILE
-)
 
 # Moravec APTED distance dataset calculator
 add_executable(ted-ds-dist
@@ -63,10 +37,10 @@ add_executable(ted-ds-dist
 )
 
 # Moravec LN experiments
-add_executable(ted-lb-experiments
-        src/lb/ted_lb_experiments.cpp
-        src/lb/ted_lb_experiments.h
-)
+#add_executable(ted-lb-experiments
+#        src/lb/ted_lb_experiments.cpp
+#        src/lb/ted_lb_experiments.h
+#)
 
 target_link_libraries(
     ted-ds-dist
@@ -74,20 +48,20 @@ target_link_libraries(
     Boost::iostreams
 )
 
-target_link_libraries(
-        ted-lb-experiments
-        TimingLibrary
-)
+#target_link_libraries(
+#        ted-lb-experiments
+#        TimingLibrary
+#)
 
 target_include_directories(
       ted-ds-dist
       PUBLIC external/common-code/timings
 )
-
-target_include_directories(
-        ted-lb-experiments
-        PUBLIC external/common-code/timings
-)
+#
+#target_include_directories(
+#        ted-lb-experiments
+#        PUBLIC external/common-code/timings
+#)
 
 # Create the timing library.
 add_library(
@@ -121,19 +95,11 @@ target_include_directories(
   external/tree-similarity/src/join/guha
 )
 
-# Let the compiler know to find the header files in TreeSimilarity library.
-target_link_libraries(
-  ted-join-experiments # EXECUTABLE NAME
-  TreeSimilarity       # LIBRARY NAME
-)
 
-# Let the compiler know to find the header files in TreeSimilarity library.
-target_link_libraries(
-  ted-algs-experiments # EXECUTABLE NAME
-  TreeSimilarity       # LIBRARY NAME
-)
+
 
 find_package(Threads REQUIRED)
+# Let the compiler know to find the header files in TreeSimilarity library.
 
 # Link LB experiments to TreeSim library
 target_link_libraries(
@@ -141,9 +107,9 @@ target_link_libraries(
         TreeSimilarity
         Threads::Threads
 )
-
-target_link_libraries(
-        ted-lb-experiments
-        TreeSimilarity
-        Threads::Threads
-)
+# Let the compiler know to find the header files in TreeSimilarity library.
+#target_link_libraries(
+#        ted-lb-experiments
+#        TreeSimilarity
+#        Threads::Threads
+#)
