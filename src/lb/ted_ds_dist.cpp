@@ -44,7 +44,7 @@ void write_to_output(result_t &results, std::ostream &output, size_t collection_
     } while ((i < results.size()));
 }
 
-void execute_dataset_touzet_ted(const std::string &dataset_path, const std::string &output_file_path)
+void execute_dataset_touzet_ted(const std::string &dataset_path, const std::string &output_file_path, const int max_edit_distance)
 {
     using Label = label::StringLabel;
     using CostModelLD = cost_model::UnitCostModelLD<Label>;
@@ -81,49 +81,43 @@ void execute_dataset_touzet_ted(const std::string &dataset_path, const std::stri
             auto ted = std::get<2>(result);
             output << t1 << "," << t2 << "," << ted << "\n";
         }*/
+    LabelDictionary ld;
+    CostModelLD ucm(ld);
+    std::vector<node::TreeIndexTouzetKRSet> tree_indexes;
+    for (size_t j = 0; j < trees_collection.size(); ++j) {
+        node::TreeIndexTouzetKRSet ti;
+        node::index_tree(ti, trees_collection[j], ld, ucm);
+        tree_indexes.emplace_back(ti);
+    }
 
     for (size_t i = 0; i < max_threads; i++)
     {
-        threads.emplace_back([chunk_size, i, &trees_collection, &output_file]
+        threads.emplace_back([chunk_size, i, &tree_indexes, &trees_collection, &output_file, max_edit_distance]
                              {
                                  LabelDictionary ld;
                                  CostModelLD ucm(ld);
                                  TedTouzet top_diff(ucm);
                                  result_t results;
                                  auto stop = std::min((i + 1) * chunk_size, trees_collection.size());
-                                 auto actual_chunk_size = stop - (i * chunk_size);
                                  auto start = i * chunk_size;
-                                 auto progress_ten = (actual_chunk_size + 10 - 1) / 10;
-                                 // first create all necessary tree indexes
-                                 std::vector<node::TreeIndexTouzetKRSet> tree_indexes;
-                                 std::cout << "Thread " << i << " creating tree indexes " << std::endl;
-                                 for (size_t j = start; j < trees_collection.size(); ++j) {
-                                     node::TreeIndexTouzetKRSet ti;
-                                     node::index_tree(ti, trees_collection[j], ld, ucm);
-                                     tree_indexes.emplace_back(ti);
-                                 }
-                                 std::cout << "Thread " << i << " calculating distances" << std::endl;
 
                                  for (size_t j = start; j < stop; j++)
                                  {
                                      for (size_t k = j + 1; k < trees_collection.size(); k++)
                                      {
-                                         auto ted = top_diff.ted(
-                                                 tree_indexes[j - start],
-                                                 tree_indexes[k - start]
+                                         auto ted = top_diff.ted_k(
+                                                 tree_indexes[j],
+                                                 tree_indexes[k],
+                                                 max_edit_distance + 1
                                          );
                                          results.emplace_back(j, k, ted);
                                      }
 
-                                     if (j % progress_ten == 0) {
-                                         std::cout << "Thread " << i << " done: " << 10 * ((j - i * chunk_size) / progress_ten) << "%" << std::endl;
-                                         if (!results.empty()) {
-                                             file_lock.lock();
-                                             write_to_output(results, output_file, trees_collection.size());
-                                             file_lock.unlock();
-                                             results.clear();
-                                         }
-                                     }
+                                     std::cout << "Thread " << i << " writing results" << std::endl;
+                                     file_lock.lock();
+                                     write_to_output(results, output_file, trees_collection.size());
+                                     file_lock.unlock();
+                                     results.clear();
                                  }
 
                                  std::cout << "Thread " << i << " done: 100%" << std::endl;
@@ -150,7 +144,7 @@ int main(int argc, char *argv[])
 {
     if (argc < 3)
     {
-        std::cerr << "Missing arguments for datasets base path and datasets" << std::endl;
+        std::cerr << "Missing arguments for datasets base path, datasets and max edit distance" << std::endl;
         exit(1);
     }
     std::vector<std::string> args(argv, argv + argc);
@@ -163,6 +157,7 @@ int main(int argc, char *argv[])
     }
 
     std::string datasets = args.at(2);
+    int max_edit_distance = std::stoi(args.at(3));
 
     std::vector<std::string> datasets_paths = split(datasets, ',');
     for (auto &dataset : datasets_paths)
@@ -185,7 +180,7 @@ int main(int argc, char *argv[])
         output_file_path.erase(output_file_path.begin() + pos, output_file_path.end());
         output_file_path.insert(pos, "/distances-tz.txt");
 
-        execute_dataset_touzet_ted(dataset_path, output_file_path);
+        execute_dataset_touzet_ted(dataset_path, output_file_path, max_edit_distance);
         std::cout << "All results written into file\n";
     }
 
