@@ -3,6 +3,7 @@
 //
 
 #include "ted_ds_dist.h"
+
 #include <thread>
 #include <fstream>
 #include <mutex>
@@ -63,24 +64,13 @@ void execute_dataset_touzet_ted(const std::string &dataset_path, const std::stri
     std::cout << "Parsing done" << std::endl;
 
     std::ofstream output_file(output_file_path);
-//    boost::iostreams::filtering_streambuf<boost::iostreams::output> outbuf;
-//    outbuf.push(boost::iostreams::lzma_compressor());
-//    outbuf.push(output_file);
-//    std::ostream out(&outbuf);
 
     auto max_threads = std::thread::hardware_concurrency();
 
     std::vector<std::thread> threads;
     auto chunk_size = (trees_collection.size() + max_threads - 1) / max_threads;
     std::cout << trees_collection.size() << std::endl;
-    /*    std::ofstream output(output_file_path);
-        for (auto &result : all_ted_results)
-        {
-            auto t1 = std::get<0>(result);
-            auto t2 = std::get<1>(result);
-            auto ted = std::get<2>(result);
-            output << t1 << "," << t2 << "," << ted << "\n";
-        }*/
+
     LabelDictionary ld;
     CostModelLD ucm(ld);
     std::vector<node::TreeIndexTouzetKRSet> tree_indexes;
@@ -140,6 +130,64 @@ void execute_dataset_touzet_ted(const std::string &dataset_path, const std::stri
     output_file.close();
 }
 
+
+void execute_tjoin(const std::string &dataset_path, const std::string & output_file_path, const int max_edit_distance) {
+    using Label = label::StringLabel;
+    using CostModelLD = cost_model::UnitCostModelLD<Label>;
+    using LabelDictionary = label::LabelDictionary<Label>;
+    using TedTouzet = ted::TouzetKRSetTreeIndex<CostModelLD , node::TreeIndexTouzetKRSet>;
+
+
+    std::vector<node::Node<Label>> trees_collection;
+    parser::BracketNotationParser<Label> bnp;
+    std::cout << "Parsing tree collection for " << dataset_path << std::endl;
+
+    std::ofstream output(output_file_path);
+
+    bnp.parse_collection(trees_collection, dataset_path);
+    std::cout << "Parsing done" << std::endl;
+
+    auto max_threads = std::thread::hardware_concurrency();
+    std::vector<std::thread> threads;
+    auto chunk_size = (trees_collection.size() + max_threads - 1) / max_threads;
+
+    for (size_t i = 0; i < max_threads; i++) {
+        std::cout << "Created thread " << i << std::endl;
+        threads.emplace_back(
+                [chunk_size, i, &trees_collection, &output] {
+                    LabelDictionary ld;
+                    CostModelLD ucm(ld);
+                    TedTouzet top_diff(ucm);
+                    join::TJoinTI<Label, TedTouzet> tjoin;
+
+                    auto start = i * chunk_size;
+                    auto stop = std::min((i + 1) * chunk_size, trees_collection.size());
+                    std::vector<std::pair<int, std::vector<label_set_converter::LabelSetElement>>> sets_collection;
+                    std::vector<std::pair<int, int>> candidates;
+                    std::vector<join::JoinResultElement> join_results;
+                    std::vector<node::Node<Label>> trees_subcollection(trees_collection.begin() + start, trees_collection.begin() + stop);
+
+                    tjoin.execute_join(trees_subcollection, sets_collection, candidates, join_results, max_edit_distance);
+
+                    std::count << "Thread " << i " done\n";
+                    file_lock.lock();
+                    for (const auto &join_result : join_results ) {
+                        output << join_result.tree_id_1 << "," << join_result.tree_id_2 << "," << join_result.ted_value << "\n";
+                    }
+                    file_lock.unlock();
+        }
+        );
+
+    }
+    std::cout << "Joining " << threads.size() << " running threads" << std::endl;
+    for (auto &t : threads)
+    {
+        t.join();
+    }
+    
+    output.close();
+}
+
 int main(int argc, char *argv[])
 {
     if (argc < 3)
@@ -178,9 +226,9 @@ int main(int argc, char *argv[])
         std::string output_file_path(dataset_path);
         auto pos = output_file_path.rfind('/');
         output_file_path.erase(output_file_path.begin() + pos, output_file_path.end());
-        output_file_path.insert(pos, "/distances-tz.txt");
+        output_file_path.insert(pos, "/distances-tjoin.txt");
 
-        execute_dataset_touzet_ted(dataset_path, output_file_path, max_edit_distance);
+        execute_tjoin(dataset_path, output_file_path, max_edit_distance);
         std::cout << "All results written into file\n";
     }
 
@@ -204,3 +252,4 @@ rlim_t increase_stack_size(rlim_t &new_stack_size)
     // printf("\n Default value now is : %lld\n", (long long int)rl.rlim_cur);
     return rl.rlim_cur;
 }
+
