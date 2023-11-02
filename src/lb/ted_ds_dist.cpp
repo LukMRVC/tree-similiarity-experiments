@@ -126,7 +126,6 @@ void execute_dataset_touzet_ted(const std::string &dataset_path, const std::stri
         t.join();
     }
 
-//    boost::iostreams::close(outbuf);
     output_file.close();
 }
 
@@ -147,42 +146,19 @@ void execute_tjoin(const std::string &dataset_path, const std::string & output_f
     bnp.parse_collection(trees_collection, dataset_path);
     std::cout << "Parsing done" << std::endl;
 
-    auto max_threads = std::thread::hardware_concurrency();
-    std::vector<std::thread> threads;
-    auto chunk_size = (trees_collection.size() + max_threads - 1) / max_threads;
+    LabelDictionary ld;
+    CostModelLD ucm(ld);
+    TedTouzet top_diff(ucm);
+    join::TJoinTI<Label, TedTouzet> tjoin;
 
-    for (size_t i = 0; i < max_threads; i++) {
-        std::cout << "Created thread " << i << std::endl;
-        threads.emplace_back(
-                [chunk_size, i, &trees_collection, &output] {
-                    LabelDictionary ld;
-                    CostModelLD ucm(ld);
-                    TedTouzet top_diff(ucm);
-                    join::TJoinTI<Label, TedTouzet> tjoin;
+    std::vector<std::pair<int, std::vector<label_set_converter::LabelSetElement>>> sets_collection;
+    std::vector<std::pair<int, int>> candidates;
+    std::vector<join::JoinResultElement> join_results;
 
-                    auto start = i * chunk_size;
-                    auto stop = std::min((i + 1) * chunk_size, trees_collection.size());
-                    std::vector<std::pair<int, std::vector<label_set_converter::LabelSetElement>>> sets_collection;
-                    std::vector<std::pair<int, int>> candidates;
-                    std::vector<join::JoinResultElement> join_results;
-                    std::vector<node::Node<Label>> trees_subcollection(trees_collection.begin() + start, trees_collection.begin() + stop);
+    tjoin.execute_join(trees_collection, sets_collection, candidates, join_results, max_edit_distance);
 
-                    tjoin.execute_join(trees_subcollection, sets_collection, candidates, join_results, max_edit_distance);
-
-                    std::count << "Thread " << i " done\n";
-                    file_lock.lock();
-                    for (const auto &join_result : join_results ) {
-                        output << join_result.tree_id_1 << "," << join_result.tree_id_2 << "," << join_result.ted_value << "\n";
-                    }
-                    file_lock.unlock();
-        }
-        );
-
-    }
-    std::cout << "Joining " << threads.size() << " running threads" << std::endl;
-    for (auto &t : threads)
-    {
-        t.join();
+    for (const auto &join_result : join_results ) {
+        output << join_result.tree_id_1 << "," << join_result.tree_id_2 << "," << join_result.ted_value << "\n";
     }
     
     output.close();
