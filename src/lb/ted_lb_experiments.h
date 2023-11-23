@@ -25,5 +25,8 @@
 #include "bracket_notation_parser.h"
 #include "touzet_kr_set_tree_index.h"
 #include "bracket_notation_parser.h"
+#include "sed_tree_index.h"
+#include "label_intersection.h"
+#include "bitmap_filter.h"
 
 #endif //TED_EXPERIMENTS_TED_LB_EXPERIMENTS_H
