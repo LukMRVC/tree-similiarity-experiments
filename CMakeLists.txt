@@ -72,6 +72,7 @@ add_library(
 # Create header-only library 'TreeSimilarity' with our algorithms.
 add_library(
   TreeSimilarity INTERFACE
+        external/tree-similarity/src/join/tang/tang_join_ti_impl.h
 )
 target_include_directories(
   TreeSimilarity INTERFACE

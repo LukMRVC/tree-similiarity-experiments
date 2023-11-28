@@ -27,6 +27,11 @@
 #include "bracket_notation_parser.h"
 #include "sed_tree_index.h"
 #include "label_intersection.h"
+#include "binary_tree_converter.h"
 #include "bitmap_filter.h"
+#include "tang_join_ti.h"
+#include "histo_join_ti.h"
+#include "bb_join_ti.h"
+#include "t_join_ti.h"
 
 #endif //TED_EXPERIMENTS_TED_LB_EXPERIMENTS_H
