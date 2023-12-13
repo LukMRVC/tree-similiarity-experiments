@@ -278,11 +278,10 @@ std::vector<std::chrono::microseconds> execute_label_intersection_index_lb(TreeC
 
     auto total_exec_time_start = high_resolution_clock ::now();
     // Retrieves candidates from the candidate index.
-    alg.retrieve_candidates(sets_collection, candidates, threshold);
+    alg.retrieve_candidates(sets_collection, candidates, threshold, ted_times);
     auto total_exec_time = duration_cast<std::chrono::milliseconds>(high_resolution_clock::now() - total_exec_time_start);
 
     std::sort(ted_times.begin(), ted_times.end());
-
     std::cout << "Total IndexLI execution time: " << total_exec_time.count() << "ms\n";
 //    std::cout << "Only  IndexLI time: " << duration_cast<std::chrono::milliseconds >(total_ted_time).count() << "ms\n";
     return ted_times;
@@ -309,10 +308,12 @@ std::vector<std::chrono::microseconds> execute_hist_lb(TreeCollection & collecti
 
     auto total_exec_time_start = high_resolution_clock ::now();
     // Retrieve candidates from the candidate index.
-    c_index.lookup(label_histogram_collection, degree_histogram_collection, leaf_distance_histogram_collection,
-                   candidates, il_size_, threshold);
+    c_index.lookup(
+            label_histogram_collection, degree_histogram_collection, leaf_distance_histogram_collection,candidates, il_size_, threshold, ted_times
+            );
     auto total_exec_time = duration_cast<std::chrono::milliseconds>(high_resolution_clock::now() - total_exec_time_start);
     std::cout << "Total LI execution time: " << total_exec_time.count() << "ms\n";
+    std::sort(ted_times.begin(), ted_times.end());
     return ted_times;
 }
 
@@ -331,9 +332,10 @@ std::vector<std::chrono::microseconds> execute_bib_lb(TreeCollection & collectio
     std::vector<std::chrono::microseconds> ted_times;
     auto total_exec_time_start = high_resolution_clock ::now();
     // Retrieve candidates from the candidate index.
-    c_index.lookup(histogram_collection, candidates, il_size_, threshold);
+    c_index.lookup(histogram_collection, candidates, il_size_, threshold, ted_times);
     auto total_exec_time = duration_cast<std::chrono::milliseconds>(high_resolution_clock::now() - total_exec_time_start);
     std::cout << "Total BIB execution time: " << total_exec_time.count() << "ms\n";
+    std::sort(ted_times.begin(), ted_times.end());
     return ted_times;
 }
 
@@ -353,12 +355,13 @@ std::vector<std::chrono::microseconds> execute_tang_lb(TreeCollection & collecti
     std::vector<std::chrono::microseconds> ted_times;
     auto total_exec_time_start = high_resolution_clock ::now();
     // Retrieve candidates from the candidate index.
-    alg.retrieve_candidates(binary_trees_collection, ix_candidates, threshold);
+    alg.retrieve_candidates(binary_trees_collection, ix_candidates, threshold, ted_times);
     auto total_exec_time = duration_cast<std::chrono::milliseconds>(high_resolution_clock::now() - total_exec_time_start);
     std::cout << "Total TANG execution time: " << total_exec_time.count() << "ms\n";
 
     for(const auto& pair: ix_candidates) {
         candidates.emplace_back(pair);
     }
+    std::sort(ted_times.begin(), ted_times.end());
     return ted_times;
 }
