@@ -10,7 +10,6 @@
 #include <algorithm>
 
 
-
 using std::chrono::high_resolution_clock;
 using std::chrono::duration_cast;
 using std::chrono::duration;
@@ -38,6 +37,7 @@ std::vector<std::string> split(const std::string &s, char delim)
 }
 
 using result_t = std::vector<std::tuple<size_t, size_t, uint>>;
+using ResultPair = std::pair<std::chrono::microseconds, std::vector<std::chrono::microseconds>>;
 
 // Trees in results can be found on their index
 // meaning tree with ID=2 is on index 2, with a collection of matching trees within threshold
@@ -90,18 +90,20 @@ std::vector<std::vector<size_t>> load_results(const std::string &results_path, i
     return results_map;
 }
 
-std::vector<std::chrono::microseconds> execute_sed_lb(TreeCollection & , Candidates & , int threshold);
-std::vector<std::chrono::microseconds> execute_label_intersection_lb(TreeCollection & , Candidates & , int threshold);
-std::vector<std::chrono::microseconds> execute_label_intersection_index_lb(TreeCollection & , Candidates & , int threshold);
-std::vector<std::chrono::microseconds> execute_hist_lb(TreeCollection & , Candidates & , int threshold);
-std::vector<std::chrono::microseconds> execute_bib_lb(TreeCollection & , Candidates & , int threshold);
-std::vector<std::chrono::microseconds> execute_tang_lb(TreeCollection & , Candidates & , int threshold);
+ResultPair execute_sed_lb(TreeCollection & , Candidates & , int threshold);
+ResultPair execute_label_intersection_lb(TreeCollection & , Candidates & , int threshold);
+ResultPair execute_label_intersection_index_lb(TreeCollection & , Candidates & , int threshold);
+ResultPair execute_hist_lb(TreeCollection & , Candidates & , int threshold);
+ResultPair execute_bib_lb(TreeCollection & , Candidates & , int threshold);
+ResultPair execute_tang_lb(TreeCollection & , Candidates & , int threshold);
 
 void output_timepoints(std::vector<std::chrono::microseconds > sorted_timepoints, std::string & dataset_path, std::string lb_alg) {
     std::string output_file_path(dataset_path);
     auto pos = output_file_path.rfind('/');
     output_file_path.erase(output_file_path.begin() + pos, output_file_path.end());
-    output_file_path.insert(pos, lb_alg);
+    output_file_path.insert(pos, "/" + lb_alg + "_us.txt");
+
+    std::cout << "Outputting times into " << output_file_path << std::endl;
     std::ofstream output (output_file_path);
     for (const auto & t: sorted_timepoints) {
         output << t.count() << "\n";
@@ -133,11 +135,11 @@ int main(int argc, char *argv[])
     bnp.parse_collection(trees_collection, dataset_path);
     std::cout << "Parsing done" << std::endl;
 
-    std::cout << "Loading results " << dataset_path << std::endl;
+    std::cout << "Loading results " << results_path << std::endl;
     auto results = load_results(results_path, threshold);
 
     auto lb_alg = args.at(2);
-    std::vector<std::chrono::microseconds> times;
+    ResultPair times;
     Candidates candidates;
 
     if (lb_alg == "bib") {
@@ -152,6 +154,9 @@ int main(int argc, char *argv[])
         times = execute_hist_lb(trees_collection, candidates, threshold);
     } else if (lb_alg == "tang") {
         times = execute_tang_lb(trees_collection, candidates, threshold);
+    } else {
+        std::cerr << "Unknown algorithm method!" << std::endl;
+        exit(1);
     }
 
     std::sort(candidates.begin(), candidates.end());
@@ -165,14 +170,13 @@ int main(int argc, char *argv[])
             incorrect += 1;
         }
     }
-
-    std::cout << "Correct trees: " << correct << "\nIncorrect trees: " << incorrect << "\n";
-    std::cout << "Precision is: " << 100 * ((double)correct / (double)(correct + incorrect)) << "%\n";
-    output_timepoints(times, dataset_path, lb_alg);
+    std::cout << "Correct trees;Incorrect trees;Precision;Total Time\n";
+    std::cout << correct << ";" << incorrect << ";" << 100 * ((double)correct / (double)(correct + incorrect)) << ";" << times.first.count() << "\n";
+    output_timepoints(times.second, dataset_path, lb_alg);
     return 0;
 }
 
-std::vector<std::chrono::microseconds> execute_sed_lb(TreeCollection & collection, Candidates & candidates, int threshold) {
+ResultPair execute_sed_lb(TreeCollection & collection, Candidates & candidates, int threshold) {
     LabelDictionary ld;
     CostModelLD ucm(ld);
     // preprocess - index tree collection
@@ -212,10 +216,10 @@ std::vector<std::chrono::microseconds> execute_sed_lb(TreeCollection & collectio
 
     std::cout << "Total SED execution time: " << total_exec_time.count() << "ms\n";
     std::cout << "Only  SED time: " << duration_cast<std::chrono::milliseconds >(total_ted_time).count() << "ms\n";
-    return ted_times;
+    return std::make_pair(total_exec_time, ted_times);
 }
 
-std::vector<std::chrono::microseconds> execute_label_intersection_lb(TreeCollection & collection, Candidates & candidates, int threshold) {
+ResultPair execute_label_intersection_lb(TreeCollection & collection, Candidates & candidates, int threshold) {
     LabelDictionary ld;
     CostModelLD ucm(ld);
     // preprocess - index tree collection
@@ -255,10 +259,10 @@ std::vector<std::chrono::microseconds> execute_label_intersection_lb(TreeCollect
 
     std::cout << "Total LI execution time: " << total_exec_time.count() << "ms\n";
     std::cout << "Only  LI time: " << duration_cast<std::chrono::milliseconds >(total_ted_time).count() << "ms\n";
-    return ted_times;
+    return std::make_pair(total_exec_time, ted_times);
 }
 
-std::vector<std::chrono::microseconds> execute_label_intersection_index_lb(TreeCollection & collection, Candidates & candidates, int threshold) {
+ResultPair execute_label_intersection_index_lb(TreeCollection & collection, Candidates & candidates, int threshold) {
     LabelDictionary ld;
     CostModelLD ucm(ld);
     std::vector<std::pair<int, std::vector<label_set_converter::LabelSetElement>>> sets_collection;
@@ -284,10 +288,10 @@ std::vector<std::chrono::microseconds> execute_label_intersection_index_lb(TreeC
     std::sort(ted_times.begin(), ted_times.end());
     std::cout << "Total IndexLI execution time: " << total_exec_time.count() << "ms\n";
 //    std::cout << "Only  IndexLI time: " << duration_cast<std::chrono::milliseconds >(total_ted_time).count() << "ms\n";
-    return ted_times;
+    return std::make_pair(total_exec_time, ted_times);
 }
 
-std::vector<std::chrono::microseconds> execute_hist_lb(TreeCollection & collection, Candidates & candidates, int threshold) {
+ResultPair execute_hist_lb(TreeCollection & collection, Candidates & candidates, int threshold) {
     LabelDictionary ld;
     CostModelLD ucm(ld);
     std::vector<std::pair<int, std::unordered_map<int, int>>> label_histogram_collection;
@@ -314,10 +318,10 @@ std::vector<std::chrono::microseconds> execute_hist_lb(TreeCollection & collecti
     auto total_exec_time = duration_cast<std::chrono::milliseconds>(high_resolution_clock::now() - total_exec_time_start);
     std::cout << "Total LI execution time: " << total_exec_time.count() << "ms\n";
     std::sort(ted_times.begin(), ted_times.end());
-    return ted_times;
+    return std::make_pair(total_exec_time, ted_times);
 }
 
-std::vector<std::chrono::microseconds> execute_bib_lb(TreeCollection & collection, Candidates & candidates, int threshold) {
+ResultPair execute_bib_lb(TreeCollection & collection, Candidates & candidates, int threshold) {
     std::vector<std::pair<int, std::unordered_map<int, int>>> histogram_collection;
     bin_branch_histogram_converter::Converter<Label> bbhc;
     auto preprocess_start = high_resolution_clock::now();
@@ -336,11 +340,11 @@ std::vector<std::chrono::microseconds> execute_bib_lb(TreeCollection & collectio
     auto total_exec_time = duration_cast<std::chrono::milliseconds>(high_resolution_clock::now() - total_exec_time_start);
     std::cout << "Total BIB execution time: " << total_exec_time.count() << "ms\n";
     std::sort(ted_times.begin(), ted_times.end());
-    return ted_times;
+    return std::make_pair(total_exec_time, ted_times);
 }
 
 
-std::vector<std::chrono::microseconds> execute_tang_lb(TreeCollection & collection, Candidates & candidates, int threshold) {
+ResultPair execute_tang_lb(TreeCollection & collection, Candidates & candidates, int threshold) {
     std::vector<node::BinaryNode<Label>> binary_trees_collection;
     std::unordered_set<std::pair<int, int>, join::hashintegerpair> ix_candidates;
     auto preprocess_start = high_resolution_clock::now();
@@ -363,5 +367,5 @@ std::vector<std::chrono::microseconds> execute_tang_lb(TreeCollection & collecti
         candidates.emplace_back(pair);
     }
     std::sort(ted_times.begin(), ted_times.end());
-    return ted_times;
+    return std::make_pair(total_exec_time, ted_times);
 }
