@@ -316,7 +316,7 @@ ResultPair execute_hist_lb(TreeCollection & collection, Candidates & candidates,
             label_histogram_collection, degree_histogram_collection, leaf_distance_histogram_collection,candidates, il_size_, threshold, ted_times
             );
     auto total_exec_time = duration_cast<std::chrono::milliseconds>(high_resolution_clock::now() - total_exec_time_start);
-    std::cout << "Total LI execution time: " << total_exec_time.count() << "ms\n";
+    std::cout << "Total HIST execution time: " << total_exec_time.count() << "ms\n";
     std::sort(ted_times.begin(), ted_times.end());
     return std::make_pair(total_exec_time, ted_times);
 }
