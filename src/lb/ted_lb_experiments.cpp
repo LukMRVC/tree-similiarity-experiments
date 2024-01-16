@@ -137,6 +137,7 @@ int main(int argc, char *argv[])
 
     std::cout << "Loading results " << results_path << std::endl;
     auto results = load_results(results_path, threshold);
+    std::cout << "Results loaded " << results_path << std::endl;
 
     auto lb_alg = args.at(2);
     ResultPair times;
@@ -179,6 +180,7 @@ int main(int argc, char *argv[])
 ResultPair execute_sed_lb(TreeCollection & collection, Candidates & candidates, int threshold) {
     LabelDictionary ld;
     CostModelLD ucm(ld);
+    std::cout << "Computing tree indexes\n";
     // preprocess - index tree collection
     std::vector<node::TreeIndexSED> tree_indexes;
     auto preprocess_start = high_resolution_clock::now();
@@ -200,16 +202,16 @@ ResultPair execute_sed_lb(TreeCollection & collection, Candidates & candidates, 
     auto total_ted_time = std::chrono::microseconds {};
     for (int i = 0; i < tree_indexes.size(); i++) {
         std::cout << "Running tree " << i << " of " << tree_indexes.size() << std::endl;
+        auto ted_start = high_resolution_clock ::now();
         for (int j = i + 1; j < tree_indexes.size(); j++) {
-            auto ted_start = high_resolution_clock ::now();
             auto lb = sed_ti.ted(tree_indexes[i], tree_indexes[j]);
-            auto ted_time = duration_cast<std::chrono::microseconds >(high_resolution_clock::now() - ted_start);
-            ted_times.emplace_back(ted_time);
-            total_ted_time += ted_time;
             if (lb <= threshold) {
                 candidates.emplace_back(std::make_pair(i, j));
             }
         }
+        auto ted_time = duration_cast<std::chrono::microseconds >(high_resolution_clock::now() - ted_start);
+        ted_times.emplace_back(ted_time);
+        total_ted_time += ted_time;
     }
     auto total_exec_time = duration_cast<std::chrono::milliseconds>(high_resolution_clock::now() - total_exec_time_start);
 
@@ -243,16 +245,16 @@ ResultPair execute_label_intersection_lb(TreeCollection & collection, Candidates
     auto total_exec_time_start = high_resolution_clock ::now();
     auto total_ted_time = std::chrono::microseconds {};
     for (int i = 0; i < tree_indexes.size(); i++) {
+        auto ted_start = high_resolution_clock ::now();
         for (int j = i + 1; j < tree_indexes.size(); j++) {
-            auto ted_start = high_resolution_clock ::now();
             auto lb = li_lb.ted(tree_indexes[i], tree_indexes[j]);
-            auto ted_time = duration_cast<std::chrono::microseconds >(high_resolution_clock::now() - ted_start);
-            ted_times.emplace_back(ted_time);
-            total_ted_time += ted_time;
             if (lb <= threshold) {
                 candidates.emplace_back(std::make_pair(i, j));
             }
         }
+        auto ted_time = duration_cast<std::chrono::microseconds >(high_resolution_clock::now() - ted_start);
+        ted_times.emplace_back(ted_time);
+        total_ted_time += ted_time;
     }
     auto total_exec_time = duration_cast<std::chrono::milliseconds>(high_resolution_clock::now() - total_exec_time_start);
 
