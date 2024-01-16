@@ -199,6 +199,7 @@ ResultPair execute_sed_lb(TreeCollection & collection, Candidates & candidates, 
     auto total_exec_time_start = high_resolution_clock ::now();
     auto total_ted_time = std::chrono::microseconds {};
     for (int i = 0; i < tree_indexes.size(); i++) {
+        std::cout << "Running tree " << i << " of " << tree_indexes.size() << std::endl;
         for (int j = i + 1; j < tree_indexes.size(); j++) {
             auto ted_start = high_resolution_clock ::now();
             auto lb = sed_ti.ted(tree_indexes[i], tree_indexes[j]);
