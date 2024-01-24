@@ -245,6 +245,7 @@ ResultPair execute_label_intersection_lb(TreeCollection & collection, Candidates
     auto total_exec_time_start = high_resolution_clock ::now();
     auto total_ted_time = std::chrono::microseconds {};
     for (int i = 0; i < tree_indexes.size(); i++) {
+        std::cout << "Processing tree " << i << " of " << tree_indexes.size() << "\n";
         auto ted_start = high_resolution_clock ::now();
         for (int j = i + 1; j < tree_indexes.size(); j++) {
             auto lb = li_lb.ted(tree_indexes[i], tree_indexes[j]);
