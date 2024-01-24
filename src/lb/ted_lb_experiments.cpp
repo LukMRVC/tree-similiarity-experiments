@@ -8,6 +8,9 @@
 #include "tree_indexer.h"
 #include <chrono>
 #include <algorithm>
+#include <random>
+#include <iterator>
+#include <cmath>
 
 
 using std::chrono::high_resolution_clock;
@@ -90,8 +93,8 @@ std::vector<std::vector<size_t>> load_results(const std::string &results_path, i
     return results_map;
 }
 
-ResultPair execute_sed_lb(TreeCollection & , Candidates & , int threshold);
-ResultPair execute_label_intersection_lb(TreeCollection & , Candidates & , int threshold);
+ResultPair execute_sed_lb(TreeCollection & , Candidates & , int threshold, int);
+ResultPair execute_label_intersection_lb(TreeCollection & , Candidates & , int threshold, int);
 ResultPair execute_label_intersection_index_lb(TreeCollection & , Candidates & , int threshold);
 ResultPair execute_hist_lb(TreeCollection & , Candidates & , int threshold);
 ResultPair execute_bib_lb(TreeCollection & , Candidates & , int threshold);
@@ -139,6 +142,12 @@ int main(int argc, char *argv[])
     auto results = load_results(results_path, threshold);
     std::cout << "Results loaded " << results_path << std::endl;
 
+    int sample_size = 0;
+
+    if (args.size() >= 4) {
+        sample_size = std::stoi(args.at(4));
+    }
+
     auto lb_alg = args.at(2);
     ResultPair times;
     Candidates candidates;
@@ -146,9 +155,9 @@ int main(int argc, char *argv[])
     if (lb_alg == "bib") {
         times = execute_bib_lb(trees_collection, candidates,  threshold);
     } else if (lb_alg == "sed") {
-        times = execute_sed_lb(trees_collection, candidates, threshold);
+        times = execute_sed_lb(trees_collection, candidates, threshold, sample_size);
     } else if (lb_alg == "lblint") {
-        times = execute_label_intersection_lb(trees_collection, candidates, threshold);
+        times = execute_label_intersection_lb(trees_collection, candidates, threshold, sample_size);
     } else if (lb_alg == "lblint_ix") {
         times = execute_label_intersection_index_lb(trees_collection, candidates, threshold);
     } else if (lb_alg == "hist") {
@@ -177,7 +186,7 @@ int main(int argc, char *argv[])
     return 0;
 }
 
-ResultPair execute_sed_lb(TreeCollection & collection, Candidates & candidates, int threshold) {
+ResultPair execute_sed_lb(TreeCollection & collection, Candidates & candidates, int threshold, int sample_size = 0) {
     LabelDictionary ld;
     CostModelLD ucm(ld);
     std::cout << "Computing tree indexes\n";
@@ -195,25 +204,42 @@ ResultPair execute_sed_lb(TreeCollection & collection, Candidates & candidates, 
 
     std::vector<std::vector<size_t>> all_candidates;
     auto sed_ti = ted_lb::SEDTreeIndex<CostModelLD>(ucm);
-
     std::vector<std::chrono::microseconds> ted_times;
-
-    auto total_exec_time_start = high_resolution_clock ::now();
     auto total_ted_time = std::chrono::microseconds {};
-    for (int i = 0; i < tree_indexes.size(); i++) {
-        std::cout << "Running tree " << i << " of " << tree_indexes.size() << std::endl;
-        auto ted_start = high_resolution_clock ::now();
-        for (int j = i + 1; j < tree_indexes.size(); j++) {
-            auto lb = sed_ti.ted(tree_indexes[i], tree_indexes[j]);
-            if (lb <= threshold) {
-                candidates.emplace_back(std::make_pair(i, j));
+    std::chrono::milliseconds total_exec_time;
+    if (sample_size > 0) {
+        auto n = (int)std::round((double)tree_indexes.size() * (sample_size / 100.0));
+        std::vector<node::TreeIndexSED> sample_indexes;
+        std::sample(tree_indexes.begin(), tree_indexes.end(), std::back_inserter(sample_indexes), n, std::mt19937 {std::random_device{}()});
+        auto total_exec_time_start = high_resolution_clock ::now();
+        for (int i = 0; i < sample_indexes.size(); ++i) {
+            std::cout << "Running tree " << i << " of " << sample_indexes.size() << "\n";
+            for (int j = i + 1; j < sample_indexes.size(); ++i) {
+                auto lb = sed_ti.ted(sample_indexes[i], sample_indexes[j]);
+                if (lb <= threshold) {
+                    candidates.emplace_back(std::make_pair(i, j));
+                }
             }
         }
-        auto ted_time = duration_cast<std::chrono::microseconds >(high_resolution_clock::now() - ted_start);
-        ted_times.emplace_back(ted_time);
-        total_ted_time += ted_time;
+        total_exec_time = duration_cast<std::chrono::milliseconds>(high_resolution_clock::now() - total_exec_time_start);
+    } else {
+        auto total_exec_time_start = high_resolution_clock ::now();
+        for (int i = 0; i < tree_indexes.size(); i++) {
+            std::cout << "Running tree " << i << " of " << tree_indexes.size() << std::endl;
+            auto ted_start = high_resolution_clock ::now();
+            for (int j = i + 1; j < tree_indexes.size(); j++) {
+                auto lb = sed_ti.ted(tree_indexes[i], tree_indexes[j]);
+                if (lb <= threshold) {
+                    candidates.emplace_back(std::make_pair(i, j));
+                }
+            }
+            auto ted_time = duration_cast<std::chrono::microseconds >(high_resolution_clock::now() - ted_start);
+            ted_times.emplace_back(ted_time);
+            total_ted_time += ted_time;
+        }
+        total_exec_time = duration_cast<std::chrono::milliseconds>(high_resolution_clock::now() - total_exec_time_start);
     }
-    auto total_exec_time = duration_cast<std::chrono::milliseconds>(high_resolution_clock::now() - total_exec_time_start);
+
 
     std::sort(ted_times.begin(), ted_times.end());
 
@@ -222,7 +248,7 @@ ResultPair execute_sed_lb(TreeCollection & collection, Candidates & candidates, 
     return std::make_pair(total_exec_time, ted_times);
 }
 
-ResultPair execute_label_intersection_lb(TreeCollection & collection, Candidates & candidates, int threshold) {
+ResultPair execute_label_intersection_lb(TreeCollection & collection, Candidates & candidates, int threshold, int sample_size = 0) {
     LabelDictionary ld;
     CostModelLD ucm(ld);
     // preprocess - index tree collection
@@ -236,28 +262,46 @@ ResultPair execute_label_intersection_lb(TreeCollection & collection, Candidates
     auto preprocess_stop = high_resolution_clock ::now();
     auto preprocessing = duration_cast<std::chrono::milliseconds >(preprocess_stop  - preprocess_start);
     std::cout << "Preprocessing time: " << preprocessing.count() << "ms\n";
-
     std::vector<std::vector<size_t>> all_candidates;
     auto li_lb = ted_lb::LabelIntersection<CostModelLD, node::TreeIndexLI>(ucm);
-
     std::vector<std::chrono::microseconds> ted_times;
+    std::chrono::microseconds total_ted_time = std::chrono::microseconds {};
+    std::chrono::milliseconds total_exec_time;
 
-    auto total_exec_time_start = high_resolution_clock ::now();
-    auto total_ted_time = std::chrono::microseconds {};
-    for (int i = 0; i < tree_indexes.size(); i++) {
-        std::cout << "Processing tree " << i << " of " << tree_indexes.size() << "\n";
-        auto ted_start = high_resolution_clock ::now();
-        for (int j = i + 1; j < tree_indexes.size(); j++) {
-            auto lb = li_lb.ted(tree_indexes[i], tree_indexes[j]);
-            if (lb <= threshold) {
-                candidates.emplace_back(std::make_pair(i, j));
+    if (sample_size > 0) {
+        auto n = (int)std::round((double)tree_indexes.size() * (sample_size / 100.0));
+        std::vector<node::TreeIndexLI> sample_indexes;
+        std::sample(tree_indexes.begin(), tree_indexes.end(), std::back_inserter(sample_indexes), n, std::mt19937 {std::random_device{}()});
+        auto total_exec_time_start = high_resolution_clock ::now();
+        for (int i = 0; i < sample_indexes.size(); ++i) {
+            std::cout << "Running tree " << i << " of " << sample_indexes.size() << "\n";
+            for (int j = i + 1; j < sample_indexes.size(); ++i) {
+                auto lb = li_lb.ted(sample_indexes[i], sample_indexes[j]);
+                if (lb <= threshold) {
+                    candidates.emplace_back(std::make_pair(i, j));
+                }
             }
         }
-        auto ted_time = duration_cast<std::chrono::microseconds >(high_resolution_clock::now() - ted_start);
-        ted_times.emplace_back(ted_time);
-        total_ted_time += ted_time;
+        total_exec_time = duration_cast<std::chrono::milliseconds>(high_resolution_clock::now() - total_exec_time_start);
+    } else {
+        auto total_exec_time_start = high_resolution_clock ::now();
+
+        for (int i = 0; i < tree_indexes.size(); i++) {
+            std::cout << "Processing tree " << i << " of " << tree_indexes.size() << "\n";
+            auto ted_start = high_resolution_clock ::now();
+            for (int j = i + 1; j < tree_indexes.size(); j++) {
+                auto lb = li_lb.ted(tree_indexes[i], tree_indexes[j]);
+                if (lb <= threshold) {
+                    candidates.emplace_back(std::make_pair(i, j));
+                }
+            }
+            auto ted_time = duration_cast<std::chrono::microseconds >(high_resolution_clock::now() - ted_start);
+            ted_times.emplace_back(ted_time);
+            total_ted_time += ted_time;
+        }
+        total_exec_time = duration_cast<std::chrono::milliseconds>(high_resolution_clock::now() - total_exec_time_start);
     }
-    auto total_exec_time = duration_cast<std::chrono::milliseconds>(high_resolution_clock::now() - total_exec_time_start);
+
 
     std::sort(ted_times.begin(), ted_times.end());
 
