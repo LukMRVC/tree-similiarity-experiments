@@ -36,6 +36,8 @@ add_executable(ted-ds-dist
         src/lb/ted_ds_dist.h
 )
 
+add_executable(sed-benchmark src/lb/sed_benchmark.cpp)
+
 # Moravec LB experiments
 add_executable(ted-lb-experiments
         src/lb/ted_lb_experiments.cpp
@@ -47,6 +49,9 @@ target_link_libraries(
     TimingLibrary
 #    Boost::iostreams
 )
+
+target_link_libraries(sed-benchmark
+        TimingLibrary)
 
 target_link_libraries(
         ted-lb-experiments
@@ -63,6 +68,10 @@ target_include_directories(
         PUBLIC external/common-code/timings
 )
 
+target_include_directories(
+        sed-benchmark
+        PUBLIC external/common-code/timings
+)
 # Create the timing library.
 add_library(
   TimingLibrary                              # LIBRARY NAME
@@ -113,3 +122,5 @@ target_link_libraries(
         TreeSimilarity
         Threads::Threads
 )
+
+target_link_libraries(sed-benchmark TreeSimilarity Threads::Threads)
