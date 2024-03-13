@@ -36,6 +36,12 @@ add_executable(ted-ds-dist
         src/lb/ted_ds_dist.h
 )
 
+
+# Moravec APTED distance dataset calculator
+add_executable(indexer-test
+        src/lb/indexer_test.cpp
+)
+
 add_executable(sed-benchmark src/lb/sed_benchmark.cpp)
 
 # Moravec LB experiments
@@ -50,7 +56,13 @@ target_link_libraries(
 #    Boost::iostreams
 )
 
-target_link_libraries(sed-benchmark
+target_link_libraries(
+        sed-benchmark
+        TimingLibrary)
+
+
+target_link_libraries(
+        indexer-test
         TimingLibrary)
 
 target_link_libraries(
@@ -70,6 +82,10 @@ target_include_directories(
 
 target_include_directories(
         sed-benchmark
+        PUBLIC external/common-code/timings
+)
+target_include_directories(
+        indexer-test
         PUBLIC external/common-code/timings
 )
 # Create the timing library.
@@ -124,3 +140,4 @@ target_link_libraries(
 )
 
 target_link_libraries(sed-benchmark TreeSimilarity Threads::Threads)
+target_link_libraries(indexer-test TreeSimilarity Threads::Threads)
