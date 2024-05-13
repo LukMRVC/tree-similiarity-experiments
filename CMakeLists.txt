@@ -42,6 +42,11 @@ add_executable(indexer-test
         src/lb/indexer_test.cpp
 )
 
+# Moravec
+add_executable(candidates-compare
+        src/lb/candidates_compare.cpp
+)
+
 add_executable(sed-benchmark src/lb/sed_benchmark.cpp)
 
 # Moravec LB experiments
@@ -58,6 +63,10 @@ target_link_libraries(
 
 target_link_libraries(
         sed-benchmark
+        TimingLibrary)
+
+target_link_libraries(
+        candidates-compare
         TimingLibrary)
 
 
@@ -86,6 +95,10 @@ target_include_directories(
 )
 target_include_directories(
         indexer-test
+        PUBLIC external/common-code/timings
+)
+target_include_directories(
+        candidates-compare
         PUBLIC external/common-code/timings
 )
 # Create the timing library.
@@ -141,3 +154,4 @@ target_link_libraries(
 
 target_link_libraries(sed-benchmark TreeSimilarity Threads::Threads)
 target_link_libraries(indexer-test TreeSimilarity Threads::Threads)
+target_link_libraries(candidates-compare TreeSimilarity Threads::Threads)
