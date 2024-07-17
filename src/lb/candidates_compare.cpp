@@ -15,9 +15,9 @@ using namespace std::chrono;
 std::vector<std::pair<int, int>> read_candidates(std::string& candidates_path);
 int main(int argc, char *argv[])
 {
-    if (argc < 6)
+    if (argc < 5)
     {
-        std::cerr << "Missing arguments for DATASET, CANDIDATES1, CANDIDATES2, [apted|topdiff] THRESHOLD" << std::endl;
+        std::cerr << "Missing arguments for DATASET, CANDIDATES, [apted|topdiff] THRESHOLD" << std::endl;
         exit(1);
     }
 
@@ -26,17 +26,16 @@ int main(int argc, char *argv[])
     // path to dataset file containing trees in BN (Bracket notation)
     std::string dataset_path = args.at(0);
 
-    std::string candidates1 = args.at(1);
-    std::string candidates2 = args.at(2);
+    std::string candidates = args.at(1);
 
-    std::string method = args.at(3);
+    std::string method = args.at(2);
 
     if (!(method == "apted" || method == "topdiff")) {
         std::cerr << "Unknown method selected, only [apted|topdiff] available\n";
         exit(1);
     }
 
-    auto threshold = std::stoi(args.at(4));
+    auto threshold = std::stoi(args.at(3));
 
     // now increase stack size
     rlim_t new_stack_size = 16777216;
@@ -64,9 +63,10 @@ int main(int argc, char *argv[])
     bnp.parse_collection(trees_collection, dataset_path);
     std::cout << "Parsing done" << std::endl;
 
-    std::vector<std::pair<int, int>> candidates1vec = read_candidates(candidates1);
-    std::vector<std::pair<int, int>> candidates2vec = read_candidates(candidates2);
+    std::vector<std::pair<int, int>> candidates1vec = read_candidates(candidates);
+//    std::vector<std::pair<int, int>> candidates2vec = read_candidates(candidates2);
 
+    std::vector<long> candidate_verification_time;
     LabelDictionary ld;
     CostModelLD ucm(ld);
 
@@ -74,6 +74,7 @@ int main(int argc, char *argv[])
     APTED apted(ucm);
     std::vector<double> teds;
 
+    int i = 0;
 
     if (method == "topdiff") {
         std::vector<node::TreeIndexTouzetKRSet> tree_indexes;
@@ -82,24 +83,16 @@ int main(int argc, char *argv[])
             node::index_tree(ti, trees_collection[j], ld, ucm);
             tree_indexes.emplace_back(ti);
         }
-        auto start  = high_resolution_clock ::now();
         for (const auto & [t1, t2] : candidates1vec) {
+            auto start  = high_resolution_clock ::now();
             teds.emplace_back(top_diff.ted_k(tree_indexes[t1], tree_indexes[t2], threshold));
+            auto stop = high_resolution_clock ::now();
+            candidate_verification_time.emplace_back(duration_cast<microseconds >(stop - start).count());
+            i += 1;
+            if (i % 100 == 0) {
+                std::cout << i << std::endl;
+            }
         }
-
-        auto stop = high_resolution_clock ::now();
-        auto duration1 = duration_cast<milliseconds>(stop - start);
-        std::cout << "First candidates duration: " << duration1.count() << "ms" << std::endl;
-        start  = high_resolution_clock ::now();
-        teds.clear();
-        for (const auto & [t1, t2] : candidates2vec) {
-            teds.emplace_back(top_diff.ted_k(tree_indexes[t1], tree_indexes[t2], threshold));
-
-        }
-        stop = high_resolution_clock ::now();
-        auto duration2 = duration_cast<milliseconds>(stop - start);
-        std::cout << "Second candidates duration: " << duration2.count() << "ms" << std::endl;
-        std::cout << "The execution difference is " << duration1.count() - duration2.count() << "ms" << std::endl;
     } else {
         std::vector<node::TreeIndexAPTED> tree_indexes;
         for (size_t j = 0; j < trees_collection.size(); ++j) {
@@ -107,24 +100,20 @@ int main(int argc, char *argv[])
             node::index_tree(ti, trees_collection[j], ld, ucm);
             tree_indexes.emplace_back(ti);
         }
-        auto start  = high_resolution_clock ::now();
         for (const auto & [t1, t2] : candidates1vec) {
+            auto start  = high_resolution_clock ::now();
             teds.emplace_back(apted.ted(tree_indexes[t1], tree_indexes[t2]));
+            auto stop = high_resolution_clock ::now();
+            candidate_verification_time.emplace_back(duration_cast<microseconds >(stop - start).count());
+            i += 1;
+            if (i % 100 == 0) {
+                std::cout << i << std::endl;
+            }
         }
+    }
 
-        auto stop = high_resolution_clock ::now();
-        auto duration1 = duration_cast<milliseconds>(stop - start);
-        std::cout << "First candidates duration: " << duration1.count() << "ms" << std::endl;
-        start  = high_resolution_clock ::now();
-        teds.clear();
-        for (const auto & [t1, t2] : candidates2vec) {
-            teds.emplace_back(apted.ted(tree_indexes[t1], tree_indexes[t2]));
-
-        }
-        stop = high_resolution_clock ::now();
-        auto duration2 = duration_cast<milliseconds>(stop - start);
-        std::cout << "Second candidates duration: " << duration2.count() << "ms" << std::endl;
-        std::cout << "The execution difference is " << duration1.count() - duration2.count() << "ms" << std::endl;
+    for (const auto & veriftime : candidate_verification_time) {
+        std::cout << veriftime << "\n";
     }
 
     return 0;
