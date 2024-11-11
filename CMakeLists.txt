@@ -2,13 +2,14 @@ cmake_minimum_required(VERSION 3.7)
 
 # Create the project.
 project(ted-experiments)
-
+set(CMAKE_CXX_STANDARD 17)
+find_package(OpenMP REQUIRED)
 # Compiler flags.
 # MUST be declared after project().
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -Wall -O0 -g")
 else ()
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -Wall -O3")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -Wall -O3 -fopenmp")
 endif ()
 # Verify which timing implementation to use.
 # NOTE: Comes from common-code.
@@ -55,9 +56,15 @@ add_executable(ted-lb-experiments
         src/lb/ted_lb_experiments.h
 )
 
+# Moravec LB experiments
+add_executable(query_validate
+        src/lb/query_validate.cpp
+)
+
 target_link_libraries(
     ted-ds-dist
     TimingLibrary
+    OpenMP::OpenMP_CXX
 #    Boost::iostreams
 )
 
@@ -68,6 +75,12 @@ target_link_libraries(
 target_link_libraries(
         candidates-compare
         TimingLibrary)
+
+target_link_libraries(
+        query_validate
+        TimingLibrary
+        OpenMP::OpenMP_CXX)
+
 
 
 target_link_libraries(
@@ -99,6 +112,10 @@ target_include_directories(
 )
 target_include_directories(
         candidates-compare
+        PUBLIC external/common-code/timings
+)
+target_include_directories(
+        query_validate
         PUBLIC external/common-code/timings
 )
 # Create the timing library.
@@ -142,6 +159,7 @@ find_package(Threads REQUIRED)
 # Link LB experiments to TreeSim library
 target_link_libraries(
         ted-ds-dist
+        OpenMP::OpenMP_CXX
         TreeSimilarity
         Threads::Threads
 )
@@ -154,4 +172,5 @@ target_link_libraries(
 
 target_link_libraries(sed-benchmark TreeSimilarity Threads::Threads)
 target_link_libraries(indexer-test TreeSimilarity Threads::Threads)
-target_link_libraries(candidates-compare TreeSimilarity Threads::Threads)
+target_link_libraries(candidates-compare TreeSimilarity Threads::Threads OpenMP::OpenMP_CXX)
+target_link_libraries(query_validate TreeSimilarity Threads::Threads OpenMP::OpenMP_CXX)

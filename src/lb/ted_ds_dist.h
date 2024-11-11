@@ -24,7 +24,8 @@
 #include "cted_tree_index.h"
 #include "bracket_notation_parser.h"
 #include "touzet_kr_set_tree_index.h"
+#include "touzet_baseline_tree_index.h"
+#include "omp.h"
 #include "t_join_ti.h"
 
-
-#endif //TED_EXPERIMENTS_TED_DS_DIST_H
+#endif // TED_EXPERIMENTS_TED_DS_DIST_H
