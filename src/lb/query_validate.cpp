@@ -6,6 +6,8 @@
 #include <execution>
 #include <algorithm>
 #include "omp.h"
+#include <unordered_set>
+#include <utility>
 
 rlim_t increase_stack_size(rlim_t &);
 
@@ -13,6 +15,29 @@ using namespace std::chrono;
 
 std::vector<std::pair<int, int>> read_candidates(std::string &candidates_path);
 std::vector<std::pair<int, std::string>> read_query_file(std::string &query_path);
+
+// Hash function that treats (a,b) and (b,a) as equivalent
+struct SymmetricPairHash
+{
+    std::size_t operator()(const std::pair<int, int> &p) const
+    {
+        // Use the smaller number first to ensure (a,b) and (b,a) hash the same
+        auto small = std::min(p.first, p.second);
+        auto large = std::max(p.first, p.second);
+        // Combine hashes - order doesn't matter now since we sorted the values
+        return std::hash<int>{}(small) ^ (std::hash<int>{}(large) << 1);
+    }
+};
+
+// Equality function that treats (a,b) and (b,a) as equivalent
+struct SymmetricPairEqual
+{
+    bool operator()(const std::pair<int, int> &p1, const std::pair<int, int> &p2) const
+    {
+        return (p1.first == p2.first && p1.second == p2.second) ||
+               (p1.first == p2.second && p1.second == p2.first);
+    }
+};
 
 int main(int argc, char *argv[])
 {
@@ -80,9 +105,11 @@ int main(int argc, char *argv[])
     std::vector<long> candidate_verification_time;
     LabelDictionary ld;
     CostModelLD ucm(ld);
-    std::vector<double> teds;
-
+    std::vector<std::pair<int, int>> correct_candidates;
+    std::cerr << "Parsed " << trees_collection.size() << " trees" << std::endl;
     int i = 0;
+
+    std::unordered_set<std::pair<int, int>, SymmetricPairHash, SymmetricPairEqual> computed_pairs;
 
     if (method == "topdiff")
     {
@@ -94,9 +121,23 @@ int main(int argc, char *argv[])
             tree_indexes.emplace_back(ti);
         }
 
-#pragma omp parallel for schedule(guided)
+#pragma omp parallel for schedule(guided) shared(computed_pairs)
         for (const auto &[t1, t2] : candidates1vec)
         {
+            auto can_skip = false;
+#pragma omp critical
+            {
+                if (computed_pairs.find({t1, t2}) != computed_pairs.end())
+                {
+                    can_skip = true;
+                }
+            }
+
+            if (can_skip)
+            {
+                continue;
+            }
+
             node::TreeIndexTouzetKRSet ti;
             auto [threshold, query_tree] = query_collection[t1];
             node::index_tree(ti, query_tree, ld, ucm);
@@ -109,12 +150,12 @@ int main(int argc, char *argv[])
             auto duration = duration_cast<nanoseconds>(stop - start).count();
 #pragma omp critical
             {
+                computed_pairs.insert({t1, t2});
                 if (final_ted <= threshold)
                 {
-                    std::cout << t1 << "," << t2 << " holds under " << threshold << "\n";
+                    correct_candidates.push_back(std::make_pair(t1, t2));
                 }
                 candidate_verification_time.emplace_back(duration);
-                teds.emplace_back(final_ted);
 
                 i += 1;
                 if (i % 10'000 == 0)
@@ -124,47 +165,17 @@ int main(int argc, char *argv[])
             }
         }
     }
-    else
+
+    std::cerr << "Calc done, printing results" << std::endl;
+    for (const auto &veriftime : candidate_verification_time)
     {
-        std::vector<node::TreeIndexAPTED> tree_indexes;
-        for (size_t j = 0; j < trees_collection.size(); ++j)
-        {
-            node::TreeIndexAPTED ti;
-            node::index_tree(ti, trees_collection[j], ld, ucm);
-            tree_indexes.emplace_back(ti);
-        }
-
-#pragma omp parallel for schedule(guided)
-        for (const auto &[t1, t2] : candidates1vec)
-        {
-            APTED apted(ucm);
-            auto start = high_resolution_clock ::now();
-            auto tedv = apted.ted(tree_indexes[t1], tree_indexes[t2]);
-
-            auto stop = high_resolution_clock ::now();
-            auto duration = duration_cast<nanoseconds>(stop - start).count();
-#pragma omp critical
-            {
-                teds.emplace_back(tedv);
-                candidate_verification_time.emplace_back(duration);
-                i += 1;
-                if (i % 10'000 == 0)
-                {
-                    std::cerr << i << std::endl;
-                }
-
-                // if (i > 5'420'000) {
-                // std::cerr << i << std::endl;
-                //               }
-            }
-        }
+        std::cout << veriftime << "\n";
     }
-
-    // std::cerr << "Calc done, printing results" << std::endl;
-    // for (const auto &veriftime : candidate_verification_time)
-    // {
-    //     std::cout << veriftime << "\n";
-    // }
+    std::cerr << "Printing correct candidates" << std::endl;
+    for (const auto &[t1, t2] : correct_candidates)
+    {
+        std::cout << t1 << "," << t2 << "\n";
+    }
 
     return 0;
 }
