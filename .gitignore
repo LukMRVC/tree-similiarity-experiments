@@ -5,3 +5,9 @@ cmake-build-debug
 cmake-build-release
 .vscode
 /CMakeFiles/
+.cache/
+
+*.csv
+*.txt
+
+*.sh

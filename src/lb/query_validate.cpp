@@ -1,250 +1,247 @@
 #include "ted_ds_dist.h"
 
-#include <thread>
-#include <fstream>
-#include <mutex>
-#include <execution>
-#include <algorithm>
 #include "omp.h"
+#include <algorithm>
+#include <chrono>
+#include <cstdint>
+#include <execution>
+#include <fstream>
+#include <iostream>
+#include <mutex>
+#include <thread>
 #include <unordered_set>
 #include <utility>
+#include <vector>
 
 rlim_t increase_stack_size(rlim_t &);
 
 using namespace std::chrono;
 
 std::vector<std::pair<int, int>> read_candidates(std::string &candidates_path);
-std::vector<std::pair<int, std::string>> read_query_file(std::string &query_path);
+std::vector<std::pair<int, std::string>>
+read_query_file(std::string &query_path);
 
 // Hash function that treats (a,b) and (b,a) as equivalent
-struct SymmetricPairHash
-{
-    std::size_t operator()(const std::pair<int, int> &p) const
-    {
-        // Use the smaller number first to ensure (a,b) and (b,a) hash the same
-        auto small = std::min(p.first, p.second);
-        auto large = std::max(p.first, p.second);
-        // Combine hashes - order doesn't matter now since we sorted the values
-        return std::hash<int>{}(small) ^ (std::hash<int>{}(large) << 1);
-    }
+struct SymmetricPairHash {
+  std::size_t operator()(const std::pair<int, int> &p) const {
+    // Use the smaller number first to ensure (a,b) and (b,a) hash the same
+    auto small = std::min(p.first, p.second);
+    auto large = std::max(p.first, p.second);
+    // Combine hashes - order doesn't matter now since we sorted the values
+    return std::hash<int>{}(small) ^ (std::hash<int>{}(large) << 1);
+  }
 };
 
 // Equality function that treats (a,b) and (b,a) as equivalent
-struct SymmetricPairEqual
-{
-    bool operator()(const std::pair<int, int> &p1, const std::pair<int, int> &p2) const
-    {
-        return (p1.first == p2.first && p1.second == p2.second) ||
-               (p1.first == p2.second && p1.second == p2.first);
-    }
+struct SymmetricPairEqual {
+  bool operator()(const std::pair<int, int> &p1,
+                  const std::pair<int, int> &p2) const {
+    return (p1.first == p2.first && p1.second == p2.second) ||
+           (p1.first == p2.second && p1.second == p2.first);
+  }
 };
 
-int main(int argc, char *argv[])
-{
-    std::ios::sync_with_stdio(false);
-    if (argc < 5)
-    {
-        std::cerr << "Missing arguments for DATASET, QUERY_FILE, CANDIDATES, [apted|topdiff]" << std::endl;
-        exit(1);
-    }
+struct PairHash {
+  inline std::size_t operator()(const std::pair<int, int> &v) const {
+    return v.first * 300 + v.second;
+  }
+};
 
-    std::vector<std::string> args(argv + 1, argv + argc);
+struct VerificationResult {
+  int query_id;
+  int candidate_id;
+  int16_t passed;
+  long verification_time;
+  double final_ted;
+};
 
-    // path to dataset file containing trees in BN (Bracket notation)
-    std::string dataset_path = args.at(0);
-    std::string query_path = args.at(1);
-    std::string candidates = args.at(2);
+int main(int argc, char *argv[]) {
+  std::ios::sync_with_stdio(false);
+  if (argc < 4) {
+    std::cerr << "Missing arguments for DATASET, QUERY_FILE, CANDIDATES*"
+              << std::endl;
+    exit(1);
+  }
 
-    std::string method = args.at(3);
+  std::vector<std::string> args(argv + 1, argv + argc);
 
-    if (!(method == "apted" || method == "topdiff"))
-    {
-        std::cerr << "Unknown method selected, only [apted|topdiff] available\n";
-        exit(1);
-    }
+  // path to dataset file containing trees in BN (Bracket notation)
+  std::string dataset_path = args.at(0);
+  std::string query_path = args.at(1);
 
-    // now increase stack size
-    rlim_t new_stack_size = 16777216;
-    if (increase_stack_size(new_stack_size) != new_stack_size)
-    {
-        std::cerr << "Unable to increase stack size!" << std::endl;
-        exit(1);
-    }
+  // we can have N candidate files, we merge all candidate pairs into single set
+  std::unordered_set<std::pair<int, int>, PairHash> candidate_set;
+  for (size_t i = 2; i < args.size(); ++i) {
+    auto candidates_vec = read_candidates(args[i]);
+    candidate_set.insert(candidates_vec.begin(), candidates_vec.end());
+  }
 
-    auto queries = read_query_file(query_path);
+  // now increase stack size
+  rlim_t new_stack_size = 16777216;
+  if (increase_stack_size(new_stack_size) != new_stack_size) {
+    std::cerr << "Unable to increase stack size!" << std::endl;
+    exit(1);
+  }
 
-    using Label = label::StringLabel;
-    using CostModelLD = cost_model::UnitCostModelLD<Label>;
-    using LabelDictionary = label::LabelDictionary<Label>;
-    //  Use APTED to compute actual tree distances at least once between all trees <- this is going to take a lot of time
-    //  Computing all these distances is necessary, so we can determine the success rate of the filter
-    //  The computation is going to take a lot of time, might as well run it in parallel :]
-    using TedTouzet = ted::TouzetKRSetTreeIndex<CostModelLD, node::TreeIndexTouzetKRSet>;
-    using APTED = ted::APTEDTreeIndex<CostModelLD>;
+  auto queries = read_query_file(query_path);
 
-    // PARSE INPUT
-    // The input is parsed once for the entire experiment.
-    std::vector<node::Node<Label>> trees_collection;
-    parser::BracketNotationParser<Label> bnp;
-    std::cerr << "Parsing tree collection for " << dataset_path << std::endl;
-    bnp.parse_collection(trees_collection, dataset_path);
-    std::cerr << "Parsing done" << std::endl;
+  using Label = label::StringLabel;
+  using CostModelLD = cost_model::UnitCostModelLD<Label>;
+  using LabelDictionary = label::LabelDictionary<Label>;
+  //  Use APTED to compute actual tree distances at least once between all trees
+  //  <- this is going to take a lot of time Computing all these distances is
+  //  necessary, so we can determine the success rate of the filter The
+  //  computation is going to take a lot of time, might as well run it in
+  //  parallel :]
+  using TedTouzet =
+      ted::TouzetKRSetTreeIndex<CostModelLD, node::TreeIndexTouzetKRSet>;
 
-    std::vector<std::pair<unsigned long, node::Node<Label>>> query_collection;
+  // PARSE INPUT
+  // The input is parsed once for the entire experiment.
+  std::vector<node::Node<Label>> trees_collection;
+  parser::BracketNotationParser<Label> bnp;
+  std::cerr << "Parsing tree collection for " << dataset_path << std::endl;
+  bnp.parse_collection(trees_collection, dataset_path);
+  std::cerr << "Parsing done" << std::endl;
 
-    for (const auto &[t, tstr] : queries)
-    {
-        auto query_tree = bnp.parse_single(tstr);
+  std::vector<std::pair<unsigned long, node::Node<Label>>> query_collection;
 
-        query_collection.emplace_back(t, query_tree);
-    }
+  for (const auto &[t, tstr] : queries) {
+    auto query_tree = bnp.parse_single(tstr);
+    query_collection.emplace_back(t, query_tree);
+  }
+  //    std::vector<std::pair<int, int>> candidates2vec =
+  //    read_candidates(candidates2);
 
-    std::vector<std::pair<int, int>> candidates1vec = read_candidates(candidates);
-    //    std::vector<std::pair<int, int>> candidates2vec = read_candidates(candidates2);
+  LabelDictionary ld;
+  CostModelLD ucm(ld);
+  std::cerr << "Parsed " << trees_collection.size() << " trees" << std::endl;
+  int i = 0;
 
-    std::vector<long> candidate_verification_time;
-    LabelDictionary ld;
-    CostModelLD ucm(ld);
-    std::vector<std::pair<int, int>> correct_candidates;
-    std::cerr << "Parsed " << trees_collection.size() << " trees" << std::endl;
-    int i = 0;
+  std::unordered_set<std::pair<int, int>, SymmetricPairHash, SymmetricPairEqual>
+      computed_pairs;
 
-    std::unordered_set<std::pair<int, int>, SymmetricPairHash, SymmetricPairEqual> computed_pairs;
+  std::vector<node::TreeIndexTouzetKRSet> tree_indexes;
+  for (size_t j = 0; j < trees_collection.size(); ++j) {
+    node::TreeIndexTouzetKRSet ti;
+    node::index_tree(ti, trees_collection[j], ld, ucm);
+    tree_indexes.emplace_back(ti);
+  }
 
-    if (method == "topdiff")
-    {
-        std::vector<node::TreeIndexTouzetKRSet> tree_indexes;
-        for (size_t j = 0; j < trees_collection.size(); ++j)
-        {
-            node::TreeIndexTouzetKRSet ti;
-            node::index_tree(ti, trees_collection[j], ld, ucm);
-            tree_indexes.emplace_back(ti);
-        }
+  std::vector<std::pair<int, int>> candidate_vector(candidate_set.begin(),
+                                                    candidate_set.end());
 
-#pragma omp parallel for schedule(guided) shared(computed_pairs)
-        for (const auto &[t1, t2] : candidates1vec)
-        {
-            auto can_skip = false;
+  std::vector<VerificationResult> verification_results;
+  verification_results.reserve(candidate_vector.size());
+
+#pragma omp parallel for schedule(guided) shared(query_collection, tree_indexes)
+  for (const auto &[t1, t2] : candidate_vector) {
+    node::TreeIndexTouzetKRSet ti;
+    auto [threshold, query_tree] = query_collection[t1];
+    node::index_tree(ti, query_tree, ld, ucm);
+
+    TedTouzet top_diff(ucm);
+
+    auto compute_ted_duration = [&]() {
+      auto start = high_resolution_clock::now();
+      auto final_ted = top_diff.ted_k(ti, tree_indexes[t2], threshold);
+      auto stop = high_resolution_clock::now();
+      auto duration =
+          std::chrono::duration_cast<microseconds>(stop - start).count();
+      return std::make_pair(final_ted, duration);
+    };
+
+    auto [final_ted, duration0] = compute_ted_duration();
+    auto [_, duration1] = compute_ted_duration();
+    auto [__, duration2] = compute_ted_duration();
+
+    auto duration = std::min({duration0, duration1, duration2});
 #pragma omp critical
-            {
-                if (computed_pairs.find({t1, t2}) != computed_pairs.end())
-                {
-                    can_skip = true;
-                }
-            }
-
-            if (can_skip)
-            {
-                continue;
-            }
-
-            node::TreeIndexTouzetKRSet ti;
-            auto [threshold, query_tree] = query_collection[t1];
-            node::index_tree(ti, query_tree, ld, ucm);
-
-            TedTouzet top_diff(ucm);
-            auto start = high_resolution_clock::now();
-            auto final_ted = top_diff.ted_k(ti, tree_indexes[t2], threshold);
-
-            auto stop = high_resolution_clock::now();
-            auto duration = duration_cast<nanoseconds>(stop - start).count();
-#pragma omp critical
-            {
-                computed_pairs.insert({t1, t2});
-                if (final_ted <= threshold)
-                {
-                    correct_candidates.push_back(std::make_pair(t1, t2));
-                }
-                candidate_verification_time.emplace_back(duration);
-
-                i += 1;
-                if (i % 10'000 == 0)
-                {
-                    std::cerr << i << std::endl;
-                }
-            }
-        }
-    }
-
-    std::cerr << "Calc done, printing results" << std::endl;
-    for (const auto &veriftime : candidate_verification_time)
     {
-        std::cout << veriftime << "\n";
-    }
-    std::cerr << "Printing correct candidates" << std::endl;
-    for (const auto &[t1, t2] : correct_candidates)
-    {
-        std::cout << t1 << "," << t2 << "\n";
-    }
+      verification_results.push_back(
+          {t1, t2, final_ted <= threshold, duration, final_ted});
 
-    return 0;
+      i += 1;
+      //   std::cerr << "[" << t1 << ", " << t2 << "]" << std::endl;
+      //   if (i % 1'000 == 0) {
+      // std::cerr << i << std::endl;
+      //   }
+    }
+  }
+
+  std::cerr << "Printing verification results" << std::endl;
+  std::cout
+      << "query_id,candidate_id,verification_time_micro,final_ted,passed\n";
+  for (const auto vr : verification_results) {
+    std::cout << vr.query_id << "," << vr.candidate_id << ","
+              << vr.verification_time << "," << vr.final_ted << "," << vr.passed
+              << "\n";
+  }
+
+  return 0;
 }
 
-std::vector<std::pair<int, int>> read_candidates(std::string &candidates_path)
-{
-    std::vector<std::pair<int, int>> candidatesvec;
+std::vector<std::pair<int, int>> read_candidates(std::string &candidates_path) {
+  std::vector<std::pair<int, int>> candidatesvec;
 
-    std::string line;
-    std::string tmp;
-    std::ifstream results(candidates_path);
-    size_t t1;
-    size_t t2;
+  std::string line;
+  std::string tmp;
+  std::ifstream results(candidates_path);
+  size_t t1;
+  size_t t2;
 
-    std::vector<std::vector<size_t>> results_map;
+  std::vector<std::vector<size_t>> results_map;
 
-    while (std::getline(results, line))
-    {
-        auto ls = std::stringstream(line);
-        std::getline(ls, tmp, ',');
-        t1 = std::stoul(tmp);
+  while (std::getline(results, line)) {
+    auto ls = std::stringstream(line);
+    std::getline(ls, tmp, ',');
+    t1 = std::stoul(tmp);
 
-        std::getline(ls, tmp, '\n');
-        t2 = std::stoul(tmp);
+    std::getline(ls, tmp, '\n');
+    t2 = std::stoul(tmp);
 
-        candidatesvec.emplace_back(t1, t2);
-    }
+    candidatesvec.emplace_back(t1, t2);
+  }
 
-    return candidatesvec;
+  return candidatesvec;
 }
 
-std::vector<std::pair<int, std::string>> read_query_file(std::string &query_path)
-{
-    std::ifstream cfile(query_path);
-    std::vector<std::pair<int, std::string>> candidatesvec;
-    std::string line;
-    std::string tmp;
-    size_t t1;
-    size_t t2;
+std::vector<std::pair<int, std::string>>
+read_query_file(std::string &query_path) {
+  std::ifstream cfile(query_path);
+  std::vector<std::pair<int, std::string>> candidatesvec;
+  std::string line;
+  std::string tmp;
+  size_t t1;
+  size_t t2;
 
-    std::vector<std::vector<size_t>> results_map;
+  std::vector<std::vector<size_t>> results_map;
 
-    while (std::getline(cfile, line))
-    {
-        auto ls = std::stringstream(line);
-        std::getline(ls, tmp, ';');
-        t1 = std::stoul(tmp);
+  while (std::getline(cfile, line)) {
+    auto ls = std::stringstream(line);
+    std::getline(ls, tmp, ';');
+    t1 = std::stoul(tmp);
 
-        std::getline(ls, tmp, '\n');
-        candidatesvec.emplace_back(t1, tmp);
-    }
+    std::getline(ls, tmp, '\n');
+    candidatesvec.emplace_back(t1, tmp);
+  }
 
-    return candidatesvec;
+  return candidatesvec;
 }
 
-rlim_t increase_stack_size(rlim_t &new_stack_size)
-{
-    // Define and object of structure rlimit.
-    struct rlimit rl;
-    // First get the time limit on CPU
-    getrlimit(RLIMIT_STACK, &rl);
-    // printf("\n Default value is : %lld\n", (long long int)rl.rlim_cur);
-    // Change the time limit
-    rl.rlim_cur = new_stack_size;
-    // Now call setrlimit() to set the
-    // changed value.
-    setrlimit(RLIMIT_STACK, &rl);
-    // Again get the limit and check
-    getrlimit(RLIMIT_STACK, &rl);
-    // printf("\n Default value now is : %lld\n", (long long int)rl.rlim_cur);
-    return rl.rlim_cur;
+rlim_t increase_stack_size(rlim_t &new_stack_size) {
+  // Define and object of structure rlimit.
+  struct rlimit rl;
+  // First get the time limit on CPU
+  getrlimit(RLIMIT_STACK, &rl);
+  // printf("\n Default value is : %lld\n", (long long int)rl.rlim_cur);
+  // Change the time limit
+  rl.rlim_cur = new_stack_size;
+  // Now call setrlimit() to set the
+  // changed value.
+  setrlimit(RLIMIT_STACK, &rl);
+  // Again get the limit and check
+  getrlimit(RLIMIT_STACK, &rl);
+  // printf("\n Default value now is : %lld\n", (long long int)rl.rlim_cur);
+  return rl.rlim_cur;
 }
