@@ -11,6 +11,11 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
 else ()
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -Wall -O3 -fopenmp -flto")
 endif ()
+
+
+# echo out build type
+message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
+
 # Verify which timing implementation to use.
 # NOTE: Comes from common-code.
 include(CheckSymbolExists)

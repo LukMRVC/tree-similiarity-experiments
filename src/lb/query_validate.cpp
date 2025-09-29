@@ -1,14 +1,10 @@
-#include "ted_ds_dist.h"
-
 #include "omp.h"
+#include "ted_ds_dist.h"
 #include <algorithm>
 #include <chrono>
 #include <cstdint>
-#include <execution>
 #include <fstream>
 #include <iostream>
-#include <mutex>
-#include <thread>
 #include <unordered_set>
 #include <utility>
 #include <vector>
@@ -104,6 +100,8 @@ int main(int argc, char *argv[]) {
   bnp.parse_collection(trees_collection, dataset_path);
   std::cerr << "Parsing done" << std::endl;
 
+  // std::cout << trees_collection[1099] << std::endl;
+
   std::vector<std::pair<unsigned long, node::Node<Label>>> query_collection;
 
   for (const auto &[t, tstr] : queries) {
@@ -134,6 +132,7 @@ int main(int argc, char *argv[]) {
   std::vector<VerificationResult> verification_results;
   verification_results.reserve(candidate_vector.size());
 
+  auto total_start = high_resolution_clock::now();
 #pragma omp parallel for schedule(guided) shared(query_collection, tree_indexes)
   for (const auto &[t1, t2] : candidate_vector) {
     node::TreeIndexTouzetKRSet ti;
@@ -168,6 +167,10 @@ int main(int argc, char *argv[]) {
       //   }
     }
   }
+  auto total_stop = high_resolution_clock::now();
+  auto total_duration =
+      std::chrono::duration_cast<milliseconds>(total_stop - total_start)
+          .count();
 
   std::cerr << "Printing verification results" << std::endl;
   std::cout
@@ -177,6 +180,7 @@ int main(int argc, char *argv[]) {
               << vr.verification_time << "," << vr.final_ted << "," << vr.passed
               << "\n";
   }
+  std::cout << "-1;-1;" << total_duration << ";-1;-1\n"; // end of file marker
 
   return 0;
 }
